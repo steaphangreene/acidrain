@@ -48,15 +48,15 @@ acidrain.exe:	$(WOBJS)
 #AUTO-GENERATED DEPS BELOW (gcc -MM *.c to regen)
 game.o: game.c scene.h game.h
 game_astral.o: game_astral.c game.h scene.h
-game_matrix.o: game_matrix.c scene.h game.h
+game_matrix.o: game_matrix.c scene.h scene_matrix.h game.h renderer.h
 game_real.o: game_real.c game.h scene.h
 input.o: input.c input.h scene.h renderer.h game.h
 main.o: main.c renderer.h scene.h input.h
 renderer.o: renderer.c renderer.h scene.h game.h
 renderer_astral.o: renderer_astral.c renderer.h scene.h
-renderer_matrix.o: renderer_matrix.c renderer.h scene.h
+renderer_matrix.o: renderer_matrix.c renderer.h scene.h scene_matrix.h
 renderer_real.o: renderer_real.c renderer.h scene.h
 scene.o: scene.c scene.h
 scene_astral.o: scene_astral.c scene.h
-scene_matrix.o: scene_matrix.c scene.h
+scene_matrix.o: scene_matrix.c scene.h scene_matrix.h
 scene_real.o: scene_real.c scene.h

@@ -30,3 +30,13 @@ void clicked(scene *current_scene, double x, double y, int b) {
   else if(current_scene->type == SCENE_TYPE_ASTRAL)
     clicked_astral(&(current_scene->astral), x, y, b);  
   }
+
+void update_viewport(scene *current_scene) {
+  if(current_scene == NULL) return;
+  else if(current_scene->type == SCENE_TYPE_MATRIX)  
+    update_viewport_matrix(&(current_scene->matrix));
+  else if(current_scene->type == SCENE_TYPE_REAL)
+    update_viewport_real(&(current_scene->real));
+  else if(current_scene->type == SCENE_TYPE_ASTRAL)
+    update_viewport_astral(&(current_scene->astral));
+  }

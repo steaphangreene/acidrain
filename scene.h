@@ -40,29 +40,8 @@
 
 #define SCENE_UNKNOWN	0
 #define SCENE_KNOWN	1
-#define NODE_LTG0	100
-#define NODE_LTG1	101
-#define NODE_LTG2	102
-#define NODE_LTG3	103
-#define NODE_LTG4	104
-#define NODE_LTG5	105
-#define NODE_LTG6	106
-#define NODE_LTG7	107
-#define NODE_LTG8	108
-#define NODE_LTG9	109
-
-#define ZONE_UNKNOWN	0
-#define ZONE_OWNED	1
-#define ZONE_PUBLIC	2
-#define ZONE_WELCOME	3
-#define ZONE_PRIVATE	4
-#define ZONE_PROTECTED	5
-#define ZONE_SECURE	6
 
 #define MOVE_NONE	0
-#define MOVE_RECENTER	1
-#define MOVE_TRAVEL1	2
-#define MOVE_TRAVEL2	3
 
 #include <stdio.h> // for NULL
 
@@ -102,7 +81,7 @@ typedef union _scene {
   } scene;
 
 const static scene new_matrix_scene = { matrix: {
-	SCENE_TYPE_MATRIX, SCENE_UNKNOWN, ZONE_UNKNOWN,
+	SCENE_TYPE_MATRIX, SCENE_UNKNOWN, 0,
 	{{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },

@@ -23,9 +23,15 @@ void set_scene(SceneID);
 
 void panel_clicked(scene *, double x, double y, int b);
 void clicked(scene *, double x, double y, int b);
+void update_viewport(scene *);
 
+//Internal use only!
 void clicked_matrix(matrix_scene *, double, double, int);
 void clicked_real(real_scene *, double, double, int);
 void clicked_astral(astral_scene *, double, double, int);
+
+void update_viewport_matrix(matrix_scene *);
+void update_viewport_real(real_scene *);
+void update_viewport_astral(astral_scene *);
 
 #endif /* GAME_H */

@@ -15,6 +15,7 @@
 // *************************************************************************
 
 #include "scene.h"
+#include "scene_matrix.h"
 #include "game.h"
 #include "renderer.h"
 
@@ -27,28 +28,27 @@ void clicked_matrix(matrix_scene *cscene, double x, double y, int b) {
     matrix_obj *tmp = cscene->objs[xp][yp];
 
     if(tmp != NULL) {
-      if(tmp->type == MATRIX_PORT) {
-	int xo = MATRIX_CONVXD((x*2.0));
-	int yo = MATRIX_CONVXD((y*2.0));
-	cview.xtarg += 4.5;  cview.xoff += 4.5;
-	cview.ytarg += 4.5;  cview.yoff += 4.5;
-	cview.xtarg += ((double)xo-4)/2.0;
-	cview.ytarg += ((double)yo-4)/2.0;
-	while(cview.xtarg >= 4.5) {
-	  cview.xtarg -= 4.5;
-	  cview.xoff -= 4.5;
-	  }
-	while(cview.ytarg >= 4.5) {
-	  cview.ytarg -= 4.5;
-	  cview.yoff -= 4.5;
-	  }
-	cview.movet = MOVE_TRAVEL1;
-	if(cview.xtarg != cview.xoff || cview.ytarg != cview.yoff) {
-	  cview.move = 0;
-	  }	
-	else {
-	  cview.move = 10;
-	  }
+      int xo = MATRIX_CONVXD((x*2.0));
+      int yo = MATRIX_CONVXD((y*2.0));
+      cview.xtarg += 4.5;  cview.xoff += 4.5;
+      cview.ytarg += 4.5;  cview.yoff += 4.5;
+      cview.xtarg += ((double)xo-4)/2.0;
+      cview.ytarg += ((double)yo-4)/2.0;
+      while(cview.xtarg >= 4.5) {
+	cview.xtarg -= 4.5;
+	cview.xoff -= 4.5;
+	}
+      while(cview.ytarg >= 4.5) {
+	cview.ytarg -= 4.5;
+	cview.yoff -= 4.5;
+	}
+      if(cview.xtarg != cview.xoff || cview.ytarg != cview.yoff) {
+	cview.movet = MOVE_TARGET;
+	cview.move = 0;
+	}	
+      else {
+	cview.movet = MOVE_TARGET;
+	cview.move = 9;
 	}
       }
     }
@@ -83,5 +83,61 @@ void clicked_matrix(matrix_scene *cscene, double x, double y, int b) {
     cview.ytarg += 0.5;
     cview.move = 0;
     cview.movet = MOVE_RECENTER;
+    }
+  }
+
+
+void update_viewport_matrix(matrix_scene *cscene) {
+  if(cview.movet == MOVE_RECENTER || cview.movet == MOVE_TARGET) {
+    cview.xoff += (double)(cview.xtarg-cview.xoff)*moves[cview.move];
+    cview.yoff += (double)(cview.ytarg-cview.yoff)*moves[cview.move];
+    ++cview.move;
+    if(cview.move >= 10) {
+      if(cview.movet == MOVE_RECENTER) {
+        cview.movet = MOVE_NONE;
+        }
+      else if(cview.movet == MOVE_TARGET) {
+	int xp = MATRIX_CONVXD(cview.xoff);
+	int yp = MATRIX_CONVXD(cview.yoff);
+	matrix_obj *tmp = cscene->objs[xp][yp];
+
+	if(tmp->type == MATRIX_PORT) {
+	  cview.movet = MOVE_PORT1;
+	  cview.move = 0;
+	  }
+	else {
+	  cview.movet = MOVE_NONE;
+	  cview.move = 0;
+	  }
+        }
+      }
+    }
+
+  else if(cview.movet == MOVE_PORT1) {
+    cview.spread = spreads[cview.move];
+    ++cview.move;
+    if(cview.move >= 10) {
+      int xp = MATRIX_CONVXD(cview.xoff);
+      int yp = MATRIX_CONVXD(cview.yoff);
+      matrix_obj *tmp = cscene->objs[xp][yp];
+
+      cview.movet = MOVE_PORT2;
+      cview.move = 9;
+
+      cview.xtarg = 0.5*(double)(COORD_DECODEX(tmp->stat2)-4);
+      cview.ytarg = 0.5*(double)(COORD_DECODEY(tmp->stat2)-4);
+      cview.xoff = 0.5*(double)(COORD_DECODEX(tmp->stat2)-4);
+      cview.yoff = 0.5*(double)(COORD_DECODEY(tmp->stat2)-4);
+      set_current_scene(tmp->stat);
+      }
+    }
+
+  else if(cview.movet == MOVE_PORT2) {
+    cview.spread = spreads[cview.move];
+    --cview.move; 
+    if(cview.move < 0) {
+      cview.spread = 1.0;
+      cview.movet = MOVE_NONE;
+      }
     }
   }

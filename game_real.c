@@ -26,3 +26,6 @@
 
 void clicked_real(real_scene *current_scene, double x, double y, int b) {
   }
+
+void update_viewport_real(real_scene *cscene) {
+  }

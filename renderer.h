@@ -29,6 +29,7 @@ typedef struct _viewport {
   double xoff, yoff;
   double xtarg, ytarg;
   int move, movet;
+  double spread;
   } viewport;
 
 /* For use internally by renderer only! */

@@ -35,7 +35,7 @@ static int hgap=0, vgap=0;
 
 static scene *current_scene;
 
-viewport cview = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+viewport cview = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0};
 
 int phase = 0;
 
@@ -197,6 +197,8 @@ int render_scene(scene *cscene, int player) {
     difftick = 30;
     }
   else lasttick += 30;
+
+  update_viewport(cscene);
 
   if(difftick < 0 || difftick >= 1000000) {
     int d = (int)difftick;
