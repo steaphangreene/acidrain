@@ -41,19 +41,17 @@ int input_process(scene *current_scene, int player_number) {
 	if (event.key.keysym.sym == SDLK_ESCAPE) {
 	  user_quit = 1;
 	  }
-	else if (event.key.keysym.sym == SDLK_F4) {
-	  fucked = !fucked;
-	  }
 	else if (event.key.keysym.sym == SDLK_F1) {
 	  toggle_render_fonts();
 	  }
 	else if (event.key.keysym.sym == SDLK_F2) {
 	  toggle_antialiasing();
 	  }
-	else if (event.key.keysym.sym == SDLK_RETURN
-		&& ((event.key.keysym.mod & KMOD_LALT)
-		|| (event.key.keysym.mod & KMOD_RALT))) {
+	else if (event.key.keysym.sym == SDLK_F3) {
 	  toggle_fullscreen();
+	  }
+	else if (event.key.keysym.sym == SDLK_F4) {
+	  fucked = !fucked;
 	  }
 	else {
 	  keypressed(current_scene, event.key.keysym.sym);

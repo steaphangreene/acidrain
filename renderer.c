@@ -274,13 +274,39 @@ void toggle_fullscreen(void) {
     oldmodex = 0;  oldmodey = 0;
     }
   else {
+    int ctr, goal=-1;
+    SDL_Rect **modes;
+
+    modes = SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
+
+    if(modes == (SDL_Rect **)0){
+      modes = SDL_ListModes(NULL, SDL_FULLSCREEN);
+      }
+    if(modes == (SDL_Rect **)0){
+      return;
+      }
+
     oldmodex = surface->w;
     oldmodey = surface->h;
-    if(oldmodex <= 640 && oldmodey <= 480) resize_display(640, 480);
-    else if(oldmodex <= 800 && oldmodey <= 600) resize_display(800, 600);
-    else if(oldmodex <= 1024 && oldmodey <= 768) resize_display(1024, 768);
-    else if(oldmodex <= 1280 && oldmodey <= 1024) resize_display(1280, 1024);
-    else if(oldmodex <= 1600 && oldmodey <= 1200) resize_display(1600, 1200);
+
+    for(ctr=0; modes[ctr]; ++ctr) {
+      if(modes[ctr]->w >= surface->w && modes[ctr]->h >= surface->h) {
+	if(goal == -1
+		|| modes[ctr]->w < modes[goal]->w
+		|| modes[ctr]->h < modes[goal]->h) {
+	  goal = ctr;
+	  }
+	}
+      }
+    if(goal == -1) {
+      goal = 0;
+      for(ctr=1; modes[ctr]; ++ctr) {
+	if(modes[ctr]->w > modes[goal]->w || modes[ctr]->h > modes[goal]->h) {
+	  goal = ctr;
+	  }
+	}
+      }
+    resize_display(modes[goal]->w, modes[goal]->h);
     }
   SDL_WM_ToggleFullScreen(surface);
   videoFlags ^= SDL_FULLSCREEN;
