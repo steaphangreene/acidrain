@@ -427,7 +427,7 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 	glTranslatef(xpos, ypos, ICON_DEPTH);
 	glRotatef((double)ang, 0.0, 0.0, 1.0);
 	if(fake) {
-	  GLdouble sc = 1.0 - 0.1*((double)(phase%10));
+	  GLdouble sc = 0.7 + 0.3*(cos(M_PI * 0.05 * (double)(phase)));
 	  glScaled(sc, sc, sc);
 	  }
 	if(cscene->objs[xp][yp]->type == MATRIX_PORT
