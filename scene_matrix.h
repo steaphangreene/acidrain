@@ -17,6 +17,14 @@
 #ifndef SCENE_MATRIX_H
 #define SCENE_MATRIX_H
 
+//Node Flags
+#define	NF_VISITED	1
+
+//Construct Flags
+#define	NF_ENCOUNTERED	1
+#define	NF_DETECTED	2
+
+//Node Types
 #define NODE_UNKNOWN	0
 #define NODE_PUBPORT	1
 #define NODE_PRIVPORT	2

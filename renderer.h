@@ -24,6 +24,7 @@ int render_scene(scene *, int);
 void toggle_fullscreen(void);
 void resize_display(int, int);
 void pixels_to_location(double *, double *);
+void toggle_settings_window(void);
 
 typedef struct _viewport {
   double xoff, yoff;

@@ -265,6 +265,26 @@ void init_digits(void) {
     }
   }
 
+void render_digits(char *str) {
+  double width;
+  int ctr, len;
+
+  if(str == NULL) return;
+  len = strlen(str);
+  if(len <= 0) return;
+
+  width = 2.0/(double)len;
+  glTranslated(-1.0+(width/2.0), 0.0, 0.0);
+  glScaled(width, 1.0, 1.0);
+  for(ctr=0; ctr<len; ++ctr) {
+    glPushMatrix();
+    glScaled(0.9, 0.9, 1.0);
+    render_digit(str[ctr]);
+    glPopMatrix();
+    glTranslated(1.0, 0.0, 0.0);
+    }
+  }
+
 void render_digit(int chr) {
   if(!render_fonts) {
     double xs, ys;

@@ -27,7 +27,7 @@
 #endif
 
 #define XZAPPY 256
-#define YZAPPY 128
+#define YZAPPY 32
 #define ZAPPY_FRAMES 13
 
 static unsigned int tex_zappy[ZAPPY_FRAMES];
@@ -555,24 +555,24 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     if(cview.move < 90) {
       glNormal3d(0.0, -1.0, 0.0);
       glTexCoord2f(0.0, 0.0);
-      glVertex3d(-5.0, prog, -7.0);
+      glVertex3d(-5.0, prog, -6.3);
       glTexCoord2f(1.0, 0.0);
-      glVertex3d( 5.0, prog, -7.0);
+      glVertex3d( 5.0, prog, -6.3);
       glTexCoord2f(1.0, 1.0);
-      glVertex3d( 5.0, prog, -5.0);
+      glVertex3d( 5.0, prog, -5.7);
       glTexCoord2f(0.0, 1.0);
-      glVertex3d(-5.0, prog, -5.0);
+      glVertex3d(-5.0, prog, -5.7);
       }
     else {
       glNormal3d(0.0, -1.0, 0.0);
       glTexCoord2f(0.0, 0.0);
-      glVertex3d(-5.0, prog, -7.0);
+      glVertex3d(-5.0, prog, -6.3);
       glTexCoord2f(0.0, 1.0);
-      glVertex3d(-5.0, prog, -5.0);
+      glVertex3d(-5.0, prog, -5.7);
       glTexCoord2f(1.0, 1.0);
-      glVertex3d( 5.0, prog, -5.0);
+      glVertex3d( 5.0, prog, -5.7);
       glTexCoord2f(1.0, 0.0);
-      glVertex3d( 5.0, prog, -7.0);
+      glVertex3d( 5.0, prog, -6.3);
       }
     glEnd();
 

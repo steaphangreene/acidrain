@@ -116,20 +116,24 @@ scene *generate_scene_matrix(SceneID id) {
 	  tmp->stat = rand()%4+1;
 	  tmp->stat2 = 0;
 	  scene_list[id]->matrix.objs[xp][yp] = tmp;
+	  tmp->conceal = rand()%4;
 	  }
 	else if(tmp->type == MATRIX_DATAFILE) {
 	  tmp->stat = rand()%4+1;
 	  tmp->stat2 = 0;
+	  tmp->conceal = rand()%4;
 	  scene_list[id]->matrix.objs[xp][yp] = tmp;
 	  }
 	else if(tmp->type == MATRIX_CONTROL) {
 	  tmp->stat = rand()%4+1;
 	  tmp->stat2 = 0;
+	  tmp->conceal = rand()%4;
 	  scene_list[id]->matrix.objs[xp][yp] = tmp;
 	  }
 	else if(tmp->type == MATRIX_FAKE) {
 	  tmp->stat = rand()%4+1;
 	  tmp->stat2 = rand()%5+4;
+	  tmp->conceal = rand()%4;
 	  scene_list[id]->matrix.objs[xp][yp] = tmp;
 	  }
 	}

@@ -31,6 +31,8 @@ static int videoFlags = 0;
 static int xsize=0, ysize=0;
 static int hgap=0, vgap=0;
 
+int settings_window_open = 0;
+
 static scene *current_scene;
 
 viewport cview = {0.0, 0.0, 0.0, 0.0, 0, 0, 0, 1.0};
@@ -70,7 +72,8 @@ int init_renderer(int xs, int ys) {
   videoFlags |= SDL_GL_DOUBLEBUFFER;
   videoFlags |= SDL_HWPALETTE;
   videoFlags |= SDL_RESIZABLE;
-//  videoFlags |= SDL_FULLSCREEN;
+  if(fullscreen_mode)
+    videoFlags |= SDL_FULLSCREEN;
 
   /* Use HW Survaces if possible */
   if(videoInfo->hw_available) videoFlags |= SDL_HWSURFACE;
@@ -214,6 +217,13 @@ int render_scene(scene *cscene, int player) {
     else if(current_scene->type == SCENE_TYPE_ASTRAL) {
       if(!render_scene_astral(&(current_scene->astral), player)) return 0;
       }
+
+    if(settings_window_open) {
+      glLoadIdentity();
+      glTranslated(0.0, 0.0, -4.4);
+      glScaled(1.25, 1.25, 1.0);
+      render_settings_window();
+      }
     }
   else {
     int ctr;
@@ -240,6 +250,14 @@ int render_scene(scene *cscene, int player) {
       else if(current_scene->type == SCENE_TYPE_ASTRAL) {
 	if(!render_scene_astral(&(current_scene->astral), player)) return 0;
 	}
+
+      if(settings_window_open) {
+	glLoadIdentity();
+	glTranslated(0.0, 0.0, -4.4);
+	glScaled(1.25, 1.25, 1.0);
+	render_settings_window();
+	}
+
       glAccum(GL_ACCUM, 1.0/(double)(antialias_level*antialias_level));
       glFlush();
       }
@@ -266,6 +284,10 @@ void resize_display(int xs, int ys) {
   }
 
 static int oldmodex = 0, oldmodey = 0;
+
+void toggle_settings_window(void) {
+  settings_window_open = !settings_window_open;
+  }
 
 void toggle_fullscreen(void) {
   char drv[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -313,6 +335,7 @@ void toggle_fullscreen(void) {
     }
   SDL_WM_ToggleFullScreen(surface);
   videoFlags ^= SDL_FULLSCREEN;
+  fullscreen_mode = (videoFlags & SDL_FULLSCREEN) != 0;
   }
 
 void pixels_to_location(double *x, double *y) {

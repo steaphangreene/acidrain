@@ -22,18 +22,25 @@
 
 #include <SDL/SDL.h>
 
+#include "settings.h"
 #include "renderer.h"
 #include "input.h"
 #include "scene.h"
 
 int main(int argc, char **argv) {
+  int ixs=832, iys=624;
   int player_number = 1;
   scene *current_scene = NULL;
 
   srand(time(NULL));
 
-//  if(!init_renderer(1024, 768)) {
-  if(!init_renderer(832, 624)) {
+  if(argc == 2 && (!strcmp(argv[1], "--fullscreen"))) {
+    fullscreen_mode = 1;
+    ixs = 1024;
+    iys = 768;
+    }
+
+  if(!init_renderer(ixs, iys)) {
     fprintf(stderr, "Renderer failed to initialize!\n");
     exit(1);
     }

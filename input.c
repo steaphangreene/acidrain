@@ -29,8 +29,9 @@
 #include "digits.h"
 
 int user_quit = 0;
-
 int fucked = 0;
+
+extern int settings_window_open;
 
 int input_process(scene *current_scene, int player_number) {
   SDL_Event event;
@@ -42,17 +43,20 @@ int input_process(scene *current_scene, int player_number) {
 	  user_quit = 1;
 	  }
 	else if (event.key.keysym.sym == SDLK_F1) {
-	  toggle_render_fonts();
+	  toggle_settings_window();
 	  }
-	else if (event.key.keysym.sym == SDLK_F2) {
-	  toggle_antialiasing();
-	  }
-	else if (event.key.keysym.sym == SDLK_F3) {
-	  toggle_fullscreen();
-	  }
-	else if (event.key.keysym.sym == SDLK_F4) {
-	  fucked = !fucked;
-	  }
+//	else if (event.key.keysym.sym == SDLK_F1) {
+//	  toggle_render_fonts();
+//	  }
+//	else if (event.key.keysym.sym == SDLK_F2) {
+//	  toggle_antialiasing();
+//	  }
+//	else if (event.key.keysym.sym == SDLK_F3) {
+//	  toggle_fullscreen();
+//	  }
+//	else if (event.key.keysym.sym == SDLK_F4) {
+//	  fucked = !fucked;
+//	  }
 	else {
 	  keypressed(current_scene, event.key.keysym.sym);
 	  }
@@ -67,7 +71,16 @@ int input_process(scene *current_scene, int player_number) {
 	double x, y;
 	x = (double)event.button.x;  y = (double)event.button.y;
 	pixels_to_location(&x, &y);
-	clicked(current_scene, x, y, event.button.button);
+	if(settings_window_open
+		&& x < ((double)5.0/(double)6.0)
+		&& x > ((double)-5.0/(double)6.0)
+		&& y < ((double)5.0/(double)6.0)
+		&& y > ((double)-5.0/(double)6.0)) {
+	  clicked_settings(x*6.0/5.0, y*6.0/5.0, event.button.button);
+	  }
+	else {
+	  clicked(current_scene, x, y, event.button.button);
+	  }
 	} break;
       }
     }

@@ -50,6 +50,7 @@ typedef struct _matrix_obj {
   int stat, stat2;
   int conceal;
   char *name;
+  unsigned int flags;
   } matrix_obj;
 
 typedef struct _matrix_scene {
@@ -60,6 +61,7 @@ typedef struct _matrix_scene {
   char *name;
   unsigned long funcs;
   matrix_obj *objs[MATRIX_X][MATRIX_Y];
+  unsigned int flags;
   } matrix_scene;
 
 typedef struct _real_scene {
@@ -96,6 +98,7 @@ const static scene new_matrix_scene = { matrix: {
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL }},
+	0
 	} };
 
 const static scene new_astral_scene = { astral: {

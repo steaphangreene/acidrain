@@ -57,7 +57,7 @@ game_astral.o: game_astral.c game.h scene.h
 game_matrix.o: game_matrix.c scene.h scene_matrix.h game.h renderer.h
 game_real.o: game_real.c game.h scene.h
 input.o: input.c input.h scene.h settings.h renderer.h game.h digits.h
-main.o: main.c renderer.h scene.h input.h
+main.o: main.c settings.h renderer.h scene.h input.h
 renderer.o: renderer.c settings.h renderer.h scene.h game.h
 renderer_astral.o: renderer_astral.c renderer.h scene.h
 renderer_matrix.o: renderer_matrix.c renderer.h scene.h game.h \
@@ -67,5 +67,5 @@ scene.o: scene.c scene.h
 scene_astral.o: scene_astral.c scene.h
 scene_matrix.o: scene_matrix.c scene.h scene_matrix.h
 scene_real.o: scene_real.c scene.h
-settings.o: settings.c
+settings.o: settings.c digits.h renderer.h scene.h
 
