@@ -9,7 +9,7 @@
 #include "digits_seg.h"
 
 #define LED_SIZE 0.1
-#define LED_EDGE 0.025
+#define LED_EDGE 0.0625
 
 #define LED_VSIZE (LED_SIZE*sqrt(5.0))
 

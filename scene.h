@@ -17,7 +17,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#define MAX_SCENES	1024
+#define MAX_SCENES	65536
 
 #define SCENE_TYPE_MATRIX	1
 #define SCENE_TYPE_REAL		2

@@ -62,7 +62,7 @@ int init_renderer(int xs, int ys) {
   const SDL_VideoInfo *videoInfo;
   GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
   GLfloat shininess[] = { 100.0 };
-  GLfloat light_pos[] = { 8.0, -8.0, -8.0, 0.0 };
+  GLfloat light_pos[] = { 1.0, -1.0, -1.0, 0.0 };
 
   xsize = xs;   ysize = ys;
 
