@@ -1,0 +1,244 @@
+#include <SDL/SDL.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#include "renderer.h"
+
+#define RADIUS ((GLdouble)0.1)
+
+#define ICON_SPHERE	1
+#define ICON_CUBE	2
+#define ICON_BURST	3
+#define ICON_PYRAMID	4
+
+static int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
+
+void __renderer_make_sphere() {
+  GLUquadricObj *quadObj;
+
+  quadObj = gluNewQuadric();
+
+  glNewList(ICON_SPHERE, GL_COMPILE);
+
+  glColor3f(0.0, 0.0, 1.0);
+  gluSphere(quadObj, RADIUS, 32, 12);
+	
+  glEndList();
+  }
+
+
+void __renderer_make_cube() {
+  glNewList(ICON_CUBE, GL_COMPILE);
+
+  glColor3f(0.0, 1.0, 0.0);
+	
+  glBegin(GL_QUADS);
+
+  glNormal3d(0.0, -1.0, 0.0);
+  glVertex3d(RADIUS, -RADIUS, -RADIUS);
+  glVertex3d(RADIUS, -RADIUS, RADIUS);
+  glVertex3d(-RADIUS, -RADIUS, RADIUS);
+  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
+
+  glNormal3d(-1.0, 0.0, 0.0);
+  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
+  glVertex3d(-RADIUS, -RADIUS, RADIUS);
+  glVertex3d(-RADIUS, RADIUS, RADIUS);
+  glVertex3d(-RADIUS, RADIUS, -RADIUS);
+
+  glNormal3d(0.0, 1.0, 0.0);
+  glVertex3d(-RADIUS, RADIUS, -RADIUS);
+  glVertex3d(-RADIUS, RADIUS, RADIUS);
+  glVertex3d(RADIUS, RADIUS, RADIUS);
+  glVertex3d(RADIUS, RADIUS, -RADIUS);
+
+  glNormal3d(1.0, 0.0, 0.0);
+  glVertex3d(RADIUS, RADIUS, -RADIUS);
+  glVertex3d(RADIUS, RADIUS, RADIUS);
+  glVertex3d(RADIUS, -RADIUS, RADIUS);
+  glVertex3d(RADIUS, -RADIUS, -RADIUS);
+
+  glNormal3d(0.0, 0.0, 1.0);
+  glVertex3d(-RADIUS, -RADIUS, RADIUS);
+  glVertex3d(RADIUS, -RADIUS, RADIUS);
+  glVertex3d(RADIUS, RADIUS, RADIUS);
+  glVertex3d(-RADIUS, RADIUS, RADIUS);
+
+  // No Bottom Drawn
+
+  glEnd();
+
+  glEndList();
+  }
+
+void __renderer_make_burst() {
+  GLUquadricObj *quadObj;
+
+  quadObj = gluNewQuadric();
+
+  glNewList(ICON_BURST, GL_COMPILE);
+
+  glColor3f(0.8, 0.8, 0.0);
+  gluSphere(quadObj, RADIUS, 16, 12);
+	
+  glEndList();
+  }
+
+
+void __renderer_make_pyramid() {
+  glNewList(ICON_PYRAMID, GL_COMPILE);
+
+  glColor3f(1.0, 0.0, 0.0);
+
+  // Draw the sides of the cube
+  glBegin(GL_TRIANGLE_FAN);
+
+  // Initial normal for left side
+  glNormal3d(-1.0, 0.0, 0.0);
+
+  // Point of Pyramid
+  glVertex3d(0.0, 0.0, -RADIUS);
+
+  // 4 Base Vertexes (No Base Drawn)
+  glVertex3d(-RADIUS, -RADIUS, RADIUS);
+  glVertex3d(-RADIUS, RADIUS, RADIUS);
+  glVertex3d(RADIUS, RADIUS, RADIUS);
+  glNormal3d(0.0, 1.0, 0.0);
+  glVertex3d(RADIUS, -RADIUS, RADIUS);
+  glNormal3d(1.0, 0.0, 0.0);
+  glVertex3d(-RADIUS, -RADIUS, RADIUS);
+  glNormal3d(0.0, -1.0, 0.0);
+  glEnd();
+  glEndList();
+  }
+
+int init_renderer(int xsize, int ysize) {
+  GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
+  GLfloat shininess[] = { 100.0 };
+  GLfloat light_pos[] = { 10.0, 10.0, 4.0, 0.0 };
+
+  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    fprintf(stderr, "Error: %s\n", SDL_GetError());
+    return 0;
+    }
+  atexit(SDL_Quit);
+
+  /* Enable OpenGL double buffering. */
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+  /* Set the color depth (16-bit 565). */
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+
+//  if(SDL_SetVideoMode(xsize, ysize, 16, SDL_OPENGL | SDL_FULLSCREEN) == NULL) {
+  if(SDL_SetVideoMode(xsize, ysize, 16, SDL_OPENGL) == NULL) {
+    fprintf(stderr, "Error: %s\n", SDL_GetError());
+    return 0;
+    }
+
+  /* Set a window title. */
+  SDL_WM_SetCaption("AcidRain", "AcidRain");
+
+  // Set the clear color to black
+  glClearColor(0.0, 0.0, 0.0, 0.0);
+
+  // Set the shading model
+  glShadeModel(GL_SMOOTH);
+//  glShadeModel(GL_FLAT);
+
+  // Set the polygon mode to fill
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+  // Enable depth testing for hidden line removal
+  glEnable(GL_DEPTH_TEST);
+
+  // Define material properties of specular color and degree of 
+  // shininess.  Since this is only done once in this particular 
+  // example, it applies to all objects.  Material properties can 
+  // be set for individual objects, individual faces of the objects,
+  // individual vertices of the faces, etc... 
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+
+  // Set the GL_AMBIENT_AND_DIFFUSE color state variable to be the
+  // one referred to by all following calls to glColor
+  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+  glEnable(GL_COLOR_MATERIAL);
+
+  // Create a Directional Light Source
+  glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+
+  // Create the display lists
+  __renderer_make_sphere();
+  __renderer_make_cube();
+  __renderer_make_burst();
+  __renderer_make_pyramid();
+
+  // Set the new viewport size
+  glViewport(0, 0, (GLint)xsize, (GLint)ysize);
+
+  // Choose the projection matrix to be the matrix 
+  // manipulated by the following calls
+  glMatrixMode(GL_PROJECTION);
+
+  // Set the projection matrix to be the identity matrix
+  glLoadIdentity();
+
+  glFrustum(-0.5, 0.5, -0.5*ysize/xsize, 0.5*ysize/xsize, 1.5, 20.0);
+
+  // Choose the modelview matrix to be the matrix
+  // manipulated by further calls
+  glMatrixMode(GL_MODELVIEW);
+
+  return 1;
+  }
+
+static int phase = 0;
+
+int __real_render_scene(real_scene *current_scene, int player) {
+  return 1;
+  }
+
+int __astral_render_scene(astral_scene *current_scene, int player) {
+  return 1;
+  }
+
+int __matrix_render_scene(matrix_scene *current_scene, int player) {
+  matrix_obj *tmp = current_scene->objs;
+
+  while(tmp != NULL) {
+    glLoadIdentity();
+    glTranslatef(-0.25+0.5*(tmp->xp-4), 0.25+0.5*(tmp->yp-4), -8.0);
+    glRotatef((45+phase*1)%360, 0.0, 0.0, 1.0);
+    glCallList(icon[tmp->type]);
+    tmp = tmp->next;
+    }
+
+  glFlush();
+  SDL_GL_SwapBuffers();
+
+  return 1;
+  }
+
+int render_scene(scene *current_scene, int player) {
+  // Increment graphical phase
+  ++phase;
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  if(current_scene == NULL) return 1;
+  else if(current_scene->type == SCENE_TYPE_MATRIX)
+    return __matrix_render_scene(&(current_scene->matrix), player);
+  else if(current_scene->type == SCENE_TYPE_REAL)
+    return __real_render_scene(&(current_scene->real), player);
+  else if(current_scene->type == SCENE_TYPE_ASTRAL)
+    return __astral_render_scene(&(current_scene->astral), player);
+  return 1;
+  }
