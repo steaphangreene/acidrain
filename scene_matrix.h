@@ -17,18 +17,19 @@
 #ifndef SCENE_MATRIX_H
 #define SCENE_MATRIX_H
 
-#define NODE_LTG0	100
-#define NODE_LTG1	101
-#define NODE_LTG2	102
-#define NODE_LTG3	103
-#define NODE_LTG4	104
-#define NODE_LTG5	105
-#define NODE_LTG6	106
-#define NODE_LTG7	107
-#define NODE_LTG8	108
-#define NODE_LTG9	109
-#define NODE_PUBPORT	200
-#define NODE_PRIVPORT	201
+#define NODE_UNKNOWN	0
+#define NODE_PUBPORT	1
+#define NODE_PRIVPORT	2
+#define NODE_LTG0	10
+#define NODE_LTG1	11
+#define NODE_LTG2	12
+#define NODE_LTG3	13
+#define NODE_LTG4	14
+#define NODE_LTG5	15
+#define NODE_LTG6	16
+#define NODE_LTG7	17
+#define NODE_LTG8	18
+#define NODE_LTG9	19
 
 #define ZONE_UNKNOWN	0
 #define ZONE_OWNED	1

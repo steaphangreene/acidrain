@@ -38,8 +38,8 @@
 #define COORD_DECODEX(c)	(c&65535)
 #define COORD_DECODEY(c)	((c>>16)&65535)
 
-#define SCENE_UNKNOWN	0
-#define SCENE_KNOWN	1
+#define INIT_UNKNOWN	0
+#define INIT_KNOWN	1
 
 #define MOVE_NONE	0
 
@@ -54,6 +54,7 @@ typedef struct _matrix_obj {
 typedef struct _matrix_scene {
   int type;
   int init;
+  int node;
   int zone;
   matrix_obj *objs[MATRIX_X][MATRIX_Y];
   } matrix_scene;
@@ -82,7 +83,7 @@ typedef union _scene {
   } scene;
 
 const static scene new_matrix_scene = { matrix: {
-	SCENE_TYPE_MATRIX, SCENE_UNKNOWN, 0,
+	SCENE_TYPE_MATRIX, INIT_UNKNOWN, 0, 0,
 	{{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },

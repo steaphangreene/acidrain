@@ -58,7 +58,7 @@ scene *generate_scene(SceneID id) {
   }
 
 scene *get_scene(SceneID id) {
-  if(scene_list[id] == NULL || scene_list[id]->any.init != SCENE_KNOWN)
+  if(scene_list[id] == NULL || scene_list[id]->any.init != INIT_KNOWN)
     return generate_scene(id);
 
   return scene_list[id];
@@ -75,7 +75,8 @@ void init_scenes(void) {
   }
 
 int scene_visited(SceneID id) {
-  if(scene_list[id] != NULL && scene_list[id]->any.init == 1) return 1;
+  if(scene_list[id] != NULL && scene_list[id]->any.init == INIT_KNOWN)
+    return 1;
   return 0;
   }
 

@@ -63,7 +63,9 @@ scene *generate_scene_matrix(SceneID id) {
     (*scene_list[id]) = new_matrix_scene;
     }
 
-  if(scene_list[id]->any.init == SCENE_UNKNOWN) {
+  if(scene_list[id]->any.init == INIT_KNOWN) return scene_list[id];
+
+  if(scene_list[id]->matrix.node == NODE_UNKNOWN) {
     if(scene_list[id]->matrix.zone == ZONE_UNKNOWN) {
       scene_list[id]->matrix.zone = ZONE_PRIVATE;
       }
@@ -104,7 +106,7 @@ scene *generate_scene_matrix(SceneID id) {
 	}
       }
     }
-  else if(scene_list[id]->any.init == NODE_LTG9) {
+  else if(scene_list[id]->matrix.node == NODE_LTG9) {
     int ctr, next;
 
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
@@ -116,19 +118,18 @@ scene *generate_scene_matrix(SceneID id) {
 	  int rnd = rand()%ltg_digits;
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 0,
 	             next, ltg_xp[rnd], ltg_yp[rnd], 4);
-	  scene_list[next]->any.init = NODE_LTG8;
+	  scene_list[next]->matrix.node = NODE_LTG8;
 	  }
 	else {
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4,
 	             next, 1+rand()%7, 1+rand()%7, 0);
-	  scene_list[next]->any.init = SCENE_UNKNOWN;
 	  scene_list[next]->matrix.zone = ZONE_WELCOME;
 	  }
 	}
       }
     }
-  else if(scene_list[id]->any.init > NODE_LTG0
-  		&& scene_list[id]->any.init < NODE_LTG9) {
+  else if(scene_list[id]->matrix.node > NODE_LTG0
+  		&& scene_list[id]->matrix.node < NODE_LTG9) {
     int ctr, next;
 
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
@@ -140,16 +141,16 @@ scene *generate_scene_matrix(SceneID id) {
 	  int rnd = rand()%ltg_digits;
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 0,
 	             next, ltg_xp[rnd], ltg_yp[rnd], 4);
-	  scene_list[next]->any.init = scene_list[id]->any.init-1;
+	  scene_list[next]->matrix.node = scene_list[id]->matrix.node-1;
 	  }
 	else {
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
-	  scene_list[next]->any.init = scene_list[id]->any.init+1;
+	  scene_list[next]->matrix.node = scene_list[id]->matrix.node+1;
 	  }
 	}
       }
     }
-  else if(scene_list[id]->any.init == NODE_LTG0) {
+  else if(scene_list[id]->matrix.node == NODE_LTG0) {
     int ctr, next;
 
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
@@ -158,12 +159,12 @@ scene *generate_scene_matrix(SceneID id) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
 	next = new_scene();
 	link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
-	scene_list[next]->any.init = NODE_LTG1;
+	scene_list[next]->matrix.node = NODE_LTG1;
 	}
       }
     }
 
-  scene_list[id]->any.init = SCENE_KNOWN;
+  scene_list[id]->any.init = INIT_KNOWN;
 
   return scene_list[id];
   }
@@ -196,8 +197,8 @@ void init_scenes_matrix(void) {
   tmp->conceal = 0;
   scene_list[0]->matrix.objs[5][6] = tmp;
 
-  scene_list[0]->any.init = SCENE_KNOWN;
+  scene_list[0]->any.init = INIT_KNOWN;
 
   link_nodes(0, 4, 4, 0, 1, ltg_xp[rnd], ltg_yp[rnd], 0);
-  scene_list[1]->any.init = NODE_LTG9;
+  scene_list[1]->matrix.node = NODE_LTG9;
   }
