@@ -23,6 +23,17 @@
 extern scene *scene_list[];
 extern SceneID csnum;
 
+const char * ltg_nm[LTG_DIGITS+1] = {
+	"0", "1", "2", "3", "4", "5", "6",
+	"7", "8", "9",      "A", "B", "C",
+	"D", "E",                "F", "G",
+	"H",                          "I",
+	"J", "K",                "L", "M",
+	"N", "O", "P",      "Q", "R", "S",
+	"T", "U", "V", "W", "X", "Y", "Z",
+	"`Back"
+	};
+
 void link_nodes(SceneID id1, int x1, int y1, int c1,
 		SceneID id2, int x2, int y2, int c2) {
   matrix_obj *p1, *p2;
@@ -38,6 +49,7 @@ void link_nodes(SceneID id1, int x1, int y1, int c1,
   p1->stat = id2;
   p1->stat2 = COORD_ENCODE(x2, y2);
   p1->conceal = c1;
+  p1->name = NULL;
   scene_list[id1]->matrix.objs[x1][y1] = p1;
 
   if(scene_list[id2] == NULL) {
@@ -51,6 +63,7 @@ void link_nodes(SceneID id1, int x1, int y1, int c1,
   p2->stat = id1;
   p2->stat2 = COORD_ENCODE(x1, y1);
   p2->conceal = c2;
+  p2->name = NULL;
   scene_list[id2]->matrix.objs[x2][y2] = p2;
   }
 
@@ -91,6 +104,7 @@ scene *generate_scene_matrix(SceneID id) {
 	if(rn > 4) continue;
 
 	tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
+	tmp->name = NULL;
 	tmp->type = rn+1;
 	if(tmp->type == MATRIX_PORT) {
 	  int next = new_scene();
@@ -134,11 +148,19 @@ scene *generate_scene_matrix(SceneID id) {
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 0,
 	             next, ltg_xp[rnd], ltg_yp[rnd], 4);
 	  scene_list[next]->matrix.node = NODE_LTG8;
+	  scene_list[next]->matrix.objs[ltg_xp[rnd]][ltg_yp[rnd]]->name
+		= (char *)ltg_nm[rnd];
+	  scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]]->name
+		= (char *)ltg_nm[ctr];
 	  }
 	else {
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
 	  scene_list[next]->matrix.zone = ZONE_WELCOME;
 	  scene_list[next]->matrix.funcs = FUNC_DIAL;
+	  scene_list[next]->matrix.objs[4][4]->name
+		= (char *)ltg_nm[LTG_DIGITS];
+	  scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]]->name
+		= (char *)ltg_nm[ctr];
 	  }
 	}
       }
@@ -161,10 +183,18 @@ scene *generate_scene_matrix(SceneID id) {
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 0,
 	             next, ltg_xp[rnd], ltg_yp[rnd], 4);
 	  scene_list[next]->matrix.node = scene_list[id]->matrix.node-1;
+	  scene_list[next]->matrix.objs[ltg_xp[rnd]][ltg_yp[rnd]]->name
+		= (char *)ltg_nm[rnd];
+	  scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]]->name
+		= (char *)ltg_nm[ctr];
 	  }
 	else {
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
 	  scene_list[next]->matrix.node = scene_list[id]->matrix.node+1;
+	  scene_list[next]->matrix.objs[4][4]->name
+		= (char *)ltg_nm[LTG_DIGITS];
+	  scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]]->name
+		= (char *)ltg_nm[ctr];
 	  }
 	}
       }
@@ -180,6 +210,10 @@ scene *generate_scene_matrix(SceneID id) {
 	next = new_scene();
 	link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
 	scene_list[next]->matrix.node = NODE_LTG1;
+	  scene_list[next]->matrix.objs[4][4]->name
+		= (char *)ltg_nm[LTG_DIGITS];
+	scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]]->name
+		= (char *)ltg_nm[ctr];
 	}
       }
     }
@@ -202,6 +236,7 @@ scene *generate_scene_matrix(SceneID id) {
     tmp->stat = 0;
     tmp->stat2 = 0;
     tmp->conceal = 0;
+    tmp->name = NULL;
     scene_list[id]->matrix.objs[5][4] = tmp;
     scene_list[id]->matrix.zone = ZONE_WELCOME;
 
@@ -220,6 +255,7 @@ scene *generate_scene_matrix(SceneID id) {
 	tmp->stat = 0;
 	tmp->stat2 = 0;
 	tmp->conceal = 12;
+	tmp->name = NULL;
 	scene_list[next]->matrix.objs[4][2] = tmp;
 	scene_list[next]->matrix.zone = ZONE_PROTECTED;
 	}
@@ -229,6 +265,7 @@ scene *generate_scene_matrix(SceneID id) {
 	tmp->stat = MATRIX_DATAFILE;
 	tmp->stat2 = 12;
 	tmp->conceal = 8;
+	tmp->name = NULL;
 	scene_list[next]->matrix.objs[4][2] = tmp;
 	scene_list[next]->matrix.zone = ZONE_PROTECTED;
 	}
@@ -262,22 +299,28 @@ void init_scenes_matrix(void) {
   tmp->type = MATRIX_DATAFILE;
   tmp->stat = 1;
   tmp->conceal = 0;
+  tmp->name = NULL;
   scene_list[0]->matrix.objs[3][6] = tmp;
 
   tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
   tmp->type = MATRIX_DATAFILE;
   tmp->stat = 1;
   tmp->conceal = 0;
+  tmp->name = NULL;
   scene_list[0]->matrix.objs[4][6] = tmp;
 
   tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
   tmp->type = MATRIX_DATAFILE;
   tmp->stat = 1;
   tmp->conceal = 0;
+  tmp->name = NULL;
   scene_list[0]->matrix.objs[5][6] = tmp;
 
   scene_list[0]->any.init = INIT_KNOWN;
 
   link_nodes(0, 4, 4, 0, 1, ltg_xp[rnd], ltg_yp[rnd], 0);
+  scene_list[0]->matrix.objs[4][4]->name = (char *)ltg_nm[LTG_DIGITS];
+  scene_list[1]->matrix.objs[ltg_xp[rnd]][ltg_yp[rnd]]->name
+	= (char *)ltg_nm[rnd];
   scene_list[1]->matrix.node = NODE_LTG9;
   }

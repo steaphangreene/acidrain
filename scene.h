@@ -49,6 +49,7 @@ typedef struct _matrix_obj {
   int type;
   int stat, stat2;
   int conceal;
+  char *name;
   } matrix_obj;
 
 typedef struct _matrix_scene {

@@ -336,6 +336,8 @@ void render_panel_matrix(matrix_scene *cscene, int player) {
   }
 
 int render_scene_matrix(matrix_scene *cscene, int player) {
+  GLdouble sc = 0.7 + 0.3*(cos(M_PI * 0.05 * (double)(phase)));
+  int ang = (phase*5%360);
   int ctr, xp, yp;
 
   if(cscene->zone == ZONE_OWNED) {
@@ -413,27 +415,34 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 	xpos *= cview.spread;
 	ypos *= cview.spread;
 
-	{ int ang = (phase*5%360);
-	  GLdouble sc = 0.7 + 0.3*(cos(M_PI * 0.05 * (double)(phase)));
+	glLoadIdentity();
+	glTranslatef(xpos, ypos, (ICON_DEPTH-ICON_HEIGHT)+0.01);
+	glPushMatrix();
+	glRotatef((double)ang, 0.0, 0.0, 1.0);
+	glPushMatrix();
+	if(fake) glScaled(sc, sc, sc);
+	/* Draw Shadow */
+	glCallList(shad[tp]);
 
-	  glLoadIdentity();
-	  glTranslatef(xpos, ypos, (ICON_DEPTH-ICON_HEIGHT)+0.01);
-	  glRotatef((double)ang, 0.0, 0.0, 1.0);
-	  glPushMatrix();
-	  if(fake) glScaled(sc, sc, sc);
-	  /* Draw Shadow */
-	  glCallList(shad[tp]);
-
-	  glPopMatrix();
-	  glTranslatef(0.0, 0.0, ICON_HEIGHT-0.01);
-	  if(fake) glScaled(sc, sc, sc);
-	  /* Draw Icon */
-	  if(cscene->objs[xp][yp]->type == MATRIX_PORT
+	glPopMatrix();
+	glTranslatef(0.0, 0.0, ICON_HEIGHT-0.01);
+	if(fake) glScaled(sc, sc, sc);
+	/* Draw Icon */
+	if(cscene->objs[xp][yp]->type == MATRIX_PORT
 		&& scene_visited(cscene->objs[xp][yp]->stat))
-	    glColor3f(1.0, 0.0, 1.0);
-	  else
-	    glColor3f(0.0, 0.0, 1.0);
-	  glCallList(icon[tp]);
+	  glColor3f(1.0, 0.0, 1.0);
+	else
+	  glColor3f(0.0, 0.0, 1.0);
+	glCallList(icon[tp]);
+
+	glPopMatrix();
+	if(cscene->objs[xp][yp]->name != NULL) {
+	  glTranslatef(0.05, -0.10, ICON_HEIGHT+0.01);
+	  glNormal3d(0.0, 0.0, -1.0);
+	  glScaled(0.1, 0.2, 1.0);
+//	  glColor3f(sc, sc, sc);
+	  glColor3f(1.0, 1.0, 1.0);
+	  render_digit(cscene->objs[xp][yp]->name[0]);
 	  }
 	}
       }
