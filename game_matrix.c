@@ -119,10 +119,10 @@ void update_viewport_matrix(matrix_scene *cscene) {
     cview.xtarg = 0.5*(double)(ltg_xp[num]-4);
     cview.ytarg = 0.5*(double)(ltg_yp[num]-4);
 
-    if(cscene->node == NODE_LTG9) {
-      cview.data = 0;
-      cview.move = 0;
-      }
+//    if(cscene->node == NODE_LTG9) {
+//      cview.data = 0;
+//      cview.move = 0;
+//      }
     }
 
   if(cview.movet == MOVE_RECENTER || cview.movet == MOVE_TARGET) {
@@ -184,8 +184,15 @@ void update_viewport_matrix(matrix_scene *cscene) {
 	cview.move = 0;
 	}
       else {
-	cview.movet = MOVE_TRAVEL2;
-	cview.move = 0;
+	if(cscene->node < NODE_LTG0 || cscene->node > NODE_LTG9) {
+	  cview.movet = MOVE_NONE;
+	  cview.data = 0;
+	  cview.move = 0;
+	  }
+	else {
+	  cview.movet = MOVE_TRAVEL2;
+	  cview.move = 0;
+	  }
 	}
       }
     }

@@ -26,25 +26,13 @@
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
 
-#include "xpms/digit0.xpm"
-#include "xpms/digit1.xpm"
-#include "xpms/digit2.xpm"
-#include "xpms/digit3.xpm"
-#include "xpms/digit4.xpm"
-#include "xpms/digit5.xpm"
-#include "xpms/digit6.xpm"
-#include "xpms/digit7.xpm"
-#include "xpms/digit8.xpm"
-#include "xpms/digit9.xpm"
-static char **digits[] = {
-	digit0_xpm, digit1_xpm, digit2_xpm, digit3_xpm, digit4_xpm,
-	digit5_xpm, digit6_xpm, digit7_xpm, digit8_xpm, digit9_xpm
-	};
-
 #include "renderer.h"
 #include "game.h"
 #include "scene.h"
 #include "scene_matrix.h"
+
+/* XPM Fonts */
+#include "digits.h"
 
 #define POLYCOUNT	32
 
@@ -70,7 +58,7 @@ static const int icon[] = {
 	ICON_PYRAMID
 	};
 
-static unsigned int tex_digit[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static unsigned int tex_digit[36];
 
 void load_xpm_texture(unsigned int tex, char *xpm[]) {
   int width, height, ncol, x, y;
@@ -124,9 +112,9 @@ void load_xpm_texture(unsigned int tex, char *xpm[]) {
 void load_textures_matrix(void) {
   int ctr;
 
-  glGenTextures(10, tex_digit);
+  glGenTextures(36, tex_digit);
 
-  for(ctr=0; ctr<10; ++ctr) {
+  for(ctr=0; ctr<36; ++ctr) {
     load_xpm_texture(tex_digit[ctr], digits[ctr]);
     }
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -348,6 +336,31 @@ int init_renderer_matrix() {
 
 extern int phase;
 
+void draw_dialog(int complete) {
+  glLoadIdentity();
+  glNormal3d( 0.0,  0.0,  -1.0);
+
+  glBegin(GL_QUADS);
+  glColor3f(0.0, 0.0, 0.0);
+  glVertex3d( 1.00, -0.15, -4.50);
+  glVertex3d(-1.00, -0.15, -4.50);
+  glVertex3d(-1.00,  0.15, -4.50);
+  glVertex3d( 1.00,  0.15, -4.50);
+  glEnd();
+
+  if(complete)
+    glColor3f(0.0, 1.0, 0.0);
+  else
+    glColor3f(1.0, 0.0, 0.0);
+
+  glBegin(GL_QUADS);
+  glVertex3d( 1.01, -0.16, -4.51);
+  glVertex3d(-1.01, -0.16, -4.51);
+  glVertex3d(-1.01,  0.16, -4.51);
+  glVertex3d( 1.01,  0.16, -4.51);
+  glEnd();
+  }
+
 int render_scene_matrix(matrix_scene *cscene, int player) {
   int ctr, xp, yp;
 
@@ -449,28 +462,7 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
     for(ctr=10; ctr>cview.move; --ctr) base /= 10;
 
-    glLoadIdentity();
-    glNormal3d( 0.0,  0.0,  -1.0);
-
-    glBegin(GL_QUADS);
-    glColor3f(0.0, 0.0, 0.0);
-    glVertex3d( 1.00, -0.15, -4.50);
-    glVertex3d(-1.00, -0.15, -4.50);
-    glVertex3d(-1.00,  0.15, -4.50);
-    glVertex3d( 1.00,  0.15, -4.50);
-    glEnd();
-
-    if(cview.move != 10)
-      glColor3f(1.0, 0.0, 0.0);
-    else
-      glColor3f(0.0, 1.0, 0.0);
-
-    glBegin(GL_QUADS);
-    glVertex3d( 1.01, -0.16, -4.51);
-    glVertex3d(-1.01, -0.16, -4.51);
-    glVertex3d(-1.01,  0.16, -4.51);
-    glVertex3d( 1.01,  0.16, -4.51);
-    glEnd();
+    draw_dialog(cview.move == 10);
 
     for(ctr = 0; ctr < cview.move; ++ctr) {
       double basex = -1.0 + 0.20*(double)ctr;
@@ -488,6 +480,29 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
       glEnd();
 
       base /= 10LL;
+      }
+    glBindTexture(GL_TEXTURE_2D, 0);
+    }
+  else if(cview.data != 0) {
+    int ctr; 
+    char *mes = "CONNECTING";
+
+    draw_dialog(cscene->node > NODE_LTG9 || cscene->node < NODE_LTG0);
+
+    for(ctr = 0; ctr < strlen(mes); ++ctr) {
+      double basex = -1.0 + 0.20*(double)ctr;
+      glBindTexture(GL_TEXTURE_2D, tex_digit[mes[ctr]-'A'+10]);
+
+      glBegin(GL_QUADS);
+      glTexCoord2f(0.0f, 0.0f);
+      glVertex3d( basex+0.02, -0.1, -4.49);
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex3d( basex+0.02,  0.1, -4.49);
+      glTexCoord2f(1.0f, 1.0f);
+      glVertex3d( basex+0.18,  0.1, -4.49);
+      glTexCoord2f(1.0f, 0.0f);
+      glVertex3d( basex+0.18, -0.1, -4.49);
+      glEnd();
       }
     glBindTexture(GL_TEXTURE_2D, 0);
     }

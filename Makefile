@@ -56,10 +56,17 @@ input.o: input.c input.h scene.h renderer.h game.h
 main.o: main.c renderer.h scene.h input.h
 renderer.o: renderer.c renderer.h scene.h game.h
 renderer_astral.o: renderer_astral.c renderer.h scene.h
-renderer_matrix.o: renderer_matrix.c xpms/digit0.xpm xpms/digit1.xpm \
+renderer_matrix.o: renderer_matrix.c renderer.h scene.h game.h \
+ scene_matrix.h digits.h xpms/digit0.xpm xpms/digit1.xpm \
  xpms/digit2.xpm xpms/digit3.xpm xpms/digit4.xpm xpms/digit5.xpm \
  xpms/digit6.xpm xpms/digit7.xpm xpms/digit8.xpm xpms/digit9.xpm \
- renderer.h scene.h game.h scene_matrix.h
+ xpms/digitA.xpm xpms/digitB.xpm xpms/digitC.xpm xpms/digitD.xpm \
+ xpms/digitE.xpm xpms/digitF.xpm xpms/digitG.xpm xpms/digitH.xpm \
+ xpms/digitI.xpm xpms/digitJ.xpm xpms/digitK.xpm xpms/digitL.xpm \
+ xpms/digitM.xpm xpms/digitN.xpm xpms/digitO.xpm xpms/digitP.xpm \
+ xpms/digitQ.xpm xpms/digitR.xpm xpms/digitS.xpm xpms/digitT.xpm \
+ xpms/digitU.xpm xpms/digitV.xpm xpms/digitW.xpm xpms/digitX.xpm \
+ xpms/digitY.xpm xpms/digitZ.xpm
 renderer_real.o: renderer_real.c renderer.h scene.h
 scene.o: scene.c scene.h
 scene_astral.o: scene_astral.c scene.h

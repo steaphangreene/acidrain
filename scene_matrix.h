@@ -31,8 +31,9 @@
 #define NODE_LTG8	18
 #define NODE_LTG9	19
 
-#define NODE_BANK	100
-#define NODE_LIBRARY	101
+#define NODE_RANDOM	100
+#define NODE_BANK	101
+#define NODE_LIBRARY	102
 
 #define ZONE_UNKNOWN	0
 #define ZONE_OWNED	1

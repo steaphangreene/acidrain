@@ -70,9 +70,10 @@ scene *generate_scene_matrix(SceneID id) {
     int rnd = rand()%3;
     if(rnd == 0) scene_list[id]->matrix.node = NODE_BANK;
     else if(rnd == 1) scene_list[id]->matrix.node = NODE_LIBRARY;
+    else scene_list[id]->matrix.node = NODE_RANDOM;
     }
 
-  if(scene_list[id]->matrix.node == NODE_UNKNOWN) {
+  if(scene_list[id]->matrix.node == NODE_RANDOM) {
     if(scene_list[id]->matrix.zone == ZONE_UNKNOWN) {
       scene_list[id]->matrix.zone = ZONE_PRIVATE;
       scene_list[id]->matrix.name = "Private Node";
@@ -92,7 +93,9 @@ scene *generate_scene_matrix(SceneID id) {
 	tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
 	tmp->type = rn+1;
 	if(tmp->type == MATRIX_PORT) {
-	  link_nodes(id, xp, yp, 0, new_scene(), 1+rand()%7, 1+rand()%7, 0);
+	  int next = new_scene();
+	  link_nodes(id, xp, yp, 0, next, 1+rand()%7, 1+rand()%7, 0);
+	  scene_list[next]->matrix.node = NODE_RANDOM;
 	  }
 	else if(tmp->type == MATRIX_DATABIN) {
 	  tmp->stat = rand()%4+1;
