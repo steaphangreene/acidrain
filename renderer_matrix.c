@@ -430,21 +430,26 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
   if(cview.movet == MOVE_RUN_DIAL) {
     int ctr; 
-    long long base = 1000000000;
+    long long base = LTG_DIGITS*LTG_DIGITS*LTG_DIGITS*LTG_DIGITS*LTG_DIGITS
+                               *LTG_DIGITS*LTG_DIGITS*LTG_DIGITS*LTG_DIGITS;
 
-    for(ctr=10; ctr>cview.move; --ctr) base /= 10;
+    for(ctr=10; ctr>cview.move; --ctr) base /= LTG_DIGITS;
 
     draw_dialog(cview.move == 10);
 
     for(ctr = 0; ctr < cview.move; ++ctr) {
       double basex = -1.0 + 0.20*(double)ctr;
+      int digit = (cview.data/base)%LTG_DIGITS;
+
+      if(digit<10)	digit += '0';
+      else		digit += 'A'-10;
 
       glTranslatef(basex+0.02, -0.1, -4.49);
       glScalef(0.16, 0.2, 1.0);
-      render_digit('0' + (cview.data/base)%10);
+      render_digit(digit);
       glLoadIdentity();
 
-      base /= 10LL;
+      base /= LTG_DIGITS;
       }
     }
   else if(cview.data != 0) {

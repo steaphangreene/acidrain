@@ -111,8 +111,8 @@ void update_viewport_matrix(matrix_scene *cscene) {
     long long num = (-cview.data)-1;
     int ctr;
 
-    for(ctr = NODE_LTG9; ctr > cscene->node; --ctr) num/=ltg_digits;
-    num %= ltg_digits;
+    for(ctr = NODE_LTG9; ctr > cscene->node; --ctr) num/=LTG_DIGITS;
+    num %= LTG_DIGITS;
     
     cview.movet = MOVE_TARGET;
     cview.move = 0;
@@ -224,6 +224,18 @@ void update_viewport_matrix(matrix_scene *cscene) {
     }
   }
 
+void undial_digit(void) {
+  cview.data /= LTG_DIGITS;
+  --cview.move;
+  if(cview.move < 0) cview.movet = MOVE_NONE;
+  }
+
+void dial_digit(long long digit) {
+  cview.data *= LTG_DIGITS;
+  cview.data += digit;
+  ++cview.move;
+  }
+
 void keypressed_matrix(matrix_scene *cscene, int k) {
   if(cview.movet == MOVE_NONE && k == SDLK_d && cscene->funcs & FUNC_DIAL) {
     cview.movet = MOVE_RUN_DIAL;
@@ -232,19 +244,16 @@ void keypressed_matrix(matrix_scene *cscene, int k) {
     }
   else if(cview.movet == MOVE_RUN_DIAL) {
     if(k >= SDLK_KP0 && k <= SDLK_KP9 && cview.move < 10) {
-      cview.data *= ltg_digits;
-      cview.data += k-SDLK_KP0;
-      ++cview.move;
+      dial_digit(k-SDLK_KP0);
       }
     else if(k >= SDLK_0 && k <= SDLK_9 && cview.move < 10) {
-      cview.data *= ltg_digits;
-      cview.data += k-SDLK_0;
-      ++cview.move;
+      dial_digit(k-SDLK_0);
+      }
+    else if(k >= SDLK_a && k <= SDLK_z && cview.move < 10) {
+      dial_digit(10+k-SDLK_a);
       }
     else if(k == SDLK_BACKSPACE || k == SDLK_DELETE) {
-      cview.data /= ltg_digits;
-      --cview.move;
-      if(cview.move < 0) cview.movet = MOVE_NONE;
+      undial_digit();
       }
     else if(cview.move == 10 && (k == SDLK_RETURN || k == SDLK_KP_ENTER)) {
       cview.movet = MOVE_TRAVEL;

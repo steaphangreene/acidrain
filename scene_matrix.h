@@ -57,11 +57,34 @@
 
 #define FUNC_DIAL	0x00000001
 
-const static int ltg_digits = 10;
-const static int ltg_xp[] = {2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 4};
-const static int ltg_yp[] = {6, 6, 6, 6, 6, 2, 2, 2, 2, 2, 4};
-const static int ltg_tp[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-
+#define LTG_DIGITS	36LL
+const static int ltg_xp[LTG_DIGITS+1] = {
+	1, 2, 3, 4, 5, 6, 7,
+	1, 2, 3,    5, 6, 7,
+	1, 2,          6, 7,
+	1,                7,
+	1, 2,          6, 7,
+	1, 2, 3,    5, 6, 7,
+	1, 2, 3, 4, 5, 6, 7,
+	4 };
+const static int ltg_yp[LTG_DIGITS+1] = {
+	1, 1, 1, 1, 1, 1, 1,
+	2, 2, 2,    2, 2, 2,
+	3, 3,          3, 3,
+	4,                4,
+	5, 5,          5, 5,
+	6, 6, 6,    6, 6, 6,
+	7, 7, 7, 7, 7, 7, 7,
+	4 };
+const static int ltg_tp[LTG_DIGITS+1] = {
+	0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0,    0, 0, 0,
+	0, 0,          0, 0,
+	0,                0,
+	0, 0,          0, 0,
+	0, 0, 0,    0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0,
+	1 };
 const static double moves[] = {
         1.0/100.0,
         3.0/99.0,

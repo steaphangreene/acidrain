@@ -7,7 +7,7 @@
 #include "digits_xpm.h"
 #include "digits_seg.h"
 
-static int render_fonts = 0;
+static int render_fonts = 1;
 
 static unsigned int tex_digit[128];
 
@@ -181,6 +181,38 @@ void init_digits(void) {
 	glVertex3d( 0.45, 0.95, 0.0);
 	glVertex3d( 0.55, 0.95, 0.0);
 	glVertex3d( 0.55, 0.55, 0.0);
+	glEnd();
+	}
+      if(digit_segs[ctr] & 0x0400) {
+	glBegin(GL_QUADS);
+	glVertex3d( 0.25, 0.25, 0.0);
+	glVertex3d( 0.25, 0.30, 0.0);
+	glVertex3d( 0.40, 0.40, 0.0);
+	glVertex3d( 0.40, 0.35, 0.0);
+	glEnd();
+	}
+      if(digit_segs[ctr] & 0x0800) {
+	glBegin(GL_QUADS);
+	glVertex3d( 0.60, 0.35, 0.0);
+	glVertex3d( 0.60, 0.40, 0.0);
+	glVertex3d( 0.85, 0.30, 0.0);
+	glVertex3d( 0.85, 0.25, 0.0);
+	glEnd();
+	}
+      if(digit_segs[ctr] & 0x1000) {
+	glBegin(GL_QUADS);
+	glVertex3d( 0.25, 0.80, 0.0);
+	glVertex3d( 0.25, 0.85, 0.0);
+	glVertex3d( 0.40, 0.60, 0.0);
+	glVertex3d( 0.40, 0.55, 0.0);
+	glEnd();
+	}
+      if(digit_segs[ctr] & 0x2000) {
+	glBegin(GL_QUADS);
+	glVertex3d( 0.60, 0.55, 0.0);
+	glVertex3d( 0.60, 0.60, 0.0);
+	glVertex3d( 0.85, 0.85, 0.0);
+	glVertex3d( 0.85, 0.80, 0.0);
 	glEnd();
 	}
 

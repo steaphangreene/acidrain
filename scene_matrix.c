@@ -126,11 +126,11 @@ scene *generate_scene_matrix(SceneID id) {
     scene_list[id]->matrix.funcs |= FUNC_DIAL;
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
 
-    for(ctr=0; ctr<(ltg_digits+1); ++ctr) {
+    for(ctr=0; ctr<(LTG_DIGITS+1); ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
 	next = new_scene();
 	if(ltg_tp[ctr]) {
-	  int rnd = rand()%ltg_digits;
+	  int rnd = rand()%LTG_DIGITS;
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 0,
 	             next, ltg_xp[rnd], ltg_yp[rnd], 4);
 	  scene_list[next]->matrix.node = NODE_LTG8;
@@ -153,11 +153,11 @@ scene *generate_scene_matrix(SceneID id) {
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
     scene_list[id]->matrix.funcs |= FUNC_DIAL;
 
-    for(ctr=0; ctr<(ltg_digits+1); ++ctr) {
+    for(ctr=0; ctr<(LTG_DIGITS+1); ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
 	next = new_scene();
 	if(ltg_tp[ctr]) {
-	  int rnd = rand()%ltg_digits;
+	  int rnd = rand()%LTG_DIGITS;
 	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 0,
 	             next, ltg_xp[rnd], ltg_yp[rnd], 4);
 	  scene_list[next]->matrix.node = scene_list[id]->matrix.node-1;
@@ -175,7 +175,7 @@ scene *generate_scene_matrix(SceneID id) {
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
     scene_list[id]->matrix.funcs |= FUNC_DIAL;
 
-    for(ctr=0; ctr<ltg_digits; ++ctr) {
+    for(ctr=0; ctr<LTG_DIGITS; ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
 	next = new_scene();
 	link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
@@ -251,7 +251,7 @@ void init_scenes_matrix(void) {
   int rnd;
   matrix_obj *tmp;
 
-  rnd = rand()%ltg_digits;
+  rnd = rand()%LTG_DIGITS;
 
   scene_list[0] = (scene*)malloc(sizeof(scene));
   (*scene_list[0]) = new_matrix_scene;
