@@ -21,6 +21,6 @@ main.o:	main.c renderer.h input.h scene.h
 renderer.o:	renderer.c renderer.h scene.h
 	$(CC) -c renderer.c
 
-input.o:	input.c input.h
+input.o:	input.c input.h renderer.h
 	$(CC) -c input.c
 

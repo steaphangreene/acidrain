@@ -17,6 +17,8 @@
 
 static int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
 
+static SDL_Surface *surface;
+
 void __renderer_make_sphere() {
   GLUquadricObj *quadObj;
 
@@ -94,29 +96,35 @@ void __renderer_make_pyramid() {
 
   glColor3f(1.0, 0.0, 0.0);
 
-  // Draw the sides of the cube
-  glBegin(GL_TRIANGLE_FAN);
+  // Draw the sides of the cube (No Base Needed)
+  glBegin(GL_TRIANGLES);
 
-  // Initial normal for left side
-  glNormal3d(-1.0, 0.0, 0.0);
-
-  // Point of Pyramid
+  glNormal3d(-1.0, 0.0, 0.5);
   glVertex3d(0.0, 0.0, -RADIUS);
-
-  // 4 Base Vertexes (No Base Drawn)
   glVertex3d(-RADIUS, -RADIUS, RADIUS);
   glVertex3d(-RADIUS, RADIUS, RADIUS);
+
+  glNormal3d(0.0, 1.0, 0.5);
+  glVertex3d(0.0, 0.0, -RADIUS);
+  glVertex3d(-RADIUS, RADIUS, RADIUS);
   glVertex3d(RADIUS, RADIUS, RADIUS);
-  glNormal3d(0.0, 1.0, 0.0);
+
+  glNormal3d(1.0, 0.0, 0.5);
+  glVertex3d(0.0, 0.0, -RADIUS);
+  glVertex3d(RADIUS, RADIUS, RADIUS);
   glVertex3d(RADIUS, -RADIUS, RADIUS);
-  glNormal3d(1.0, 0.0, 0.0);
+
+  glNormal3d(0.0, -1.0, 0.5);
+  glVertex3d(0.0, 0.0, -RADIUS);
+  glVertex3d(RADIUS, -RADIUS, RADIUS);
   glVertex3d(-RADIUS, -RADIUS, RADIUS);
-  glNormal3d(0.0, -1.0, 0.0);
   glEnd();
   glEndList();
   }
 
 int init_renderer(int xsize, int ysize) {
+  int videoFlags;
+  const SDL_VideoInfo *videoInfo;
   GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
   GLfloat shininess[] = { 100.0 };
   GLfloat light_pos[] = { 10.0, 10.0, 4.0, 0.0 };
@@ -127,16 +135,25 @@ int init_renderer(int xsize, int ysize) {
     }
   atexit(SDL_Quit);
 
-  /* Enable OpenGL double buffering. */
+  videoInfo = SDL_GetVideoInfo();
+
+  videoFlags = SDL_OPENGL;
+  videoFlags |= SDL_GL_DOUBLEBUFFER;
+  videoFlags |= SDL_HWPALETTE;
+  videoFlags |= SDL_RESIZABLE;
+
+  /* Use HW Survaces if possible */
+  if(videoInfo->hw_available) videoFlags |= SDL_HWSURFACE;
+  else videoFlags |= SDL_SWSURFACE;
+
+  /* Use HW Blits if possible */
+  if(videoInfo->blit_hw) videoFlags|=SDL_HWACCEL;
+
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-  /* Set the color depth (16-bit 565). */
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+  surface = SDL_SetVideoMode(xsize, ysize, 16, videoFlags);
 
-//  if(SDL_SetVideoMode(xsize, ysize, 16, SDL_OPENGL | SDL_FULLSCREEN) == NULL) {
-  if(SDL_SetVideoMode(xsize, ysize, 16, SDL_OPENGL) == NULL) {
+  if(surface == NULL) {
     fprintf(stderr, "Error: %s\n", SDL_GetError());
     return 0;
     }
@@ -156,6 +173,7 @@ int init_renderer(int xsize, int ysize) {
 
   // Enable depth testing for hidden line removal
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_NORMALIZE);
 
   // Define material properties of specular color and degree of 
   // shininess.  Since this is only done once in this particular 
@@ -227,11 +245,24 @@ int __matrix_render_scene(matrix_scene *current_scene, int player) {
   return 1;
   }
 
+void __render_panel(scene *current_scene, int player) {
+  glLoadIdentity();
+  glColor3f(6.0, 6.0, 6.0);
+  glNormal3d(0.0, 0.0, 1.0);
+  glBegin(GL_QUADS);
+  glVertex3d(0.6, -0.75, -3.0);
+  glVertex3d(1.0, -0.75, -3.0);
+  glVertex3d(1.0, 0.75, -3.0);
+  glVertex3d(0.6, 0.75, -3.0);
+  glEnd();
+  }
+
 int render_scene(scene *current_scene, int player) {
-  // Increment graphical phase
   ++phase;
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  __render_panel(current_scene, player);
 
   if(current_scene == NULL) return 1;
   else if(current_scene->type == SCENE_TYPE_MATRIX)
@@ -241,4 +272,8 @@ int render_scene(scene *current_scene, int player) {
   else if(current_scene->type == SCENE_TYPE_ASTRAL)
     return __astral_render_scene(&(current_scene->astral), player);
   return 1;
+  }
+
+void toggle_fullscreen() {
+  SDL_WM_ToggleFullScreen(surface);
   }

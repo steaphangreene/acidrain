@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "input.h"
+#include "renderer.h"
 
 int user_quit = 0;
 
@@ -18,6 +19,11 @@ int input_process(int player_number) {
       case SDL_KEYDOWN: {
 	if (event.key.keysym.sym == SDLK_ESCAPE) {
 	  user_quit = 1;
+	  }
+	else if (event.key.keysym.sym == SDLK_RETURN
+		&& ((event.key.keysym.mod & KMOD_LALT)
+		|| (event.key.keysym.mod & KMOD_RALT))) {
+	  toggle_fullscreen();
 	  }
 	} break;
       case SDL_QUIT: {
