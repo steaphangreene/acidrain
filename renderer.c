@@ -34,16 +34,6 @@ static scene *current_scene;
 
 int phase = 0;
 
-//#define SDL_TICK 13;
-//
-//Uint32 tick(Uint32 t, void *data) {
-//  SDL_Event event;
-//  event.user.type = SDL_USEREVENT;
-//  event.user.code = SDL_TICK;
-//  SDL_PushEvent(&event);
-//  return 30;
-//  }
-
 int init_renderer(int xs, int ys) {
   const SDL_VideoInfo *videoInfo;
   GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -52,7 +42,7 @@ int init_renderer(int xs, int ys) {
 
   xsize = xs;   ysize = ys;
 
-  if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     fprintf(stderr, "Error: %s\n", SDL_GetError());
     return 0;
     }
@@ -132,8 +122,6 @@ int init_renderer(int xs, int ys) {
   // manipulated by further calls
   glMatrixMode(GL_MODELVIEW);
 
-//  SDL_AddTimer(30, tick, NULL);
-
   if(!init_renderer_matrix()) {
     fprintf(stderr, "Matrix Renderer Init Failed!\n");
     return 0;
@@ -194,7 +182,7 @@ int render_scene(scene *cscene, int player) {
     return -1;
     }
 
-  if(fucked) SDL_Delay(100);
+  if(fucked) SDL_Delay(500);
 
   current_scene = cscene;
 

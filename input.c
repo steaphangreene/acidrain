@@ -34,11 +34,6 @@ int input_process(int player_number) {
 
   while(SDL_PollEvent(&event)) {
     switch (event.type) {
-//      case(SDL_USEREVENT): {
-//	if(event.user.code == 13) {
-//	  return 1;
-//	  }
-//	} break;
       case(SDL_KEYDOWN): {
 	if (event.key.keysym.sym == SDLK_ESCAPE) {
 	  user_quit = 1;
