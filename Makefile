@@ -23,7 +23,8 @@ clean:	.
 	rm -f acidrain acidrain.* *.o *.win32_o
 
 upload:	all
-	scp acidrain acidrain.exe warp:public_html/acidrain/
+	scp acidrain warp:public_html/acidrain/i386/
+	scp acidrain.exe warp:public_html/acidrain/win32/
 
 backup:	tar
 	scp ~/c/archive/acidrain.$(TSTR).tar.gz stea@reactor:backup/
