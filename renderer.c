@@ -24,36 +24,13 @@
 
 #include "renderer.h"
 
-#define RADIUS ((GLdouble)0.1)
-
-#define ICON_SPHERE	1
-#define ICON_CUBE	2
-#define ICON_BURST	3
-#define ICON_PYRAMID	4
-
-static int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
-
 static SDL_Surface *surface = NULL;
 static int videoFlags = 0;
 
 static int xsize=0, ysize=0;
 static int hgap=0, vgap=0;
 
-static double xoff=0.0, yoff=0.0, xtarg=0.0, ytarg=0.0;
-static int move = -1;
-
-const double moves[] = {
-	1.0/100.0,
-	3.0/99.0,
-	6.0/96.0,
-	15.0/90.0,
-	25.0/75.0,
-	25.0/50.0,
-	15.0/25.0,
-	6.0/10.0,
-	3.0/4.0,
-	1.0/1.0
-	};
+static scene *current_scene;
 
 #define SDL_TICK 13;
 
@@ -63,109 +40,6 @@ Uint32 tick(Uint32 t, void *data) {
   event.user.code = SDL_TICK;
   SDL_PushEvent(&event);
   return 30;
-  }
-
-void __renderer_make_sphere(void) {
-  GLUquadricObj *quadObj;
-
-  quadObj = gluNewQuadric();
-
-  glNewList(ICON_SPHERE, GL_COMPILE);
-
-  glColor3f(0.0, 0.0, 1.0);
-  gluSphere(quadObj, RADIUS, 32, 12);
-	
-  glEndList();
-  }
-
-
-void __renderer_make_cube(void) {
-  glNewList(ICON_CUBE, GL_COMPILE);
-
-  glColor3f(0.0, 1.0, 0.0);
-	
-  glBegin(GL_QUADS);
-
-  glNormal3d(0.0, -1.0, 0.0);
-  glVertex3d(RADIUS, -RADIUS, -RADIUS);
-  glVertex3d(RADIUS, -RADIUS, RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
-
-  glNormal3d(-1.0, 0.0, 0.0);
-  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, -RADIUS);
-
-  glNormal3d(0.0, 1.0, 0.0);
-  glVertex3d(-RADIUS, RADIUS, -RADIUS);
-  glVertex3d(-RADIUS, RADIUS, RADIUS);
-  glVertex3d(RADIUS, RADIUS, RADIUS);
-  glVertex3d(RADIUS, RADIUS, -RADIUS);
-
-  glNormal3d(1.0, 0.0, 0.0);
-  glVertex3d(RADIUS, RADIUS, -RADIUS);
-  glVertex3d(RADIUS, RADIUS, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, -RADIUS);
-
-  glNormal3d(0.0, 0.0, 1.0);
-  glVertex3d(-RADIUS, -RADIUS, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, RADIUS);
-  glVertex3d(RADIUS, RADIUS, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, RADIUS);
-
-  // No Bottom Drawn
-
-  glEnd();
-
-  glEndList();
-  }
-
-void __renderer_make_burst(void) {
-  GLUquadricObj *quadObj;
-
-  quadObj = gluNewQuadric();
-
-  glNewList(ICON_BURST, GL_COMPILE);
-
-  glColor3f(0.8, 0.8, 0.0);
-  gluSphere(quadObj, RADIUS, 16, 12);
-	
-  glEndList();
-  }
-
-
-void __renderer_make_pyramid(void) {
-  glNewList(ICON_PYRAMID, GL_COMPILE);
-
-  glColor3f(1.0, 0.0, 0.0);
-
-  // Draw the sides of the cube (No Base Needed)
-  glBegin(GL_TRIANGLES);
-
-  glNormal3d(-1.0, 0.0, 0.5);
-  glVertex3d(0.0, 0.0, RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
-  glVertex3d(-RADIUS, RADIUS, -RADIUS);
-
-  glNormal3d(0.0, 1.0, 0.5);
-  glVertex3d(0.0, 0.0, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, -RADIUS);
-  glVertex3d(RADIUS, RADIUS, -RADIUS);
-
-  glNormal3d(1.0, 0.0, 0.5);
-  glVertex3d(0.0, 0.0, RADIUS);
-  glVertex3d(RADIUS, RADIUS, -RADIUS);
-  glVertex3d(RADIUS, -RADIUS, -RADIUS);
-
-  glNormal3d(0.0, -1.0, 0.5);
-  glVertex3d(0.0, 0.0, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, -RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
-  glEnd();
-  glEndList();
   }
 
 int init_renderer(int xs, int ys) {
@@ -240,12 +114,6 @@ int init_renderer(int xs, int ys) {
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
 
-  // Create the display lists
-  __renderer_make_sphere();
-  __renderer_make_cube();
-  __renderer_make_burst();
-  __renderer_make_pyramid();
-
   // Set the new viewport size
   glViewport(0, 0, (GLint)xsize, (GLint)ysize);
 
@@ -264,56 +132,32 @@ int init_renderer(int xs, int ys) {
 
   SDL_AddTimer(30, tick, NULL);
 
-  return 1;
-  }
-
-static int phase = 0;
-
-int __real_render_scene(real_scene *current_scene, int player) {
-  return 1;
-  }
-
-int __astral_render_scene(astral_scene *current_scene, int player) {
-  return 1;
-  }
-
-int __matrix_render_scene(matrix_scene *current_scene, int player) {
-  matrix_obj *tmp = current_scene->objs;
-
-  if(move >= 0) {
-    xoff += (double)(xtarg-xoff)*(double)moves[move];
-    yoff += (double)(ytarg-yoff)*(double)moves[move];
-    ++move;
-    if(move >= 10) move = -1;
+  if(!init_renderer_matrix()) {
+    fprintf(stderr, "Matrix Renderer Init Failed!\n");
+    return 0;
+    }
+  if(!init_renderer_real()) {
+    fprintf(stderr, "Real-World Renderer Init Failed!\n");
+    return 0;
+    }
+  if(!init_renderer_astral()) {
+    fprintf(stderr, "Astral Renderer Init Failed!\n");
+    return 0;
     }
 
-  while(tmp != NULL) {
-    int tp = tmp->type, fac=1, ang;
-    double xpos = 0.5*(tmp->xp-4)-xoff;
-    double ypos = 0.5*(tmp->yp-4)-yoff;
-
-    if(tp == MATRIX_FAKE) { tp = tmp->stat; fac=-1; }
-
-    while(xpos < -2.25) xpos += 4.5;
-    while(ypos < -2.25) ypos += 4.5;
-    while(xpos > 2.25) xpos -= 4.5;
-    while(ypos > 2.25) ypos -= 4.5;
-
-    ang = (phase*5%360)*fac;
-    glLoadIdentity();
-    glTranslatef(xpos, ypos, -6.0);
-    glRotatef((double)ang, 0.0, 0.0, 1.0);
-    glCallList(icon[tp]);
-    tmp = tmp->next;
-    }
-
-  glFlush();
-  SDL_GL_SwapBuffers();
-
   return 1;
   }
 
-void __render_panel(scene *current_scene, int player) {
+int real_render_scene(real_scene *cscene, int player) {
+  return 0;
+  }
+
+int astral_render_scene(astral_scene *cscene, int player) {
+  return 0;
+  }
+
+void render_panel(scene *cscene, int player) {
+  current_scene = cscene;
   glLoadIdentity();
   glColor3f(6.0, 6.0, 6.0);
   glNormal3d(0.0, 0.0, 1.0);
@@ -325,20 +169,20 @@ void __render_panel(scene *current_scene, int player) {
   glEnd();
   }
 
-int render_scene(scene *current_scene, int player) {
-  ++phase;
+int render_scene(scene *cscene, int player) {
+  current_scene = cscene;
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  __render_panel(current_scene, player);
+  render_panel(current_scene, player);
 
   if(current_scene == NULL) return 1;
   else if(current_scene->type == SCENE_TYPE_MATRIX)
-    return __matrix_render_scene(&(current_scene->matrix), player);
+    return render_scene_matrix(&(current_scene->matrix), player);
   else if(current_scene->type == SCENE_TYPE_REAL)
-    return __real_render_scene(&(current_scene->real), player);
+    return render_scene_real(&(current_scene->real), player);
   else if(current_scene->type == SCENE_TYPE_ASTRAL)
-    return __astral_render_scene(&(current_scene->astral), player);
+    return render_scene_astral(&(current_scene->astral), player);
   return 1;
   }
 
@@ -397,27 +241,11 @@ void pixels_to_location(double *x, double *y) {
   }
 
 void clicked(double x, double y, int b) {
-  if(move == -1 && b == 3) {
-    x*=8;  x+=9.5;
-    y*=8;  y+=9.5;
-    if(((int)x & 1) == 1 && ((int)y & 1) == 1) {
-      int ix = ((int)x)/2;
-      int iy = ((int)y)/2;
-      xtarg += 4.5;  xoff += 4.5;
-      ytarg += 4.5;  yoff += 4.5;
-      xtarg += ((double)ix-4)/2.0;
-      ytarg += ((double)iy-4)/2.0;
-      while(xtarg > 4.5) { xtarg -= 4.5; xoff -= 4.5; }
-      while(ytarg > 4.5) { ytarg -= 4.5; yoff -= 4.5; }
-      if(xtarg != xoff || ytarg != yoff) move = 0;
-      }
-    }
-  if(b == 4) {
-    ytarg -= 0.5;
-    move = 0;
-    }
-  if(b == 5) {
-    ytarg += 0.5;
-    move = 0;
-    }
+  if(current_scene == NULL) return;
+  else if(current_scene->type == SCENE_TYPE_MATRIX)
+    clicked_matrix(x, y, b);
+  else if(current_scene->type == SCENE_TYPE_REAL)
+    clicked_real(x, y, b);
+  else if(current_scene->type == SCENE_TYPE_ASTRAL)
+    clicked_astral(x, y, b);
   }

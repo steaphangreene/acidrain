@@ -1,5 +1,5 @@
 // *************************************************************************
-// renderer.h
+// renderer_real.c
 // This is a component of Acid Rain, Pre ALPHA non-distribution version
 //
 // -By Insomnia (Steaphan Greene)   (Copyright 2002 Steaphan Greene)
@@ -14,29 +14,23 @@
 // must have the author's permission, and may be subject to a royaltee fee.
 // *************************************************************************
 
-#ifndef RENDERER_H
-#define RENDERER_H
+#include <SDL/SDL.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 
-#include "scene.h"
+#include "renderer.h"
 
-int init_renderer(int, int);
-int render_scene(scene *, int);
-void toggle_fullscreen(void);
-void resize_display(int, int);
-void pixels_to_location(double *, double *);
-void clicked(double, double, int);
+int init_renderer_real() {
+  return 1;
+  }
 
-/* For use internally by renderer only! */
-int init_renderer_matrix();
-int init_renderer_real();
-int init_renderer_astral();
+int render_scene_real(real_scene *current_scene, int player) {
+  return 0;
+  }
 
-int render_scene_matrix(matrix_scene *, int);
-int render_scene_real(real_scene *, int);
-int render_scene_astral(astral_scene *, int);
-
-void clicked_matrix(double, double, int);
-void clicked_real(double, double, int);
-void clicked_astral(double, double, int);
-
-#endif /* RENDERER_H */
+void clicked_real(double x, double y, int b) {
+  }

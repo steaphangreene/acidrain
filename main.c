@@ -18,21 +18,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <sys/time.h>
+#include <time.h>
 
 #include "renderer.h"
 #include "input.h"
 #include "scene.h"
 
 int main(int argc, char **argv) {
-  struct timeval tv;
   int player_number = 1, ctr;
   scene current_scene;
   current_scene.matrix.type = SCENE_TYPE_MATRIX;
   current_scene.matrix.objs = NULL;
 
-  gettimeofday(&tv, NULL);
-  srandom(tv.tv_usec);
+  srandom(time(NULL));
 
 // if(!init_renderer(1024, 768)) {
   if(!init_renderer(832, 624)) {
@@ -43,8 +41,7 @@ int main(int argc, char **argv) {
   for(ctr=0; ctr<81; ++ctr) {
     matrix_obj *tmp;
     int rn = random()%19;
-//    if(rn > 4) continue;
-    if(rn > 3) continue;
+    if(rn > 4) continue;
 
     tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
     tmp->type = rn+1;
@@ -64,7 +61,6 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Input processing failed!\n");
       exit(1);
       }
-//    SDL_Delay(40);
     }
 
   exit(0);
