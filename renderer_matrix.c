@@ -24,12 +24,16 @@
 
 #include "renderer.h"
 
-#define RADIUS ((GLdouble)0.1)
+#define IMAGE_TILE	1
 
-#define ICON_SPHERE	1
-#define ICON_CUBE	2
-#define ICON_BURST	3
-#define ICON_PYRAMID	4
+#define ICON_RADIUS	((GLdouble)0.1)
+#define ICON_HEIGHT	((GLdouble)0.3)
+#define ICON_DEPTH	((GLdouble)-6.0)
+
+#define ICON_SPHERE	10
+#define ICON_CUBE	11
+#define ICON_BURST	12
+#define ICON_PYRAMID	13
 
 static int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
 
@@ -49,16 +53,66 @@ const double moves[] = {
 	1.0/1.0
 	};
 
+void renderer_make_tile(void) {
+  glNewList(IMAGE_TILE, GL_COMPILE);
+
+  glColor3f(0.0, 0.8, 0.8);
+	
+  glBegin(GL_QUADS);
+
+  glNormal3d(-1.0,   0.0,   1.0);
+  glVertex3d(-0.25, -0.25, -0.02);
+  glVertex3d(-0.25,  0.25, -0.02);
+  glVertex3d(-0.23,  0.23,  0.00);
+  glVertex3d(-0.23, -0.23,  0.00);
+
+  glNormal3d( 0.0,  -1.0,   1.0);
+  glVertex3d(-0.25, -0.25, -0.02);
+  glVertex3d( 0.25, -0.25, -0.02);
+  glVertex3d( 0.23, -0.23,  0.00);
+  glVertex3d(-0.23, -0.23,  0.00);
+
+  glNormal3d( 1.0,   0.0,   1.0);
+  glVertex3d( 0.25, -0.25, -0.02);
+  glVertex3d( 0.25,  0.25, -0.02);
+  glVertex3d( 0.23,  0.23,  0.00);
+  glVertex3d( 0.23, -0.23,  0.00);
+
+  glNormal3d( 0.0,   1.0,   1.0);
+  glVertex3d(-0.25,  0.25, -0.02);
+  glVertex3d( 0.25,  0.25, -0.02);
+  glVertex3d( 0.23,  0.23,  0.00);
+  glVertex3d(-0.23,  0.23,  0.00);
+
+  glNormal3d( 0.0,   0.0,   1.0);
+  glVertex3d(-0.23, -0.23,  0.00);
+  glVertex3d( 0.23, -0.23,  0.00);
+  glVertex3d( 0.23,  0.23,  0.00);
+  glVertex3d(-0.23,  0.23,  0.00);
+
+  // No Bottom Drawn
+
+  glEnd();
+
+  glEndList();
+  }
+
 void renderer_make_sphere(void) {
   GLUquadricObj *quadObj;
+  GLUquadricObj *shadow;
 
   quadObj = gluNewQuadric();
+  shadow = gluNewQuadric();
 
   glNewList(ICON_SPHERE, GL_COMPILE);
 
   glColor3f(0.0, 0.0, 1.0);
-  gluSphere(quadObj, RADIUS, 32, 12);
+  gluSphere(quadObj, ICON_RADIUS, 32, 12);
 	
+  glColor3f(0.0, 0.0, 0.0);
+  glTranslatef(0.0, 0.0, -ICON_HEIGHT+0.01);
+  gluDisk(shadow, 0.0, ICON_RADIUS, 16, 1);
+
   glEndList();
   }
 
@@ -71,36 +125,44 @@ void renderer_make_cube(void) {
   glBegin(GL_QUADS);
 
   glNormal3d(0.0, -1.0, 0.0);
-  glVertex3d(RADIUS, -RADIUS, -RADIUS);
-  glVertex3d(RADIUS, -RADIUS, RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
 
   glNormal3d(-1.0, 0.0, 0.0);
-  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, -RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
 
   glNormal3d(0.0, 1.0, 0.0);
-  glVertex3d(-RADIUS, RADIUS, -RADIUS);
-  glVertex3d(-RADIUS, RADIUS, RADIUS);
-  glVertex3d(RADIUS, RADIUS, RADIUS);
-  glVertex3d(RADIUS, RADIUS, -RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
 
   glNormal3d(1.0, 0.0, 0.0);
-  glVertex3d(RADIUS, RADIUS, -RADIUS);
-  glVertex3d(RADIUS, RADIUS, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, -RADIUS);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
 
   glNormal3d(0.0, 0.0, 1.0);
-  glVertex3d(-RADIUS, -RADIUS, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, RADIUS);
-  glVertex3d(RADIUS, RADIUS, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
 
   // No Bottom Drawn
+
+  // Shadow
+  glColor3f(0.0, 0.0, 0.0);
+  glNormal3d(0.0, 0.0, 1.0);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
 
   glEnd();
 
@@ -108,15 +170,26 @@ void renderer_make_cube(void) {
   }
 
 void renderer_make_burst(void) {
-  GLUquadricObj *quadObj;
+  GLUquadricObj *quadObj, *quadObj2;
+  GLUquadricObj *shadow;
 
   quadObj = gluNewQuadric();
+  quadObj2 = gluNewQuadric();
+  shadow = gluNewQuadric();
 
   glNewList(ICON_BURST, GL_COMPILE);
 
-  glColor3f(0.8, 0.8, 0.0);
-  gluSphere(quadObj, RADIUS, 16, 12);
-	
+  glColor3f(0.9, 0.9, 0.0);
+  glTranslatef(0.0, 0.0, -ICON_RADIUS);
+  gluCylinder(quadObj, ICON_RADIUS, ICON_RADIUS, ICON_RADIUS*2.0, 16, 1);
+
+  glTranslatef(0.0, 0.0, ICON_RADIUS*2.0);
+  gluDisk(quadObj2, 0.0, ICON_RADIUS, 16, 1);
+
+  glColor3f(0.0, 0.0, 0.0);
+  glTranslatef(0.0, 0.0, -ICON_RADIUS-ICON_HEIGHT+0.01);
+  gluDisk(shadow, 0.0, ICON_RADIUS, 16, 1);
+
   glEndList();
   }
 
@@ -130,30 +203,43 @@ void renderer_make_pyramid(void) {
   glBegin(GL_TRIANGLES);
 
   glNormal3d(-1.0, 0.0, 0.5);
-  glVertex3d(0.0, 0.0, RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
-  glVertex3d(-RADIUS, RADIUS, -RADIUS);
+  glVertex3d(0.0, 0.0, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
 
   glNormal3d(0.0, 1.0, 0.5);
-  glVertex3d(0.0, 0.0, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, -RADIUS);
-  glVertex3d(RADIUS, RADIUS, -RADIUS);
+  glVertex3d(0.0, 0.0, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
 
   glNormal3d(1.0, 0.0, 0.5);
-  glVertex3d(0.0, 0.0, RADIUS);
-  glVertex3d(RADIUS, RADIUS, -RADIUS);
-  glVertex3d(RADIUS, -RADIUS, -RADIUS);
+  glVertex3d(0.0, 0.0, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
 
   glNormal3d(0.0, -1.0, 0.5);
-  glVertex3d(0.0, 0.0, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, -RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
+  glVertex3d(0.0, 0.0, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
   glEnd();
+
+  // Shadow
+  glBegin(GL_QUADS);
+  glColor3f(0.0, 0.0, 0.0);
+  glNormal3d(0.0, 0.0, 1.0);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glEnd();
+
   glEndList();
   }
 
 int init_renderer_matrix() {
   // Create the display lists
+  renderer_make_tile();
+
   renderer_make_sphere();
   renderer_make_cube();
   renderer_make_burst();
@@ -165,6 +251,7 @@ int init_renderer_matrix() {
 static int phase = 0;
 
 int render_scene_matrix(matrix_scene *current_scene, int player) {
+  int ctr;
   matrix_obj *tmp = current_scene->objs;
 
   ++phase;
@@ -173,7 +260,22 @@ int render_scene_matrix(matrix_scene *current_scene, int player) {
     xoff += (double)(xtarg-xoff)*(double)moves[move];
     yoff += (double)(ytarg-yoff)*(double)moves[move];
     ++move;
+//    SDL_Delay(2000);
     if(move >= 10) move = -1;
+    }
+
+  for(ctr=0; ctr<100; ++ctr) {
+    double xpos = 0.5*((ctr%10)-4)-xoff;
+    double ypos = 0.5*((ctr/10)-4)-yoff;
+
+    while(xpos < -2.5) xpos += 5.0;
+    while(ypos < -2.5) ypos += 5.0;
+    while(xpos > 2.5) xpos -= 5.0;
+    while(ypos > 2.5) ypos -= 5.0;
+
+    glLoadIdentity();
+    glTranslatef(xpos, ypos, ICON_DEPTH-ICON_HEIGHT);
+    glCallList(IMAGE_TILE);
     }
 
   while(tmp != NULL) {
@@ -190,7 +292,7 @@ int render_scene_matrix(matrix_scene *current_scene, int player) {
 
     ang = (phase*5%360)*fac;
     glLoadIdentity();
-    glTranslatef(xpos, ypos, -6.0);
+    glTranslatef(xpos, ypos, ICON_DEPTH);
     glRotatef((double)ang, 0.0, 0.0, 1.0);
     glCallList(icon[tp]);
     tmp = tmp->next;
