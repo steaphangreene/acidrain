@@ -17,9 +17,10 @@
 
 static int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
 
-static SDL_Surface *surface;
+static SDL_Surface *surface = NULL;
+static int videoFlags = 0;
 
-void __renderer_make_sphere() {
+void __renderer_make_sphere(void) {
   GLUquadricObj *quadObj;
 
   quadObj = gluNewQuadric();
@@ -33,7 +34,7 @@ void __renderer_make_sphere() {
   }
 
 
-void __renderer_make_cube() {
+void __renderer_make_cube(void) {
   glNewList(ICON_CUBE, GL_COMPILE);
 
   glColor3f(0.0, 1.0, 0.0);
@@ -77,7 +78,7 @@ void __renderer_make_cube() {
   glEndList();
   }
 
-void __renderer_make_burst() {
+void __renderer_make_burst(void) {
   GLUquadricObj *quadObj;
 
   quadObj = gluNewQuadric();
@@ -91,7 +92,7 @@ void __renderer_make_burst() {
   }
 
 
-void __renderer_make_pyramid() {
+void __renderer_make_pyramid(void) {
   glNewList(ICON_PYRAMID, GL_COMPILE);
 
   glColor3f(1.0, 0.0, 0.0);
@@ -123,7 +124,6 @@ void __renderer_make_pyramid() {
   }
 
 int init_renderer(int xsize, int ysize) {
-  int videoFlags;
   const SDL_VideoInfo *videoInfo;
   GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
   GLfloat shininess[] = { 100.0 };
@@ -274,6 +274,28 @@ int render_scene(scene *current_scene, int player) {
   return 1;
   }
 
-void toggle_fullscreen() {
+void resize_display(int xsize, int ysize) {
+  surface = SDL_SetVideoMode(xsize, ysize, 16, videoFlags);
+  glViewport(0, 0, (GLint)xsize, (GLint)ysize);
+  }
+
+static int oldmodex = 0, oldmodey = 0;
+
+void toggle_fullscreen(void) {
+  if(oldmodex != 0) {
+    resize_display(oldmodex, oldmodey);
+    oldmodex = 0;  oldmodey = 0;
+    }
+  else {
+    oldmodex = surface->w;
+    oldmodey = surface->h;
+    if(oldmodex <= 640 && oldmodey <= 480) resize_display(640, 480);
+    else if(oldmodex <= 800 && oldmodey <= 600) resize_display(800, 600);
+    else if(oldmodex <= 1024 && oldmodey <= 768) resize_display(1024, 768);
+    else if(oldmodex <= 1280 && oldmodey <= 1024) resize_display(1280, 1024);
+    else if(oldmodex <= 1600 && oldmodey <= 1200) resize_display(1600, 1200);
+    }
   SDL_WM_ToggleFullScreen(surface);
+  videoFlags ^= SDL_FULLSCREEN;
+  printf("Size is now %dx%d\n", surface->w, surface->h);
   }

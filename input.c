@@ -29,6 +29,9 @@ int input_process(int player_number) {
       case SDL_QUIT: {
 	user_quit = 1;
 	} break;
+      case SDL_VIDEORESIZE: {
+	resize_display(event.resize.w, event.resize.h);
+	} break;
       }
     }
 
