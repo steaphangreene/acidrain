@@ -35,7 +35,7 @@ tar:	archive
 archive:	.
 	cd .. ; tar czhvf ~/c/archive/acidrain.$(TSTR).tar.gz \
 		acidrain/*.[hc] acidrain/Makefile \
-		acidrain/xpms acidrain/*.raw acidrain/*.csh
+		acidrain/*.raw acidrain/*.csh
 
 acidrain:	$(OBJS)
 	$(CC) -s -o acidrain $(OBJS) $(LIBS)
