@@ -313,7 +313,15 @@ void render_panel_matrix(matrix_scene *cscene, int player) {
     ys = xs * 1.6;
 
     xp += xs/2.0;
-    yp += ys/2.0;
+    yp += xs;
+
+    glColor3d(0.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+    glVertex3d(1.55, -1.45, -4.495);
+    glVertex3d(1.55, -1.45+xs*2.0, -4.495);
+    glVertex3d(2.45, -1.45+xs*2.0, -4.495);
+    glVertex3d(2.45, -1.45, -4.495);
+    glEnd();
 
     glColor3d(0.0, 1.0, 1.0);
 

@@ -7,8 +7,8 @@
 #include "digits_xpm.h"
 #include "digits_seg.h"
 
-#define LED_SIZE 0.2
-#define LED_EDGE 0.05
+#define LED_SIZE 0.1
+#define LED_EDGE 0.025
 
 static int render_fonts = 1;
 
@@ -193,35 +193,43 @@ void init_digits(void) {
 	glEnd();
 	}
       if(digit_segs[ctr] & 0x0400) {
-	glBegin(GL_QUADS);
-	glVertex3d( 0.25, 0.25, 0.0);
-	glVertex3d( 0.25, 0.30, 0.0);
-	glVertex3d( 0.40, 0.40, 0.0);
-	glVertex3d( 0.40, 0.35, 0.0);
+	glBegin(GL_POLYGON);
+	glVertex3d( 0.0+LED_SIZE*3.0/2.0+LED_EDGE, -1.0+LED_SIZE+LED_EDGE, 0.0);
+	glVertex3d( 0.0+LED_SIZE+LED_EDGE, -1.0+LED_SIZE+LED_EDGE, 0.0);
+	glVertex3d( 0.0+LED_SIZE+LED_EDGE, -1.0+LED_SIZE*3.0/2.0+LED_EDGE, 0.0);
+	glVertex3d( 0.5-LED_SIZE-LED_EDGE, 0.0-LED_SIZE/2.0-LED_EDGE, 0.0);
+	glVertex3d( 0.5-LED_SIZE/2.0-LED_EDGE, 0.0-LED_SIZE/2.0-LED_EDGE, 0.0);
+	glVertex3d( 0.5-LED_SIZE/2.0-LED_EDGE, 0.0-LED_SIZE-LED_EDGE, 0.0);
 	glEnd();
 	}
       if(digit_segs[ctr] & 0x0800) {
-	glBegin(GL_QUADS);
-	glVertex3d( 0.60, 0.35, 0.0);
-	glVertex3d( 0.60, 0.40, 0.0);
-	glVertex3d( 0.85, 0.30, 0.0);
-	glVertex3d( 0.85, 0.25, 0.0);
+	glBegin(GL_POLYGON);
+	glVertex3d( 0.5+LED_SIZE/2.0+LED_EDGE, 0.0-LED_SIZE-LED_EDGE, 0.0);
+	glVertex3d( 0.5+LED_SIZE/2.0+LED_EDGE, 0.0-LED_SIZE/2.0-LED_EDGE, 0.0);
+	glVertex3d( 0.5+LED_SIZE+LED_EDGE, 0.0-LED_SIZE/2.0-LED_EDGE, 0.0);
+	glVertex3d( 1.0-LED_SIZE-LED_EDGE, -1.0+LED_SIZE*3.0/2.0+LED_EDGE, 0.0);
+	glVertex3d( 1.0-LED_SIZE-LED_EDGE, -1.0+LED_SIZE+LED_EDGE, 0.0);
+	glVertex3d( 1.0-LED_SIZE*3.0/2.0-LED_EDGE, -1.0+LED_SIZE+LED_EDGE, 0.0);
 	glEnd();
 	}
       if(digit_segs[ctr] & 0x1000) {
-	glBegin(GL_QUADS);
-	glVertex3d( 0.25, 0.80, 0.0);
-	glVertex3d( 0.25, 0.85, 0.0);
-	glVertex3d( 0.40, 0.60, 0.0);
-	glVertex3d( 0.40, 0.55, 0.0);
+	glBegin(GL_POLYGON);
+	glVertex3d( 0.5-LED_SIZE/2.0-LED_EDGE, 0.0+LED_SIZE+LED_EDGE, 0.0);
+	glVertex3d( 0.5-LED_SIZE/2.0-LED_EDGE, 0.0+LED_SIZE/2.0+LED_EDGE, 0.0);
+	glVertex3d( 0.5-LED_SIZE-LED_EDGE, 0.0+LED_SIZE/2.0+LED_EDGE, 0.0);
+	glVertex3d( 0.0+LED_SIZE+LED_EDGE, 1.0-LED_SIZE*3.0/2.0-LED_EDGE, 0.0);
+	glVertex3d( 0.0+LED_SIZE+LED_EDGE, 1.0-LED_SIZE-LED_EDGE, 0.0);
+	glVertex3d( 0.0+LED_SIZE*3.0/2.0+LED_EDGE, 1.0-LED_SIZE-LED_EDGE, 0.0);
 	glEnd();
 	}
       if(digit_segs[ctr] & 0x2000) {
-	glBegin(GL_QUADS);
-	glVertex3d( 0.60, 0.55, 0.0);
-	glVertex3d( 0.60, 0.60, 0.0);
-	glVertex3d( 0.85, 0.85, 0.0);
-	glVertex3d( 0.85, 0.80, 0.0);
+	glBegin(GL_POLYGON);
+	glVertex3d( 1.0-LED_SIZE*3.0/2.0-LED_EDGE, 1.0-LED_SIZE-LED_EDGE, 0.0);
+	glVertex3d( 1.0-LED_SIZE-LED_EDGE, 1.0-LED_SIZE-LED_EDGE, 0.0);
+	glVertex3d( 1.0-LED_SIZE-LED_EDGE, 1.0-LED_SIZE*3.0/2.0-LED_EDGE, 0.0);
+	glVertex3d( 0.5+LED_SIZE+LED_EDGE, 0.0+LED_SIZE/2.0+LED_EDGE, 0.0);
+	glVertex3d( 0.5+LED_SIZE/2.0+LED_EDGE, 0.0+LED_SIZE/2.0+LED_EDGE, 0.0);
+	glVertex3d( 0.5+LED_SIZE/2.0+LED_EDGE, 0.0+LED_SIZE+LED_EDGE, 0.0);
 	glEnd();
 	}
 
