@@ -28,7 +28,7 @@ int init_renderer_astral() {
   return 1;
   }
 
-int render_scene_astral(astral_scene *current_scene, int player) {
+int render_scene_astral(astral_scene *cscene, int player) {
   return 0;
   }
 

@@ -3,7 +3,8 @@ LIBS:=	`sdl-config --libs` -L/usr/X11R6/lib -lGL -lGLU
 TSTR:=	$(shell date +"%Y%m%d%H%M")
 
 OBJS:=	main.o renderer.o input.o \
-	renderer_matrix.o renderer_real.o renderer_astral.o
+	renderer_matrix.o renderer_real.o renderer_astral.o \
+	LivTyler.o
 
 all:	acidrain
 
@@ -16,12 +17,12 @@ archive:	.
 		acidrain/*.[hc] acidrain/Makefile
 
 acidrain:	$(OBJS)
-	$(CC) -o acidrain $(OBJS) $(LIBS)
+	$(CC) -s -o acidrain $(OBJS) $(LIBS)
 
 main.o:	main.c renderer.h input.h scene.h
 	$(CC) -c main.c
 
-renderer.o:	renderer.c renderer.h scene.h
+renderer.o:	renderer.c renderer.h scene.h gimp.h
 	$(CC) -c renderer.c
 
 renderer_matrix.o:	renderer_matrix.c renderer.h scene.h
@@ -36,3 +37,5 @@ renderer_astral.o:	renderer_astral.c renderer.h scene.h
 input.o:	input.c input.h renderer.h
 	$(CC) -c input.c
 
+LivTyler.o:	LivTyler.c gimp.h
+	$(CC) -c LivTyler.c

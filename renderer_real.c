@@ -28,7 +28,7 @@ int init_renderer_real() {
   return 1;
   }
 
-int render_scene_real(real_scene *current_scene, int player) {
+int render_scene_real(real_scene *cscene, int player) {
   return 0;
   }
 

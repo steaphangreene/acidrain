@@ -24,6 +24,8 @@
 
 #include "renderer.h"
 
+#include "gimp.h"
+
 static SDL_Surface *surface = NULL;
 static int videoFlags = 0;
 
@@ -33,6 +35,34 @@ static int hgap=0, vgap=0;
 static scene *current_scene;
 
 int phase = 0;
+
+static unsigned int Liv;
+
+void load_textures(void) {
+  glGenTextures(1, &Liv);
+  glBindTexture(GL_TEXTURE_2D, Liv);
+  gluBuild2DMipmaps(GL_TEXTURE_2D, 3, LivTyler.width, LivTyler.height,
+	GL_RGB, GL_UNSIGNED_BYTE, LivTyler.pixel_data);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  }
+
+void render_panel(scene *cscene, int player) {
+  current_scene = cscene;
+  glBindTexture(GL_TEXTURE_2D, Liv);
+  glLoadIdentity();
+  glColor3d(1.0, 1.0, 1.0);
+  glNormal3d(0.0, 0.0, 1.0);
+  glBegin(GL_QUADS);
+  glTexCoord2f(0.0f, 0.0f);
+  glVertex3d(1.5, -1.5, -4.5);
+  glTexCoord2f(1.0f, 0.0f);
+  glVertex3d(2.5, -1.5, -4.5);
+  glTexCoord2f(1.0f, 1.0f);
+  glVertex3d(2.5, 1.5, -4.5);
+  glTexCoord2f(0.0f, 1.0f);
+  glVertex3d(1.5, 1.5, -4.5);
+  glEnd();
+  }
 
 int init_renderer(int xs, int ys) {
   const SDL_VideoInfo *videoInfo;
@@ -87,6 +117,7 @@ int init_renderer(int xs, int ys) {
   // Enable depth testing for hidden line removal
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
+  glEnable(GL_TEXTURE_2D);
 
   // Define material properties of specular color and degree of 
   // shininess.  Since this is only done once in this particular 
@@ -135,28 +166,9 @@ int init_renderer(int xs, int ys) {
     return 0;
     }
 
+  load_textures();
+
   return 1;
-  }
-
-int real_render_scene(real_scene *cscene, int player) {
-  return 0;
-  }
-
-int astral_render_scene(astral_scene *cscene, int player) {
-  return 0;
-  }
-
-void render_panel(scene *cscene, int player) {
-  current_scene = cscene;
-  glLoadIdentity();
-  glColor3f(6.0, 6.0, 6.0);
-  glNormal3d(0.0, 0.0, 1.0);
-  glBegin(GL_QUADS);
-  glVertex3d(1.5, -1.5, -4.5);
-  glVertex3d(2.5, -1.5, -4.5);
-  glVertex3d(2.5, 1.5, -4.5);
-  glVertex3d(1.5, 1.5, -4.5);
-  glEnd();
   }
 
 extern int fucked;
@@ -254,8 +266,12 @@ void pixels_to_location(double *x, double *y) {
     }
   }
 
+void panel_clicked(double x, double y, int b) {
+  }
+
 void clicked(double x, double y, int b) {
   if(current_scene == NULL) return;
+  if(x >= 1.0) panel_clicked(x, y, b);
   else if(current_scene->type == SCENE_TYPE_MATRIX)
     clicked_matrix(x, y, b);
   else if(current_scene->type == SCENE_TYPE_REAL)
