@@ -7,8 +7,8 @@ OBJS:=	main.o input.o \
 	scene.o scene_matrix.o scene_real.o scene_astral.o \
 	renderer.o renderer_matrix.o renderer_real.o renderer_astral.o
 
-WCC:=	cross-gcc.sh -O2 -Wall
-WLIBS:=	`cross-exec.sh sdl-config --libs` -lopengl32 -lglu32
+WCC:=	win32-gcc -O2 -Wall
+WLIBS:=	`win32-exec sdl-config --libs` -lopengl32 -lglu32
 WOBJS:=	main.obj input.obj \
 	game.obj game_matrix.obj game_real.obj game_astral.obj \
 	scene.obj scene_matrix.obj scene_real.obj scene_astral.obj \
@@ -22,6 +22,9 @@ win:	acidrain.exe
 
 clean:	.
 	rm -f acidrain acidrain.exe *.o *.obj
+
+upload:	all
+	scp acidrain acidrain.exe warp:public_html/acidrain/
 
 backup:	tar
 	scp ~/c/archive/acidrain.$(TSTR).tar.gz stea@reactor:backup/
