@@ -49,21 +49,13 @@ void load_textures(void) {
   }
 
 void render_panel(scene *cscene, int player) {
-  current_scene = cscene;
-//  glBindTexture(GL_TEXTURE_2D, tex_panel);
-  glLoadIdentity();
-  glColor3d(1.0, 1.0, 1.0);
-  glNormal3d(0.0, 0.0, -1.0);
-  glBegin(GL_QUADS);
-//  glTexCoord2f(0.0f, 0.0f);
-  glVertex3d(1.5, -1.5, -4.5);
-//  glTexCoord2f(0.0f, 1.0f);
-  glVertex3d(1.5, 1.5, -4.5);
-//  glTexCoord2f(1.0f, 1.0f);
-  glVertex3d(2.5, 1.5, -4.5);
-//  glTexCoord2f(1.0f, 0.0f);
-  glVertex3d(2.5, -1.5, -4.5);
-  glEnd();
+  if(current_scene == NULL) return;
+  else if(current_scene->type == SCENE_TYPE_MATRIX)
+    render_panel_matrix(&(current_scene->matrix), player);
+  else if(current_scene->type == SCENE_TYPE_REAL)
+    render_panel_real(&(current_scene->real), player);
+  else if(current_scene->type == SCENE_TYPE_ASTRAL)
+    render_panel_astral(&(current_scene->astral), player);
   }
 
 int init_renderer(int xs, int ys) {
@@ -198,6 +190,7 @@ int render_scene(scene *cscene, int player) {
   else lasttick += 30;
 
   update_viewport(cscene);
+  cscene = get_current_scene();
 
   if(difftick < 0 || difftick >= 1000000) {
     int d = (int)difftick;
@@ -278,4 +271,53 @@ void pixels_to_location(double *x, double *y) {
     (*x) *= 2.0;  (*x) -= 1.0;
     (*y) *= 2.0;  (*y) -= 1.0;
     }
+  }
+
+void load_xpm_texture(unsigned int tex, char *xpm[]) {
+  int width, height, ncol, x, y;
+  unsigned char *tmp;
+
+  sscanf(xpm[0], "%d %d %d", &width, &height, &ncol);
+  tmp = (unsigned char *)malloc(width*height*4);
+//  memset(tmp, 0, width*height*4);
+  for(y=0; y<height; ++y) {
+    for(x=0; x<width; ++x) {
+      if(xpm[1+ncol+y][x] == xpm[1][0]) {
+	tmp[(y*width+x)*4+0] = 0;
+	tmp[(y*width+x)*4+1] = 0;
+	tmp[(y*width+x)*4+2] = 0;
+	tmp[(y*width+x)*4+3] = 0;
+	}
+      else {
+	tmp[(y*width+x)*4+0] = 255;
+	tmp[(y*width+x)*4+1] = 255;
+	tmp[(y*width+x)*4+2] = 255;
+	tmp[(y*width+x)*4+3] = 255;
+	}
+      }
+    }
+
+  glBindTexture(GL_TEXTURE_2D, tex);
+
+/////////
+  glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+
+  // when texture area is small, bilinear filter the closest mipmap
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                 GL_LINEAR_MIPMAP_NEAREST );
+  // when texture area is large, bilinear filter the original
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+  // the texture wraps over at the edges (repeat)
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+/////////
+
+  gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height,
+	GL_RGBA, GL_UNSIGNED_BYTE, tmp);
+//  gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height,
+//	GL_COLOR_INDEX, GL_BITMAP, tmp);
+//  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+  free(tmp);
   }

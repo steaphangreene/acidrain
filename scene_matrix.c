@@ -76,10 +76,10 @@ scene *generate_scene_matrix(SceneID id) {
   if(scene_list[id]->matrix.node == NODE_RANDOM) {
     if(scene_list[id]->matrix.zone == ZONE_UNKNOWN) {
       scene_list[id]->matrix.zone = ZONE_PRIVATE;
-      scene_list[id]->matrix.name = "Private Node";
+      scene_list[id]->matrix.name = ":Private Node";
       }
     else {
-      scene_list[id]->matrix.name = "Welcome Node";
+      scene_list[id]->matrix.name = ":Welcome Node";
       }
     for(xp=0; xp<MATRIX_X; ++xp) {
       for(yp=0; yp<MATRIX_Y; ++yp) {

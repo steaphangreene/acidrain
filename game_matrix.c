@@ -254,6 +254,7 @@ void keypressed_matrix(matrix_scene *cscene, int k) {
     else if(k == SDLK_d) {
       cview.movet = MOVE_NONE;
       cview.move = 0;
+      cview.data = 0;
       }
     }
   else if(cview.movet == MOVE_NONE && k == SDLK_s) {

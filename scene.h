@@ -85,7 +85,7 @@ typedef union _scene {
   } scene;
 
 const static scene new_matrix_scene = { matrix: {
-	SCENE_TYPE_MATRIX, INIT_UNKNOWN, 0, 0, "Matrix Node", 0,
+	SCENE_TYPE_MATRIX, INIT_UNKNOWN, 0, 0, ":Matrix Node", 0,
 	{{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },

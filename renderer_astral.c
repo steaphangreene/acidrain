@@ -30,6 +30,9 @@ int init_renderer_astral() {
   return 1;
   }
 
+void render_panel_astral(astral_scene *cscene, int player) {
+  }
+
 int render_scene_astral(astral_scene *cscene, int player) {
   return 0;
   }

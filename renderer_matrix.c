@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <math.h>
 
 #ifndef M_PI
@@ -31,7 +32,7 @@
 #include "scene.h"
 #include "scene_matrix.h"
 
-/* XPM Fonts */
+/* Digit Font */
 #include "digits.h"
 
 #define POLYCOUNT	32
@@ -42,11 +43,13 @@
 #define ICON_HEIGHT	((GLdouble)0.3)
 #define ICON_DEPTH	((GLdouble)-6.0)
 
-#define ICON_VSPHERE	10
-#define ICON_SPHERE	11
-#define ICON_CUBE	12
-#define ICON_BURST	13
-#define ICON_PYRAMID	14
+#define ICON_SPHERE	10
+#define ICON_CUBE	11
+#define ICON_BURST	12
+#define ICON_PYRAMID	13
+
+#define SHAD_ROUND	20
+#define SHAD_SQUARE	21
 
 extern viewport cview;
 
@@ -58,66 +61,15 @@ static const int icon[] = {
 	ICON_PYRAMID
 	};
 
-static unsigned int tex_digit[36];
-
-void load_xpm_texture(unsigned int tex, char *xpm[]) {
-  int width, height, ncol, x, y;
-  unsigned char *tmp;
-
-  sscanf(xpm[0], "%d %d %d", &width, &height, &ncol);
-  tmp = (unsigned char *)malloc(width*height*4);
-//  memset(tmp, 0, width*height*4);
-  for(y=0; y<height; ++y) {
-    for(x=0; x<width; ++x) {
-      if(xpm[1+ncol+y][x] == xpm[1][0]) {
-	tmp[(y*width+x)*4+0] = 0;
-	tmp[(y*width+x)*4+1] = 0;
-	tmp[(y*width+x)*4+2] = 0;
-	tmp[(y*width+x)*4+3] = 0;
-	}
-      else {
-	tmp[(y*width+x)*4+0] = 255;
-	tmp[(y*width+x)*4+1] = 255;
-	tmp[(y*width+x)*4+2] = 255;
-	tmp[(y*width+x)*4+3] = 255;
-	}
-      }
-    }
-
-  glBindTexture(GL_TEXTURE_2D, tex);
-
-/////////
-  glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-
-  // when texture area is small, bilinear filter the closest mipmap
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                 GL_LINEAR_MIPMAP_NEAREST );
-  // when texture area is large, bilinear filter the original
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-  // the texture wraps over at the edges (repeat)
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-/////////
-
-  gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height,
-	GL_RGBA, GL_UNSIGNED_BYTE, tmp);
-//  gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height,
-//	GL_COLOR_INDEX, GL_BITMAP, tmp);
-//  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-
-  free(tmp);
-  }
+static const int shad[] = {
+	0,
+	SHAD_ROUND,
+	SHAD_SQUARE,
+	SHAD_ROUND,
+	SHAD_SQUARE
+	};
 
 void load_textures_matrix(void) {
-  int ctr;
-
-  glGenTextures(36, tex_digit);
-
-  for(ctr=0; ctr<36; ++ctr) {
-    load_xpm_texture(tex_digit[ctr], digits[ctr]);
-    }
-  glBindTexture(GL_TEXTURE_2D, 0);
   }
 
 void renderer_make_tile(void) {
@@ -162,41 +114,39 @@ void renderer_make_tile(void) {
   glEndList();
   }
 
-void renderer_make_sphere(void) {
-  GLUquadricObj *quadObj;
-  GLUquadricObj *shadow;
+void renderer_make_square(void) {
+  glNewList(SHAD_SQUARE, GL_COMPILE);
 
-  quadObj = gluNewQuadric();
-  shadow = gluNewQuadric();
-
-  glNewList(ICON_SPHERE, GL_COMPILE);
-
-  glColor3f(0.0, 0.0, 1.0);
-  gluSphere(quadObj, ICON_RADIUS, POLYCOUNT, POLYCOUNT/2);
-	
   glColor3f(0.0, 0.0, 0.0);
-  glTranslatef(0.0, 0.0, -ICON_HEIGHT+0.01);
-  gluDisk(shadow, 0.0, ICON_RADIUS, 16, 1);
+
+  glBegin(GL_QUADS);
+  glNormal3d(0.0, 0.0, 1.0);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, 0.0);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, 0.0);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, 0.0);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, 0.0);
+  glEnd();
 
   glEndList();
   }
 
-void renderer_make_vsphere(void) {
-  GLUquadricObj *quadObj;
+void renderer_make_round(void) {
   GLUquadricObj *shadow;
-
-  quadObj = gluNewQuadric();
   shadow = gluNewQuadric();
 
-  glNewList(ICON_VSPHERE, GL_COMPILE);
-
-  glColor3f(0.8, 0.0, 0.8);
-  gluSphere(quadObj, ICON_RADIUS, POLYCOUNT, POLYCOUNT/2);
-	
+  glNewList(SHAD_ROUND, GL_COMPILE);
   glColor3f(0.0, 0.0, 0.0);
-  glTranslatef(0.0, 0.0, -ICON_HEIGHT+0.01);
+  gluQuadricOrientation(shadow, GLU_INSIDE);
   gluDisk(shadow, 0.0, ICON_RADIUS, 16, 1);
+  glEndList();
+  }
 
+void renderer_make_sphere(void) {
+  GLUquadricObj *quadObj;
+  quadObj = gluNewQuadric();
+
+  glNewList(ICON_SPHERE, GL_COMPILE);
+  gluSphere(quadObj, ICON_RADIUS, POLYCOUNT, POLYCOUNT/2);
   glEndList();
   }
 
@@ -239,39 +189,22 @@ void renderer_make_cube(void) {
 
   // No Bottom Drawn
 
-  // Shadow
-  glColor3f(0.0, 0.0, 0.0);
-  glNormal3d(0.0, 0.0, -1.0);
-  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
-
   glEnd();
 
   glEndList();
   }
 
 void renderer_make_burst(void) {
-  GLUquadricObj *quadObj, *quadObj2;
-  GLUquadricObj *shadow;
+  GLUquadricObj *quadObj;
 
   quadObj = gluNewQuadric();
-  quadObj2 = gluNewQuadric();
-  shadow = gluNewQuadric();
 
   glNewList(ICON_BURST, GL_COMPILE);
 
   glColor3f(0.9, 0.9, 0.0);
   glTranslatef(0.0, 0.0, -ICON_RADIUS);
-  gluCylinder(quadObj, ICON_RADIUS, 0.0, ICON_RADIUS*2.0, 16, 1);
-
-  glTranslatef(0.0, 0.0, ICON_RADIUS*2.0);
-//  gluDisk(quadObj2, 0.0, ICON_RADIUS, POLYCOUNT, 1);
-
-  glColor3f(0.0, 0.0, 0.0);
-  glTranslatef(0.0, 0.0, -ICON_RADIUS-ICON_HEIGHT+0.01);
-  gluDisk(shadow, 0.0, ICON_RADIUS, POLYCOUNT, 1);
+  gluQuadricOrientation(quadObj, GLU_INSIDE);
+  gluCylinder(quadObj, ICON_RADIUS, 0.0, ICON_RADIUS*2.0, 16, 4);
 
   glEndList();
   }
@@ -306,16 +239,6 @@ void renderer_make_pyramid(void) {
   glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
   glEnd();
 
-  // Shadow
-  glBegin(GL_QUADS);
-  glColor3f(0.0, 0.0, 0.0);
-  glNormal3d(0.0, 0.0, 1.0);
-  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glEnd();
-
   glEndList();
   }
 
@@ -324,10 +247,12 @@ int init_renderer_matrix() {
   renderer_make_tile();
 
   renderer_make_sphere();
-  renderer_make_vsphere();
   renderer_make_cube();
   renderer_make_burst();
   renderer_make_pyramid();
+
+  renderer_make_round();
+  renderer_make_square();
 
   load_textures_matrix();
 
@@ -359,6 +284,44 @@ void draw_dialog(int complete) {
   glVertex3d(-1.01,  0.16, -4.51);
   glVertex3d( 1.01,  0.16, -4.51);
   glEnd();
+  }
+
+void render_panel_matrix(matrix_scene *cscene, int player) {
+//  glBindTexture(GL_TEXTURE_2D, tex_panel);
+  glLoadIdentity();
+  glColor3d(1.0, 1.0, 1.0);
+  glNormal3d(0.0, 0.0, -1.0);
+  glBegin(GL_QUADS);
+//  glTexCoord2f(0.0f, 0.0f);
+  glVertex3d(1.5, -1.5, -4.5);
+//  glTexCoord2f(0.0f, 1.0f);
+  glVertex3d(1.5, 1.5, -4.5);
+//  glTexCoord2f(1.0f, 1.0f);
+  glVertex3d(2.5, 1.5, -4.5);
+//  glTexCoord2f(1.0f, 0.0f);
+  glVertex3d(2.5, -1.5, -4.5);
+  glEnd();
+
+  { int ctr;
+    double ys, xs, yp = -1.45, xp = 1.55;
+    char *mes = "Generic Node";
+
+    if(cscene->name != NULL) mes = cscene->name;
+    if(mes[0] == ':') ++mes;
+
+    xs = 0.9 / (double)(strlen(mes));
+    ys = xs * 1.5;
+
+    glColor3d(0.0, 1.0, 1.0);
+
+    for(ctr=0; ctr<strlen(mes); ++ctr) {
+      glTranslatef(xp, yp, -4.49);
+      glScalef(xs, ys, 1.0);
+      render_digit(mes[ctr]);
+      glLoadIdentity();
+      xp += xs;
+      }
+    }
   }
 
 int render_scene_matrix(matrix_scene *cscene, int player) {
@@ -402,7 +365,7 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
   for(xp=0; xp<MATRIX_X; ++xp) {
     for(yp=0; yp<MATRIX_Y; ++yp) {
       if(cscene->objs[xp][yp] != NULL) {
-	int tp = cscene->objs[xp][yp]->type, ang;
+	int tp = cscene->objs[xp][yp]->type;
 	double xpos = 0.5*(xp-4)-(cview.xoff);
 	double ypos = 0.5*(yp-4)-(cview.yoff);
 	int fake = 0;
@@ -439,19 +402,28 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 	xpos *= cview.spread;
 	ypos *= cview.spread;
 
-	ang = (phase*5%360);
-	glLoadIdentity();
-	glTranslatef(xpos, ypos, ICON_DEPTH);
-	glRotatef((double)ang, 0.0, 0.0, 1.0);
-	if(fake) {
+	{ int ang = (phase*5%360);
 	  GLdouble sc = 0.7 + 0.3*(cos(M_PI * 0.05 * (double)(phase)));
-	  glScaled(sc, sc, sc);
-	  }
-	if(cscene->objs[xp][yp]->type == MATRIX_PORT
+
+	  glLoadIdentity();
+	  glTranslatef(xpos, ypos, (ICON_DEPTH-ICON_HEIGHT)+0.01);
+	  glRotatef((double)ang, 0.0, 0.0, 1.0);
+	  glPushMatrix();
+	  if(fake) glScaled(sc, sc, sc);
+	  /* Draw Shadow */
+	  glCallList(shad[tp]);
+
+	  glPopMatrix();
+	  glTranslatef(0.0, 0.0, ICON_HEIGHT-0.01);
+	  if(fake) glScaled(sc, sc, sc);
+	  /* Draw Icon */
+	  if(cscene->objs[xp][yp]->type == MATRIX_PORT
 		&& scene_visited(cscene->objs[xp][yp]->stat))
-	  glCallList(ICON_VSPHERE);
-	else
+	    glColor3f(1.0, 0.0, 1.0);
+	  else
+	    glColor3f(0.0, 0.0, 1.0);
 	  glCallList(icon[tp]);
+	  }
 	}
       }
     }
@@ -466,22 +438,14 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
     for(ctr = 0; ctr < cview.move; ++ctr) {
       double basex = -1.0 + 0.20*(double)ctr;
-      glBindTexture(GL_TEXTURE_2D, tex_digit[(cview.data/base)%10]);
 
-      glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, 0.0f);
-      glVertex3d( basex+0.02, -0.1, -4.49);
-      glTexCoord2f(0.0f, 1.0f);
-      glVertex3d( basex+0.02,  0.1, -4.49);
-      glTexCoord2f(1.0f, 1.0f);
-      glVertex3d( basex+0.18,  0.1, -4.49);
-      glTexCoord2f(1.0f, 0.0f);
-      glVertex3d( basex+0.18, -0.1, -4.49);
-      glEnd();
+      glTranslatef(basex+0.02, -0.1, -4.49);
+      glScalef(0.16, 0.2, 1.0);
+      render_digit('0' + (cview.data/base)%10);
+      glLoadIdentity();
 
       base /= 10LL;
       }
-    glBindTexture(GL_TEXTURE_2D, 0);
     }
   else if(cview.data != 0) {
     int ctr; 
@@ -491,20 +455,12 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
     for(ctr = 0; ctr < strlen(mes); ++ctr) {
       double basex = -1.0 + 0.20*(double)ctr;
-      glBindTexture(GL_TEXTURE_2D, tex_digit[mes[ctr]-'A'+10]);
 
-      glBegin(GL_QUADS);
-      glTexCoord2f(0.0f, 0.0f);
-      glVertex3d( basex+0.02, -0.1, -4.49);
-      glTexCoord2f(0.0f, 1.0f);
-      glVertex3d( basex+0.02,  0.1, -4.49);
-      glTexCoord2f(1.0f, 1.0f);
-      glVertex3d( basex+0.18,  0.1, -4.49);
-      glTexCoord2f(1.0f, 0.0f);
-      glVertex3d( basex+0.18, -0.1, -4.49);
-      glEnd();
+      glTranslatef(basex+0.02, -0.1, -4.49);
+      glScalef(0.16, 0.2, 1.0);
+      render_digit(mes[ctr]);
+      glLoadIdentity();
       }
-    glBindTexture(GL_TEXTURE_2D, 0);
     }
 
   if(cview.movet == MOVE_RUN_SCAN) {

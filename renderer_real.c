@@ -30,6 +30,9 @@ int init_renderer_real() {
   return 1;
   }
 
+void render_panel_real(real_scene *cscene, int player) {
+  }
+
 int render_scene_real(real_scene *cscene, int player) {
   return 0;
   }

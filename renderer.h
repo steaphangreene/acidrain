@@ -34,6 +34,8 @@ typedef struct _viewport {
   } viewport;
 
 /* For use internally by renderer only! */
+void load_xpm_texture(unsigned int tex, char *xpm[]);
+
 int init_renderer_matrix();
 int init_renderer_real();
 int init_renderer_astral();
@@ -41,5 +43,9 @@ int init_renderer_astral();
 int render_scene_matrix(matrix_scene *, int);
 int render_scene_real(real_scene *, int);
 int render_scene_astral(astral_scene *, int);
+
+void render_panel_matrix(matrix_scene *, int);
+void render_panel_real(real_scene *, int);
+void render_panel_astral(astral_scene *, int);
 
 #endif /* RENDERER_H */

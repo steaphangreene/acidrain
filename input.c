@@ -26,6 +26,7 @@
 #include "renderer.h"
 #include "scene.h"
 #include "game.h"
+#include "digits.h"
 
 int user_quit = 0;
 
@@ -42,6 +43,9 @@ int input_process(scene *current_scene, int player_number) {
 	  }
 	else if (event.key.keysym.sym == SDLK_SCROLLOCK) {
 	  fucked = !fucked;
+	  }
+	else if (event.key.keysym.sym == SDLK_PRINT) {
+	  toggle_render_fonts();
 	  }
 	else if (event.key.keysym.sym == SDLK_RETURN
 		&& ((event.key.keysym.mod & KMOD_LALT)
