@@ -195,9 +195,18 @@ void update_viewport_matrix(matrix_scene *cscene) {
     if(cview.move %20 == 10) {
       int xp, yp = MATRIX_CONVYD(cview.yoff - 2.5 + 0.025*(double)(cview.move));
       for(xp=0; xp<8; ++xp) {
-	if(cscene->objs[xp][yp] != NULL && cscene->objs[xp][yp]->conceal < 0) {
-	  if(roll(6, -(cscene->objs[xp][yp]->conceal)) > 0) {
-	    cscene->objs[xp][yp]->conceal = 0;
+	if(cscene->objs[xp][yp] != NULL) {
+	  if(cscene->objs[xp][yp]->conceal < 0) {
+	    if(roll(6, -(cscene->objs[xp][yp]->conceal)) > 0) {
+	      cscene->objs[xp][yp]->conceal = 0;
+	      }
+	    }
+	  if(cscene->objs[xp][yp]->conceal == 0
+		&& cscene->objs[xp][yp]->type == MATRIX_FAKE
+		&& cscene->objs[xp][yp]->stat2 < 0) {
+	    if(roll(6, -(cscene->objs[xp][yp]->stat2)) > 0) {
+	      cscene->objs[xp][yp]->stat2 = 0;
+	      }
 	    }
 	  }
 	}

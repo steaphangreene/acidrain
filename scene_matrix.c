@@ -111,7 +111,7 @@ scene *generate_scene_matrix(SceneID id) {
 	  }
 	else if(tmp->type == MATRIX_FAKE) {
 	  tmp->stat = rand()%4+1;
-	  tmp->stat2 = 0;
+	  tmp->stat2 = rand()%5+4;
 	  scene_list[id]->matrix.objs[xp][yp] = tmp;
 	  }
 	}

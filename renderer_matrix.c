@@ -385,20 +385,33 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
   for(xp=0; xp<MATRIX_X; ++xp) {
     for(yp=0; yp<MATRIX_Y; ++yp) {
       if(cscene->objs[xp][yp] != NULL) {
-	int tp = cscene->objs[xp][yp]->type, fac=1, ang;
+	int tp = cscene->objs[xp][yp]->type, ang;
 	double xpos = 0.5*(xp-4)-(cview.xoff);
 	double ypos = 0.5*(yp-4)-(cview.yoff);
+	int fake = 0;
 
-	if(tp == MATRIX_FAKE) {
-	  tp = cscene->objs[xp][yp]->stat; fac=-1;
-	  }
-	else if(cscene->objs[xp][yp]->conceal != 0) {
+	if(cscene->objs[xp][yp]->conceal != 0) {
 	  if(cscene->objs[xp][yp]->conceal < 0) continue;
 	  if(roll(6, cscene->objs[xp][yp]->conceal) < 1) {
 	    cscene->objs[xp][yp]->conceal = -(cscene->objs[xp][yp]->conceal);
 	    continue;
 	    }
 	  cscene->objs[xp][yp]->conceal = 0;
+	  }
+	if(tp == MATRIX_FAKE) {
+	  tp = cscene->objs[xp][yp]->stat;
+	  if(cscene->objs[xp][yp]->stat2 == 0) {
+	    fake = 1;
+	    }
+	  else if(cscene->objs[xp][yp]->stat2 < 0) {
+	    }
+	  else if(roll(6, cscene->objs[xp][yp]->stat2) < 1) {
+	    cscene->objs[xp][yp]->stat2 = -(cscene->objs[xp][yp]->stat2);
+	    }
+	  else {
+	    fake = 1;
+	    cscene->objs[xp][yp]->stat2 = 0;
+	    }
 	  }
 
 	while(xpos < -2.25) xpos += 4.5;
@@ -409,10 +422,14 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 	xpos *= cview.spread;
 	ypos *= cview.spread;
 
-	ang = (phase*5%360)*fac;
+	ang = (phase*5%360);
 	glLoadIdentity();
 	glTranslatef(xpos, ypos, ICON_DEPTH);
 	glRotatef((double)ang, 0.0, 0.0, 1.0);
+	if(fake) {
+	  GLdouble sc = 1.0 - 0.1*((double)(phase%10));
+	  glScaled(sc, sc, sc);
+	  }
 	if(cscene->objs[xp][yp]->type == MATRIX_PORT
 		&& scene_visited(cscene->objs[xp][yp]->stat))
 	  glCallList(ICON_VSPHERE);
