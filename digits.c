@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
 #include <SDL/SDL_opengl.h>
@@ -5,7 +7,8 @@
 #include "settings.h"
 #include "renderer.h"
 #include "digits.h"
-#include "digits_xpm.h"
+//#include "digits_xpm.h"
+#include "font_fancy.h"
 #include "digits_seg.h"
 
 #define LED_SIZE 0.1
@@ -13,20 +16,51 @@
 
 #define LED_VSIZE (LED_SIZE*sqrt(5.0))
 
-static unsigned int tex_digit[128];
+static unsigned int tex_digit[128]; // FIXME!
 
 static int rendered_initialized = 0;
 static int nonrendered_initialized = 0;
 
 static GLuint base_digit = 0;
 
+/* Old Way
 void create_digit_tex(unsigned int *tx, char *xpm[]) {
   glGenTextures(1, tx);
   load_xpm_texture(*tx, xpm);
   }
+*/
 
 void init_digits(void) {
   if(!render_fonts) {
+    int ctr;
+    unsigned char *tmp = (unsigned char *)malloc(256*256*4);
+
+    for(ctr=0; ctr<256*256; ++ctr) {
+      tmp[(ctr<<2)+0] = 255;
+      tmp[(ctr<<2)+1] = 255;
+      tmp[(ctr<<2)+2] = 255;
+      tmp[(ctr<<2)+3] = font_fancy[ctr];
+      }
+
+    glGenTextures(1, tex_digit);
+
+    glBindTexture(GL_TEXTURE_2D, tex_digit[0]);
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                 GL_LINEAR_MIPMAP_NEAREST );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA,
+	sqrt(sizeof(font_fancy)), sqrt(sizeof(font_fancy)),
+        GL_RGBA, GL_UNSIGNED_BYTE, tmp);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+    free(tmp);
+
+/* Old Way
     create_digit_tex(tex_digit+'0', digit0_xpm);
     create_digit_tex(tex_digit+'1', digit1_xpm);
     create_digit_tex(tex_digit+'2', digit2_xpm);
@@ -91,8 +125,8 @@ void init_digits(void) {
     create_digit_tex(tex_digit+'x', digitX_xpm);
     create_digit_tex(tex_digit+'y', digitY_xpm);
     create_digit_tex(tex_digit+'z', digitZ_xpm);
-
     glBindTexture(GL_TEXTURE_2D, 0);
+*/
 
     nonrendered_initialized = 1;
     }
@@ -231,23 +265,48 @@ void init_digits(void) {
 
 void render_digit(int chr) {
   if(!render_fonts) {
+    double xs, ys;
     if(!nonrendered_initialized) init_digits();
 
-    if(tex_digit[chr] == 0) return;
-    glBindTexture(GL_TEXTURE_2D, tex_digit[chr]);
+    xs = (1.0/(double)16)*(double)((chr-32)%16);
+    ys = (1.0/(double)16)*(double)((chr-32)/16);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+    glEnable(GL_BLEND);
+    glBindTexture(GL_TEXTURE_2D, tex_digit[0]);
 
     glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f);
+    glTexCoord2f(xs,        ys);
     glVertex3d(-0.5,-0.5, 0.0);
-    glTexCoord2f(0.0f, 1.0f);
+    glTexCoord2f(xs,        ys+0.0625);
     glVertex3d(-0.5, 0.5, 0.0);
-    glTexCoord2f(1.0f, 1.0f);
+    glTexCoord2f(xs+0.0625, ys+0.0625);
     glVertex3d( 0.5, 0.5, 0.0);
-    glTexCoord2f(1.0f, 0.0f);
+    glTexCoord2f(xs+0.0625, ys);
     glVertex3d( 0.5,-0.5, 0.0);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_BLEND);
+
+/* Old Way
+    if(tex_digit[chr] == 0) return;
+    glBindTexture(GL_TEXTURE_2D, tex_digit[chr]);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0);
+    glVertex3d(-0.5,-0.5, 0.0);
+    glTexCoord2f(0.0, 1.0);
+    glVertex3d(-0.5, 0.5, 0.0);
+    glTexCoord2f(1.0, 1.0);
+    glVertex3d( 0.5, 0.5, 0.0);
+    glTexCoord2f(1.0, 0.0);
+    glVertex3d( 0.5,-0.5, 0.0);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+*/
     }
   else {
     if(!rendered_initialized) init_digits();

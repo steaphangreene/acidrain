@@ -50,16 +50,7 @@ acidrain.exe:	$(WOBJS)
 	$(WCC) -c $< -o $@
 
 #AUTO-GENERATED DEPS BELOW (gcc -MM *.c to regen)
-digits.o: digits.c settings.h renderer.h scene.h digits.h digits_xpm.h \
- xpms/digit0.xpm xpms/digit1.xpm xpms/digit2.xpm xpms/digit3.xpm \
- xpms/digit4.xpm xpms/digit5.xpm xpms/digit6.xpm xpms/digit7.xpm \
- xpms/digit8.xpm xpms/digit9.xpm xpms/digitA.xpm xpms/digitB.xpm \
- xpms/digitC.xpm xpms/digitD.xpm xpms/digitE.xpm xpms/digitF.xpm \
- xpms/digitG.xpm xpms/digitH.xpm xpms/digitI.xpm xpms/digitJ.xpm \
- xpms/digitK.xpm xpms/digitL.xpm xpms/digitM.xpm xpms/digitN.xpm \
- xpms/digitO.xpm xpms/digitP.xpm xpms/digitQ.xpm xpms/digitR.xpm \
- xpms/digitS.xpm xpms/digitT.xpm xpms/digitU.xpm xpms/digitV.xpm \
- xpms/digitW.xpm xpms/digitX.xpm xpms/digitY.xpm xpms/digitZ.xpm \
+digits.o: digits.c settings.h renderer.h scene.h digits.h font_fancy.h \
  digits_seg.h
 game.o: game.c scene.h game.h
 game_astral.o: game_astral.c game.h scene.h

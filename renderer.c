@@ -101,6 +101,9 @@ int init_renderer(int xs, int ys) {
   // Set the polygon mode to fill
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+  // Fuck with Alpha shit
+  glDepthFunc(GL_LEQUAL);
+
   // Enable depth testing for hidden line removal
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
