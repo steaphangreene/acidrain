@@ -120,7 +120,7 @@ int init_renderer(int xs, int ys) {
   // Enable depth testing for hidden line removal
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
-//  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_TEXTURE_2D);
 
 //  glCullFace (GL_BACK);
 //  glEnable (GL_CULL_FACE);

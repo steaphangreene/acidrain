@@ -57,9 +57,13 @@ input.o: input.c input.h scene.h renderer.h game.h
 main.o: main.c renderer.h scene.h input.h
 renderer.o: renderer.c renderer.h scene.h game.h
 renderer_astral.o: renderer_astral.c renderer.h scene.h
-renderer_matrix.o: renderer_matrix.c renderer.h scene.h game.h scene_matrix.h
+renderer_matrix.o: renderer_matrix.c xpms/digit0.xpm xpms/digit1.xpm \
+ xpms/digit2.xpm xpms/digit3.xpm xpms/digit4.xpm xpms/digit5.xpm \
+ xpms/digit6.xpm xpms/digit7.xpm xpms/digit8.xpm xpms/digit9.xpm \
+ renderer.h scene.h game.h scene_matrix.h
 renderer_real.o: renderer_real.c renderer.h scene.h
 scene.o: scene.c scene.h
 scene_astral.o: scene_astral.c scene.h
 scene_matrix.o: scene_matrix.c scene.h scene_matrix.h
 scene_real.o: scene_real.c scene.h
+

@@ -22,6 +22,21 @@
 #include <string.h>
 #include <math.h>
 
+#include "xpms/digit0.xpm"
+#include "xpms/digit1.xpm"
+#include "xpms/digit2.xpm"
+#include "xpms/digit3.xpm"
+#include "xpms/digit4.xpm"
+#include "xpms/digit5.xpm"
+#include "xpms/digit6.xpm"
+#include "xpms/digit7.xpm"
+#include "xpms/digit8.xpm"
+#include "xpms/digit9.xpm"
+static char **digits[] = {
+	digit0_xpm, digit1_xpm, digit2_xpm, digit3_xpm, digit4_xpm,
+	digit5_xpm, digit6_xpm, digit7_xpm, digit8_xpm, digit9_xpm
+	};
+
 #include "renderer.h"
 #include "game.h"
 #include "scene.h"
@@ -50,6 +65,68 @@ static const int icon[] = {
 	ICON_BURST,
 	ICON_PYRAMID
 	};
+
+static unsigned int tex_digit[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+void load_xpm_texture(unsigned int tex, char *xpm[]) {
+  int width, height, ncol, x, y;
+  unsigned char *tmp;
+
+  sscanf(xpm[0], "%d %d %d", &width, &height, &ncol);
+  tmp = (unsigned char *)malloc(width*height*4);
+//  memset(tmp, 0, width*height*4);
+  for(y=0; y<height; ++y) {
+    for(x=0; x<width; ++x) {
+      if(xpm[1+ncol+y][x] == xpm[1][0]) {
+	tmp[(y*width+x)*4+0] = 0;
+	tmp[(y*width+x)*4+1] = 0;
+	tmp[(y*width+x)*4+2] = 0;
+	tmp[(y*width+x)*4+3] = 0;
+	}
+      else {
+	tmp[(y*width+x)*4+0] = 255;
+	tmp[(y*width+x)*4+1] = 255;
+	tmp[(y*width+x)*4+2] = 255;
+	tmp[(y*width+x)*4+3] = 0;
+	}
+      }
+    }
+
+  glBindTexture(GL_TEXTURE_2D, tex);
+
+/////////
+  glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+
+  // when texture area is small, bilinear filter the closest mipmap
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                 GL_LINEAR_MIPMAP_NEAREST );
+  // when texture area is large, bilinear filter the original
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+  // the texture wraps over at the edges (repeat)
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+/////////
+
+  gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height,
+	GL_RGBA, GL_UNSIGNED_BYTE, tmp);
+//  gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height,
+//	GL_COLOR_INDEX, GL_BITMAP, tmp);
+//  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+  free(tmp);
+  }
+
+void load_textures_matrix(void) {
+  int ctr;
+
+  glGenTextures(10, tex_digit);
+
+  for(ctr=0; ctr<10; ++ctr) {
+    load_xpm_texture(tex_digit[ctr], digits[ctr]);
+    }
+  glBindTexture(GL_TEXTURE_2D, 0);
+  }
 
 void renderer_make_tile(void) {
   glNewList(IMAGE_TILE, GL_COMPILE);
@@ -260,6 +337,8 @@ int init_renderer_matrix() {
   renderer_make_burst();
   renderer_make_pyramid();
 
+  load_textures_matrix();
+
   return 1;
   }
 
@@ -344,37 +423,53 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     }
 
   if(cview.movet >= MOVE_RUN_DIAL00 && cview.movet <= MOVE_RUN_DIAL10) {
-    int ctr;
+    int ctr; 
+    long long base = 1000000000;
+
+    for(ctr=MOVE_RUN_DIAL10; ctr>cview.movet; --ctr) base /= 10LL;
 
     glLoadIdentity();
     glNormal3d( 0.0,  0.0,  1.0);
+
     glBegin(GL_QUADS);
-
     glColor3f(0.0, 0.0, 0.0);
-    glVertex3d( 1.01, -0.16, -4.51);
-    glVertex3d( 1.01,  0.16, -4.51);
-    glVertex3d(-1.01,  0.16, -4.51);
-    glVertex3d(-1.01, -0.16, -4.51);
-
-    glColor3f(1.0, 1.0, 1.0);
     glVertex3d( 1.00, -0.15, -4.50);
     glVertex3d( 1.00,  0.15, -4.50);
     glVertex3d(-1.00,  0.15, -4.50);
     glVertex3d(-1.00, -0.15, -4.50);
+    glEnd();
 
     if(cview.movet != MOVE_RUN_DIAL10)
       glColor3f(1.0, 0.0, 0.0);
     else
       glColor3f(0.0, 1.0, 0.0);
+
+//    glColor3f(1.0, 1.0, 1.0);
+    glBegin(GL_QUADS);
+    glVertex3d( 1.01, -0.16, -4.51);
+    glVertex3d( 1.01,  0.16, -4.51);
+    glVertex3d(-1.01,  0.16, -4.51);
+    glVertex3d(-1.01, -0.16, -4.51);
+    glEnd();
+
     for(ctr = 0; ctr < cview.movet-MOVE_RUN_DIAL00; ++ctr) {
       double basex = -1.0 + 0.20*(double)ctr;
-      glVertex3d( basex+0.02, -0.1, -4.49);
-      glVertex3d( basex+0.02,  0.1, -4.49);
-      glVertex3d( basex+0.18,  0.1, -4.49);
-      glVertex3d( basex+0.18, -0.1, -4.49);
-      }
+      glBindTexture(GL_TEXTURE_2D, tex_digit[(cview.move/base)%10]);
 
-    glEnd();
+      glBegin(GL_QUADS);
+      glTexCoord2f(0.0f, 0.0f);
+      glVertex3d( basex+0.02, -0.1, -4.49);
+      glTexCoord2f(0.0f, 1.0f);
+      glVertex3d( basex+0.02,  0.1, -4.49);
+      glTexCoord2f(1.0f, 1.0f);
+      glVertex3d( basex+0.18,  0.1, -4.49);
+      glTexCoord2f(1.0f, 0.0f);
+      glVertex3d( basex+0.18, -0.1, -4.49);
+      glEnd();
+
+      base /= 10LL;
+      }
+    glBindTexture(GL_TEXTURE_2D, 0);
     }
 
   if(cview.movet == MOVE_RUN_SCAN) {

@@ -28,7 +28,8 @@ void pixels_to_location(double *, double *);
 typedef struct _viewport {
   double xoff, yoff;
   double xtarg, ytarg;
-  int move, movet;
+  long long move;
+  int movet;
   double spread;
   } viewport;
 

@@ -57,6 +57,7 @@ void link_nodes(SceneID id1, int x1, int y1, int c1,
 scene *generate_scene_matrix(SceneID id) {
   int xp, yp;
   matrix_obj *tmp;
+  static char name_buf[64];
 
   if(scene_list[id] == NULL) {
     scene_list[id] = (scene*)malloc(sizeof(scene));
@@ -68,6 +69,10 @@ scene *generate_scene_matrix(SceneID id) {
   if(scene_list[id]->matrix.node == NODE_UNKNOWN) {
     if(scene_list[id]->matrix.zone == ZONE_UNKNOWN) {
       scene_list[id]->matrix.zone = ZONE_PRIVATE;
+      scene_list[id]->matrix.name = "Private Node";
+      }
+    else {
+      scene_list[id]->matrix.name = "Welcome Node";
       }
     for(xp=0; xp<MATRIX_X; ++xp) {
       for(yp=0; yp<MATRIX_Y; ++yp) {
@@ -127,6 +132,9 @@ scene *generate_scene_matrix(SceneID id) {
 	  }
 	}
       }
+    sprintf(name_buf, "LTG: %9d-", 607729016);
+    scene_list[id]->matrix.name = (char *)malloc(strlen(name_buf)+1);
+    strcpy(scene_list[id]->matrix.name, name_buf);
     }
   else if(scene_list[id]->matrix.node > NODE_LTG0
   		&& scene_list[id]->matrix.node < NODE_LTG9) {
