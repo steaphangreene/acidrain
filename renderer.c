@@ -21,6 +21,7 @@
 #include <string.h>
 #include <math.h>
 
+#include "settings.h"
 #include "renderer.h"
 #include "game.h"
 
@@ -36,15 +37,7 @@ viewport cview = {0.0, 0.0, 0.0, 0.0, 0, 0, 0, 1.0};
 
 int phase = 0;
 
-//static unsigned int tex_panel = 0;
-
 void load_textures(void) {
-//  glGenTextures(1, &tex_panel);
-//  glBindTexture(GL_TEXTURE_2D, tex_panel);
-//  gluBuild2DMipmaps(GL_TEXTURE_2D, 3,
-//	panel_matrix_grap.width, panel_matrix_grap.height,
-//	GL_RGB, GL_UNSIGNED_BYTE, panel_matrix_grap.pixel_data);
-//  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
   }
 
 void render_panel(scene *cscene, int player) {
@@ -88,7 +81,7 @@ int init_renderer(int xs, int ys) {
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-  surface = SDL_SetVideoMode(xsize, ysize, 16, videoFlags);
+  surface = SDL_SetVideoMode(xsize, ysize, 0, videoFlags);
 
   if(surface == NULL) {
     fprintf(stderr, "Error: %s\n", SDL_GetError());
@@ -115,9 +108,16 @@ int init_renderer(int xs, int ys) {
 
   glCullFace (GL_BACK);
   glEnable (GL_CULL_FACE);
-//  glEnable (GL_POLYGON_SMOOTH);
 
+//  glEnable (GL_POLYGON_SMOOTH);
+//  if(glError());
+//  glHint(GL_POLYGON_SMOOTH,GL_FASTEST);
+
+//  glEnable(GL_POINT_SMOOTH);
 //  glEnable(GL_LINE_SMOOTH);
+
+
+
 //  glEnable(GL_BLEND);
 //  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //  glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
@@ -142,19 +142,6 @@ int init_renderer(int xs, int ys) {
 
   // Set the new viewport size
   glViewport(0, 0, (GLint)xsize, (GLint)ysize);
-
-  // Choose the projection matrix to be the matrix 
-  // manipulated by the following calls
-  glMatrixMode(GL_PROJECTION);
-
-  // Set the projection matrix to be the identity matrix
-  glLoadIdentity();
-
-  glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), 0.5, -0.5, 1.5, 20.0);
-
-  // Choose the modelview matrix to be the matrix
-  // manipulated by further calls
-  glMatrixMode(GL_MODELVIEW);
 
   if(!init_renderer_matrix()) {
     fprintf(stderr, "Matrix Renderer Init Failed!\n");
@@ -206,15 +193,60 @@ int render_scene(scene *cscene, int player) {
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  render_panel(current_scene, player);
-
   if(current_scene == NULL) return 1;
-  else if(current_scene->type == SCENE_TYPE_MATRIX)
-    return render_scene_matrix(&(current_scene->matrix), player);
-  else if(current_scene->type == SCENE_TYPE_REAL)
-    return render_scene_real(&(current_scene->real), player);
-  else if(current_scene->type == SCENE_TYPE_ASTRAL)
-    return render_scene_astral(&(current_scene->astral), player);
+
+  if(antialias_level <= 1) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), 0.5, -0.5, 1.5, 20.0);
+    glMatrixMode(GL_MODELVIEW);
+
+    render_panel(current_scene, player);
+
+    if(current_scene->type == SCENE_TYPE_MATRIX) {
+      if(!render_scene_matrix(&(current_scene->matrix), player)) return 0;
+      }
+    else if(current_scene->type == SCENE_TYPE_REAL) {
+      if(!render_scene_real(&(current_scene->real), player)) return 0;
+      }
+    else if(current_scene->type == SCENE_TYPE_ASTRAL) {
+      if(!render_scene_astral(&(current_scene->astral), player)) return 0;
+      }
+    }
+  else {
+    int ctr;
+    double xo, yo;
+    glClear(GL_ACCUM_BUFFER_BIT);
+    for(ctr = 0; ctr < (antialias_level*antialias_level); ++ctr) {
+      xo = (-0.5+(double)(ctr%antialias_level))/(double)(ysize*antialias_level);
+      yo = (-0.5+(double)(ctr/antialias_level))/(double)(ysize*antialias_level);
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      glFrustum(-0.5+xo, -0.5+((GLdouble)xsize)/((GLdouble)ysize)+xo,
+		0.5+yo, -0.5+yo, 1.5, 20.0);
+      glMatrixMode(GL_MODELVIEW);
+      glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+
+      render_panel(current_scene, player);
+
+      if(current_scene->type == SCENE_TYPE_MATRIX) {
+	if(!render_scene_matrix(&(current_scene->matrix), player)) return 0;
+	}
+      else if(current_scene->type == SCENE_TYPE_REAL) {
+	if(!render_scene_real(&(current_scene->real), player)) return 0;
+	}
+      else if(current_scene->type == SCENE_TYPE_ASTRAL) {
+	if(!render_scene_astral(&(current_scene->astral), player)) return 0;
+	}
+      glAccum(GL_ACCUM, 1.0/(double)(antialias_level*antialias_level));
+      glFlush();
+      }
+    glAccum(GL_RETURN, 1.0);
+    }
+
+  glFlush();
+  SDL_GL_SwapBuffers();
+
   return 1;
   }
 
@@ -226,11 +258,6 @@ void resize_display(int xs, int ys) {
 
   if(xsize > (ysize*4)/3) xsize = (ysize*4)/3;
   if(ysize > (xsize*3)/4) ysize = (xsize*3)/4;
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), 0.5, -0.5, 1.5, 20.0);
-  glMatrixMode(GL_MODELVIEW);
 
   hgap = (rx-xsize)/2;  vgap = (ry-ysize)/2;
   glViewport(hgap, vgap, (GLint)xsize, (GLint)ysize);

@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <SDL/SDL_opengl.h>
 
+#include "settings.h"
 #include "renderer.h"
 #include "digits.h"
 #include "digits_xpm.h"
@@ -12,18 +13,12 @@
 
 #define LED_VSIZE (LED_SIZE*sqrt(5.0))
 
-static int render_fonts = 1;
-
 static unsigned int tex_digit[128];
 
 static int rendered_initialized = 0;
 static int nonrendered_initialized = 0;
 
 static GLuint base_digit = 0;
-
-void toggle_render_fonts(void) {
-  render_fonts = !render_fonts;
-  }
 
 void create_digit_tex(unsigned int *tx, char *xpm[]) {
   glGenTextures(1, tx);

@@ -294,13 +294,13 @@ void render_panel_matrix(matrix_scene *cscene, int player) {
   glNormal3d(0.0, 0.0, -1.0);
   glBegin(GL_QUADS);
 //  glTexCoord2f(0.0f, 0.0f);
-  glVertex3d(1.5, -1.5, -4.5);
+  glVertex3d(1.5, -2.0, -4.5);
 //  glTexCoord2f(0.0f, 1.0f);
-  glVertex3d(1.5, 1.5, -4.5);
+  glVertex3d(1.5, 2.0, -4.5);
 //  glTexCoord2f(1.0f, 1.0f);
-  glVertex3d(2.5, 1.5, -4.5);
+  glVertex3d(3.0, 2.0, -4.5);
 //  glTexCoord2f(1.0f, 0.0f);
-  glVertex3d(2.5, -1.5, -4.5);
+  glVertex3d(3.0, -2.0, -4.5);
   glEnd();
 
   { int ctr;
@@ -514,9 +514,6 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
       }
     glEnd();
     }
-
-  glFlush();
-  SDL_GL_SwapBuffers();
 
   return 1;
   }

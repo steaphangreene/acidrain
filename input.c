@@ -22,6 +22,7 @@
 #include <math.h>
 
 #include "input.h"
+#include "settings.h"
 #include "renderer.h"
 #include "scene.h"
 #include "game.h"
@@ -45,6 +46,9 @@ int input_process(scene *current_scene, int player_number) {
 	  }
 	else if (event.key.keysym.sym == SDLK_PRINT) {
 	  toggle_render_fonts();
+	  }
+	else if (event.key.keysym.sym == SDLK_PAUSE) {
+	  toggle_antialiasing();
 	  }
 	else if (event.key.keysym.sym == SDLK_RETURN
 		&& ((event.key.keysym.mod & KMOD_LALT)
