@@ -57,6 +57,7 @@ typedef struct _matrix_scene {
   int node;
   int zone;
   char *name;
+  unsigned long funcs;
   matrix_obj *objs[MATRIX_X][MATRIX_Y];
   } matrix_scene;
 
@@ -84,7 +85,7 @@ typedef union _scene {
   } scene;
 
 const static scene new_matrix_scene = { matrix: {
-	SCENE_TYPE_MATRIX, INIT_UNKNOWN, 0, 0, "Matrix Node",
+	SCENE_TYPE_MATRIX, INIT_UNKNOWN, 0, 0, "Matrix Node", 0,
 	{{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },

@@ -93,6 +93,38 @@ void panel_clicked_matrix(matrix_scene *cscene, double x, double y, int b) {
   }
 
 void update_viewport_matrix(matrix_scene *cscene) {
+  if(cview.movet == MOVE_TRAVEL) {
+    if(cscene->node == NODE_LTG0) {
+      cview.movet = MOVE_TRAVEL2;
+      cview.move = 0;
+      cview.data = -cview.data;
+      }
+    else {
+      cview.movet = MOVE_TARGET;
+      cview.move = 0;
+      cview.xtarg = 0.0;
+      cview.ytarg = 0.0;
+      }
+    }
+
+  if(cview.movet == MOVE_TRAVEL2) {
+    long long num = -cview.data;
+    int ctr;
+
+    for(ctr = NODE_LTG9; ctr > cscene->node; --ctr) num/=ltg_digits;
+    num %= ltg_digits;
+    
+    cview.movet = MOVE_TARGET;
+    cview.move = 0;
+    cview.xtarg = 0.5*(double)(ltg_xp[num]-4);
+    cview.ytarg = 0.5*(double)(ltg_yp[num]-4);
+
+    if(cscene->node == NODE_LTG9) {
+      cview.data = 0;
+      cview.move = 0;
+      }
+    }
+
   if(cview.movet == MOVE_RECENTER || cview.movet == MOVE_TARGET) {
     cview.xoff += (double)(cview.xtarg-cview.xoff)*moves[cview.move];
     cview.yoff += (double)(cview.ytarg-cview.yoff)*moves[cview.move];
@@ -105,6 +137,8 @@ void update_viewport_matrix(matrix_scene *cscene) {
 	int xp = MATRIX_CONVXD(cview.xoff);
 	int yp = MATRIX_CONVXD(cview.yoff);
 	matrix_obj *tmp = cscene->objs[xp][yp];
+
+	tmp->conceal = 0;  // I obviously found it!
 
 	if(tmp->type == MATRIX_PORT) {
 	  cview.movet = MOVE_PORT1;
@@ -141,8 +175,20 @@ void update_viewport_matrix(matrix_scene *cscene) {
     cview.spread = spreads[cview.move];
     --cview.move; 
     if(cview.move < 0) {
-      cview.spread = 1.0;
-      cview.movet = MOVE_NONE;
+      if(cview.data == 0) {
+	cview.spread = 1.0;
+	cview.movet = MOVE_NONE;
+	}
+      else if(cview.data > 0) {
+	cview.spread = 1.0;
+	cview.movet = MOVE_TRAVEL;
+	cview.move = 0;
+	}
+      else {
+	cview.spread = 1.0;
+	cview.movet = MOVE_TRAVEL2;
+	cview.move = 0;
+	}
       }
     }
 
@@ -164,28 +210,29 @@ void update_viewport_matrix(matrix_scene *cscene) {
   }
 
 void keypressed_matrix(matrix_scene *cscene, int k) {
-  if(cview.movet == MOVE_NONE && k == SDLK_d) {
-    cview.movet = MOVE_RUN_DIAL00;
+  if(cview.movet == MOVE_NONE && k == SDLK_d && cscene->funcs & FUNC_DIAL) {
+    cview.movet = MOVE_RUN_DIAL;
     cview.move = 0;
+    cview.data = 0;
     }
-  else if(cview.movet <= MOVE_RUN_DIAL10 && cview.movet >= MOVE_RUN_DIAL00) {
-    if(k >= SDLK_KP0 && k <= SDLK_KP9 && cview.movet != MOVE_RUN_DIAL10) {
-      cview.move *= 10;
-      cview.move += k-SDLK_KP0;
-      ++cview.movet;
+  else if(cview.movet == MOVE_RUN_DIAL) {
+    if(k >= SDLK_KP0 && k <= SDLK_KP9 && cview.move < 10) {
+      cview.data *= ltg_digits;
+      cview.data += k-SDLK_KP0;
+      ++cview.move;
       }
-    else if(k >= SDLK_0 && k <= SDLK_9 && cview.movet != MOVE_RUN_DIAL10) {
-      cview.move *= 10;
-      cview.move += k-SDLK_0;
-      ++cview.movet;
+    else if(k >= SDLK_0 && k <= SDLK_9 && cview.move < 10) {
+      cview.data *= ltg_digits;
+      cview.data += k-SDLK_0;
+      ++cview.move;
       }
     else if(k == SDLK_BACKSPACE || k == SDLK_DELETE) {
-      cview.move /= 10;
-      --cview.movet;
-      if(cview.movet < MOVE_RUN_DIAL00) cview.movet = MOVE_NONE;
+      cview.data /= ltg_digits;
+      --cview.move;
+      if(cview.move < 0) cview.movet = MOVE_NONE;
       }
-    else if((k == SDLK_RETURN || k == SDLK_KP_ENTER)) {
-      cview.movet = MOVE_NONE;
+    else if(cview.move == 10 && (k == SDLK_RETURN || k == SDLK_KP_ENTER)) {
+      cview.movet = MOVE_TRAVEL;
       cview.move = 0;
       }
     else if(k == SDLK_d) {

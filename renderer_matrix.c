@@ -347,6 +347,24 @@ extern int phase;
 int render_scene_matrix(matrix_scene *cscene, int player) {
   int ctr, xp, yp;
 
+  if(cscene->zone == ZONE_OWNED) {
+    glColor3f(1.0, 1.0, 1.0);
+    }
+  else if(cscene->zone == ZONE_PUBLIC) {
+    glColor3f(0.0, 0.9, 0.0);
+    }
+  else if(cscene->zone == ZONE_WELCOME) {
+    glColor3f(0.0, 0.8, 0.8);
+    }
+  else if(cscene->zone == ZONE_PRIVATE) {
+    glColor3f(0.3, 0.3, 0.3);
+    }
+  else if(cscene->zone == ZONE_PROTECTED) {
+    glColor3f(0.8, 0.4, 0.0);
+    }
+  else if(cscene->zone == ZONE_SECURE) {
+    glColor3f(0.8, 0.0, 0.0);
+    }
   for(ctr=0; ctr<100; ++ctr) {
     double xpos = 0.5*((ctr%10)-4)-(cview.xoff);
     double ypos = 0.5*((ctr/10)-4)-(cview.yoff);
@@ -361,24 +379,6 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
     glLoadIdentity();
     glTranslatef(xpos, ypos, ICON_DEPTH-ICON_HEIGHT);
-    if(cscene->zone == ZONE_OWNED) {
-      glColor3f(1.0, 1.0, 1.0);
-      }
-    else if(cscene->zone == ZONE_PUBLIC) {
-      glColor3f(0.0, 0.9, 0.0);
-      }
-    else if(cscene->zone == ZONE_WELCOME) {
-      glColor3f(0.0, 0.8, 0.8);
-      }
-    else if(cscene->zone == ZONE_PRIVATE) {
-      glColor3f(0.3, 0.3, 0.3);
-      }
-    else if(cscene->zone == ZONE_PROTECTED) {
-      glColor3f(0.8, 0.4, 0.0);
-      }
-    else if(cscene->zone == ZONE_SECURE) {
-      glColor3f(0.8, 0.0, 0.0);
-      }
     glCallList(IMAGE_TILE);
     }
 
@@ -422,11 +422,11 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
       }
     }
 
-  if(cview.movet >= MOVE_RUN_DIAL00 && cview.movet <= MOVE_RUN_DIAL10) {
+  if(cview.movet == MOVE_RUN_DIAL) {
     int ctr; 
     long long base = 1000000000;
 
-    for(ctr=MOVE_RUN_DIAL10; ctr>cview.movet; --ctr) base /= 10LL;
+    for(ctr=10; ctr>cview.move; --ctr) base /= 10;
 
     glLoadIdentity();
     glNormal3d( 0.0,  0.0,  1.0);
@@ -439,7 +439,7 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     glVertex3d(-1.00, -0.15, -4.50);
     glEnd();
 
-    if(cview.movet != MOVE_RUN_DIAL10)
+    if(cview.move != 10)
       glColor3f(1.0, 0.0, 0.0);
     else
       glColor3f(0.0, 1.0, 0.0);
@@ -452,9 +452,9 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     glVertex3d(-1.01, -0.16, -4.51);
     glEnd();
 
-    for(ctr = 0; ctr < cview.movet-MOVE_RUN_DIAL00; ++ctr) {
+    for(ctr = 0; ctr < cview.move; ++ctr) {
       double basex = -1.0 + 0.20*(double)ctr;
-      glBindTexture(GL_TEXTURE_2D, tex_digit[(cview.move/base)%10]);
+      glBindTexture(GL_TEXTURE_2D, tex_digit[(cview.data/base)%10LL]);
 
       glBegin(GL_QUADS);
       glTexCoord2f(0.0f, 0.0f);

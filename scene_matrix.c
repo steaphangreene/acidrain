@@ -115,6 +115,7 @@ scene *generate_scene_matrix(SceneID id) {
     int ctr, next;
 
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
+    scene_list[id]->matrix.funcs |= FUNC_DIAL;
 
     for(ctr=0; ctr<(ltg_digits+1); ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
@@ -141,6 +142,7 @@ scene *generate_scene_matrix(SceneID id) {
     int ctr, next;
 
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
+    scene_list[id]->matrix.funcs |= FUNC_DIAL;
 
     for(ctr=0; ctr<(ltg_digits+1); ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
@@ -162,6 +164,7 @@ scene *generate_scene_matrix(SceneID id) {
     int ctr, next;
 
     scene_list[id]->matrix.zone = ZONE_PUBLIC;
+    scene_list[id]->matrix.funcs |= FUNC_DIAL;
 
     for(ctr=0; ctr<ltg_digits; ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {

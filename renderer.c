@@ -33,7 +33,7 @@ static int hgap=0, vgap=0;
 
 static scene *current_scene;
 
-viewport cview = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0};
+viewport cview = {0.0, 0.0, 0.0, 0.0, 0, 0, 0, 1.0};
 
 int phase = 0;
 

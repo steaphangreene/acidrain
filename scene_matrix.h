@@ -45,20 +45,13 @@
 #define MOVE_PORT2	104
 #define MOVE_DATA1	103
 #define MOVE_DATA2	104
+#define MOVE_TRAVEL	105
+#define MOVE_TRAVEL2	106
 
-#define MOVE_RUN_DIAL00	200
-#define MOVE_RUN_DIAL01	201
-#define MOVE_RUN_DIAL02	202
-#define MOVE_RUN_DIAL03	203
-#define MOVE_RUN_DIAL04	204
-#define MOVE_RUN_DIAL05	205
-#define MOVE_RUN_DIAL06	206
-#define MOVE_RUN_DIAL07	207
-#define MOVE_RUN_DIAL08	208
-#define MOVE_RUN_DIAL09	209
-#define MOVE_RUN_DIAL10	210
+#define MOVE_RUN_DIAL	200
+#define MOVE_RUN_SCAN	201
 
-#define MOVE_RUN_SCAN	220
+#define FUNC_DIAL	0x00000001
 
 const static int ltg_digits = 10;
 const static int ltg_xp[] = {2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 4};
