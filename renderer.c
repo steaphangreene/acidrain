@@ -209,7 +209,7 @@ int init_renderer(int xsize, int ysize) {
   // Set the projection matrix to be the identity matrix
   glLoadIdentity();
 
-  glFrustum(-0.5, 0.5, -0.5*ysize/xsize, 0.5*ysize/xsize, 1.5, 20.0);
+  glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), -0.5, 0.5, 1.5, 20.0);
 
   // Choose the modelview matrix to be the matrix
   // manipulated by further calls
@@ -233,7 +233,7 @@ int __matrix_render_scene(matrix_scene *current_scene, int player) {
 
   while(tmp != NULL) {
     glLoadIdentity();
-    glTranslatef(-0.25+0.5*(tmp->xp-4), 0.25+0.5*(tmp->yp-4), -8.0);
+    glTranslatef(0.25+0.5*(tmp->xp-4), 0.25+0.5*(tmp->yp-4), -6.0);
     glRotatef((45+phase*1)%360, 0.0, 0.0, 1.0);
     glCallList(icon[tmp->type]);
     tmp = tmp->next;
@@ -250,10 +250,10 @@ void __render_panel(scene *current_scene, int player) {
   glColor3f(6.0, 6.0, 6.0);
   glNormal3d(0.0, 0.0, 1.0);
   glBegin(GL_QUADS);
-  glVertex3d(0.6, -0.75, -3.0);
-  glVertex3d(1.0, -0.75, -3.0);
-  glVertex3d(1.0, 0.75, -3.0);
-  glVertex3d(0.6, 0.75, -3.0);
+  glVertex3d(1.0, -1.0, -3.0);
+  glVertex3d(2.0, -1.0, -3.0);
+  glVertex3d(2.0, 1.0, -3.0);
+  glVertex3d(1.0, 1.0, -3.0);
   glEnd();
   }
 
@@ -275,8 +275,18 @@ int render_scene(scene *current_scene, int player) {
   }
 
 void resize_display(int xsize, int ysize) {
+  int rx = xsize, ry = ysize;
   surface = SDL_SetVideoMode(xsize, ysize, 16, videoFlags);
-  glViewport(0, 0, (GLint)xsize, (GLint)ysize);
+
+  if(xsize > (ysize*4)/3) xsize = (ysize*4)/3;
+  if(ysize > (xsize*3)/4) ysize = (xsize*3)/4;
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), -0.5, 0.5, 1.5, 20.0);
+  glMatrixMode(GL_MODELVIEW);
+
+  glViewport((rx-xsize)/2, (ry-ysize)/2, (GLint)xsize, (GLint)ysize);
   }
 
 static int oldmodex = 0, oldmodey = 0;
@@ -297,5 +307,4 @@ void toggle_fullscreen(void) {
     }
   SDL_WM_ToggleFullScreen(surface);
   videoFlags ^= SDL_FULLSCREEN;
-  printf("Size is now %dx%d\n", surface->w, surface->h);
   }
