@@ -33,7 +33,7 @@ backup:	tar
 tar:	archive
 archive:	.
 	cd .. ; tar czhvf ~/c/archive/acidrain.$(TSTR).tar.gz \
-		acidrain/*.[hc] acidrain/Makefile
+		acidrain/*.[hc] acidrain/Makefile acidrain/xpms
 
 acidrain:	$(OBJS)
 	$(CC) -s -o acidrain $(OBJS) $(LIBS)
