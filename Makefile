@@ -1,13 +1,13 @@
 TSTR:=	$(shell date +"%Y%m%d%H%M")
 
-CC:=	gcc -O2 -Wall
+CC:=	gcc `sdl-config --cflags` -O2 -Wall
 LIBS:=	`sdl-config --libs` -L/usr/X11R6/lib -lGL -lGLU
 OBJS:=	main.o input.o digits.o settings.o \
 	game.o game_matrix.o game_real.o game_astral.o \
 	scene.o scene_matrix.o scene_real.o scene_astral.o \
 	renderer.o renderer_matrix.o renderer_real.o renderer_astral.o
 
-WCC:=	win32-gcc -O2 -Wall
+WCC:=	win32-gcc `win32-exec sdl-config --cflags` -O2 -Wall
 WLIBS:=	`win32-exec sdl-config --libs` -lopengl32 -lglu32
 WOBJS:=	$(shell echo $(OBJS) | sed 's-\.o-.win32_o-g')
 
@@ -34,7 +34,8 @@ backup:	tar
 tar:	archive
 archive:	.
 	cd .. ; tar czhvf ~/c/archive/acidrain.$(TSTR).tar.gz \
-		acidrain/*.[hc] acidrain/Makefile acidrain/xpms
+		acidrain/*.[hc] acidrain/Makefile \
+		acidrain/xpms acidrain/*.raw
 
 acidrain:	$(OBJS)
 	$(CC) -s -o acidrain $(OBJS) $(LIBS)
