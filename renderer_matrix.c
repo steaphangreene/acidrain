@@ -26,8 +26,8 @@
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
 
-#define XZAPPY 1024
-#define YZAPPY 256
+#define XZAPPY 256
+#define YZAPPY 128
 #define ZAPPY_FRAMES 13
 
 static unsigned int tex_zappy[ZAPPY_FRAMES];
