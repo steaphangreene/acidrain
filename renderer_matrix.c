@@ -68,6 +68,8 @@ static const int shad[] = {
 	SHAD_SQUARE
 	};
 
+extern matrix_path *path;
+
 void load_textures_matrix(void) {
   }
 

@@ -14,6 +14,9 @@
 // must have the author's permission, and may be subject to a royaltee fee.
 // *************************************************************************
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <SDL/SDL.h>
 
 #include "scene.h"
@@ -21,7 +24,9 @@
 #include "game.h"
 #include "renderer.h"
 
+extern int user_quit;
 extern viewport cview;
+matrix_path *path = NULL;
 
 void clicked_matrix(matrix_scene *cscene, double x, double y, int b) {
   if(cview.movet == MOVE_NONE && b == 1) {
@@ -160,6 +165,19 @@ void update_viewport_matrix(matrix_scene *cscene) {
       int yp = MATRIX_CONVXD(cview.yoff);
       matrix_obj *tmp = cscene->objs[xp][yp];
 
+      if(path != NULL && path->xp == xp && path->yp == yp) {
+	matrix_path *tmpn = path;
+	path = path->prev;
+	free(tmpn);
+	}
+      else {
+	matrix_path *tmpn = (matrix_path*)malloc(sizeof(matrix_path));
+	tmpn->xp = COORD_DECODEX(tmp->stat2);
+	tmpn->yp = COORD_DECODEY(tmp->stat2);
+	tmpn->prev = path;
+	path = tmpn;
+	}
+
       cview.movet = MOVE_PORT2;
       cview.move = 9;
 
@@ -269,5 +287,8 @@ void keypressed_matrix(matrix_scene *cscene, int k) {
   else if(cview.movet == MOVE_NONE && k == SDLK_s) {
     cview.movet = MOVE_RUN_SCAN;
     cview.move = 0;
+    }
+  else if(cview.movet == MOVE_NONE && k == SDLK_BACKSPACE) {
+    if(path == NULL) user_quit = 1;
     }
   }

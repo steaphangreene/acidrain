@@ -111,4 +111,9 @@ const static double spreads[] = {
         6.5
         };
 
+typedef struct _matrix_path {  
+  int xp, yp;
+  struct _matrix_path *prev;
+  } matrix_path;
+
 #endif /* SCENE_MATRIX_H */
