@@ -288,18 +288,22 @@ int __matrix_render_scene(matrix_scene *current_scene, int player) {
     }
 
   while(tmp != NULL) {
+    int tp = tmp->type, fac=1, ang;
     double xpos = 0.5*(tmp->xp-4)-xoff;
     double ypos = 0.5*(tmp->yp-4)-yoff;
+
+    if(tp == MATRIX_FAKE) { tp = tmp->stat; fac=-1; }
 
     while(xpos < -2.25) xpos += 4.5;
     while(ypos < -2.25) ypos += 4.5;
     while(xpos > 2.25) xpos -= 4.5;
     while(ypos > 2.25) ypos -= 4.5;
 
+    ang = (phase*5%360)*fac;
     glLoadIdentity();
     glTranslatef(xpos, ypos, -6.0);
-    glRotatef((45+phase*5)%360, 0.0, 0.0, 1.0);
-    glCallList(icon[tmp->type]);
+    glRotatef((double)ang, 0.0, 0.0, 1.0);
+    glCallList(icon[tp]);
     tmp = tmp->next;
     }
 

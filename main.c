@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   srandom(tv.tv_usec);
 
 // if(!init_renderer(1024, 768)) {
-  if(!init_renderer(800, 600)) {
+  if(!init_renderer(832, 624)) {
     fprintf(stderr, "Renderer failed to initialize!\n");
     exit(1);
     }
@@ -43,12 +43,14 @@ int main(int argc, char **argv) {
   for(ctr=0; ctr<81; ++ctr) {
     matrix_obj *tmp;
     int rn = random()%19;
+//    if(rn > 4) continue;
     if(rn > 3) continue;
 
     tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
     tmp->type = rn+1;
     tmp->xp = ctr%9;	tmp->yp = ctr/9;
-    tmp->stat = 0;	tmp->stat2 = 0;
+    tmp->stat = random()%4+1;
+    tmp->stat2 = 0;
     tmp->next = current_scene.matrix.objs;
     current_scene.matrix.objs = tmp;
     }
