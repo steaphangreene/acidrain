@@ -269,6 +269,10 @@ void resize_display(int xs, int ys) {
 static int oldmodex = 0, oldmodey = 0;
 
 void toggle_fullscreen(void) {
+  char drv[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  SDL_VideoDriverName((char *)drv, 15);
+  if(strcmp(drv, "x11")) return;
+
   if(oldmodex != 0) {
     resize_display(oldmodex, oldmodey);
     oldmodex = 0;  oldmodey = 0;
