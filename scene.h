@@ -34,6 +34,23 @@
 #define MATRIX_CONVXD(x)	(( (int)((double)(MATRIX_X)*3.5+((x)*2.0)) )%MATRIX_X)
 #define MATRIX_CONVYD(y)	(( (int)((double)(MATRIX_Y)*3.5+((y)*2.0)) )%MATRIX_Y)
 
+#define COORD_ENCODE(x, y)	(((y&65535)<<16)|(x&65535))
+#define COORD_DECODEX(c)	(c&65535)
+#define COORD_DECODEY(c)	((c>>16)&65535)
+
+#define SCENE_UNKNOWN	0
+#define SCENE_KNOWN	1
+#define NODE_LTG0	100
+#define NODE_LTG1	101
+#define NODE_LTG2	102
+#define NODE_LTG3	103
+#define NODE_LTG4	104
+#define NODE_LTG5	105
+#define NODE_LTG6	106
+#define NODE_LTG7	107
+#define NODE_LTG8	108
+#define NODE_LTG9	109
+
 #define MOVE_NONE	0
 #define MOVE_RECENTER	1
 #define MOVE_TRAVEL1	2
@@ -76,7 +93,7 @@ typedef union _scene {
   } scene;
 
 const static scene new_matrix_scene = { matrix: {
-	SCENE_TYPE_MATRIX, 0,
+	SCENE_TYPE_MATRIX, SCENE_UNKNOWN,
 	{{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
@@ -103,6 +120,8 @@ void init_scenes(void);
 void set_current_scene(SceneID id);
 scene *get_current_scene();
 scene *get_scene(SceneID id);
+int scene_visited(SceneID id);
+SceneID new_scene(void);
 
 // Internal use ONLY!
 scene *generate_scene(SceneID id);

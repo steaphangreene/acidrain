@@ -58,7 +58,7 @@ scene *generate_scene(SceneID id) {
   }
 
 scene *get_scene(SceneID id) {
-  if(scene_list[id] == NULL || (!scene_list[id]->any.init))
+  if(scene_list[id] == NULL || scene_list[id]->any.init != SCENE_KNOWN)
     return generate_scene(id);
 
   return scene_list[id];
@@ -72,4 +72,21 @@ void init_scenes(void) {
   init_scenes_matrix();
   init_scenes_real();
   init_scenes_astral();
+  }
+
+int scene_visited(SceneID id) {
+  if(scene_list[id] != NULL && scene_list[id]->any.init == 1) return 1;
+  return 0;
+  }
+
+SceneID new_scene(void) {
+  SceneID ret = 0;
+  while(scene_list[ret] != NULL) {
+    ++ret;
+    if(ret == MAX_SCENES) {
+      fprintf(stderr, "Out of scene IDs, AARRGGHH!!\n");
+      exit(1);
+      }
+    }
+  return ret;
   }

@@ -32,14 +32,21 @@
 #define ICON_HEIGHT	((GLdouble)0.3)
 #define ICON_DEPTH	((GLdouble)-6.0)
 
-#define ICON_SPHERE	10
-#define ICON_CUBE	11
-#define ICON_BURST	12
-#define ICON_PYRAMID	13
+#define ICON_VSPHERE	10
+#define ICON_SPHERE	11
+#define ICON_CUBE	12
+#define ICON_BURST	13
+#define ICON_PYRAMID	14
 
 extern viewport cview;
 
-static const int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
+static const int icon[] = {
+	0,
+	ICON_SPHERE,
+	ICON_CUBE,
+	ICON_BURST,
+	ICON_PYRAMID
+	};
 
 const double moves[] = {
 	1.0/100.0,
@@ -70,8 +77,6 @@ const double spreads[] = {
 void renderer_make_tile(void) {
   glNewList(IMAGE_TILE, GL_COMPILE);
 
-  glColor3f(0.0, 0.8, 0.8);
-	
   glBegin(GL_QUADS);
 
   glNormal3d(-1.0,   0.0,   1.0);
@@ -130,6 +135,24 @@ void renderer_make_sphere(void) {
   glEndList();
   }
 
+void renderer_make_vsphere(void) {
+  GLUquadricObj *quadObj;
+  GLUquadricObj *shadow;
+
+  quadObj = gluNewQuadric();
+  shadow = gluNewQuadric();
+
+  glNewList(ICON_VSPHERE, GL_COMPILE);
+
+  glColor3f(0.8, 0.0, 0.8);
+  gluSphere(quadObj, ICON_RADIUS, POLYCOUNT, POLYCOUNT/2);
+	
+  glColor3f(0.0, 0.0, 0.0);
+  glTranslatef(0.0, 0.0, -ICON_HEIGHT+0.01);
+  gluDisk(shadow, 0.0, ICON_RADIUS, 16, 1);
+
+  glEndList();
+  }
 
 void renderer_make_cube(void) {
   glNewList(ICON_CUBE, GL_COMPILE);
@@ -255,6 +278,7 @@ int init_renderer_matrix() {
   renderer_make_tile();
 
   renderer_make_sphere();
+  renderer_make_vsphere();
   renderer_make_cube();
   renderer_make_burst();
   renderer_make_pyramid();
@@ -288,6 +312,10 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
       cview.movet = MOVE_TRAVEL2;
 
+      cview.xtarg = 0.5*(double)(COORD_DECODEX(tmp->stat2)-4);
+      cview.ytarg = 0.5*(double)(COORD_DECODEY(tmp->stat2)-4);
+      cview.xoff = 0.5*(double)(COORD_DECODEX(tmp->stat2)-4);
+      cview.yoff = 0.5*(double)(COORD_DECODEY(tmp->stat2)-4);
       set_current_scene(tmp->stat);
       }
     }
@@ -314,6 +342,7 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
     glLoadIdentity();
     glTranslatef(xpos, ypos, ICON_DEPTH-ICON_HEIGHT);
+    glColor3f(0.0, 0.8, 0.8);
     glCallList(IMAGE_TILE);
     }
 
@@ -324,7 +353,9 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 	double xpos = 0.5*(xp-4)-(cview.xoff);
 	double ypos = 0.5*(yp-4)-(cview.yoff);
 
-	if(tp == MATRIX_FAKE) { tp = cscene->objs[xp][yp]->stat; fac=-1; }
+	if(tp == MATRIX_FAKE) {
+	  tp = cscene->objs[xp][yp]->stat; fac=-1;
+	  }
 
 	while(xpos < -2.25) xpos += 4.5;
 	while(ypos < -2.25) ypos += 4.5;
@@ -338,7 +369,11 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 	glLoadIdentity();
 	glTranslatef(xpos, ypos, ICON_DEPTH);
 	glRotatef((double)ang, 0.0, 0.0, 1.0);
-	glCallList(icon[tp]);
+	if(cscene->objs[xp][yp]->type == MATRIX_PORT
+		&& scene_visited(cscene->objs[xp][yp]->stat))
+	  glCallList(ICON_VSPHERE);
+	else
+	  glCallList(icon[tp]);
 	}
       }
     }
