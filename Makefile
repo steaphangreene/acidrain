@@ -23,6 +23,11 @@ win:	acidrain.exe
 clean:	.
 	rm -f acidrain acidrain.exe *.o *.obj
 
+backup:	tar
+	scp ~/c/archive/acidrain.$(TSTR).tar.gz stea@reactor:backup/
+	scp ~/c/archive/acidrain.$(TSTR).tar.gz stea@megatron:backup/
+	scp ~/c/archive/acidrain.$(TSTR).tar.gz stea@opal:backup/
+
 tar:	archive
 archive:	.
 	cd .. ; tar czhvf ~/c/archive/acidrain.$(TSTR).tar.gz \
