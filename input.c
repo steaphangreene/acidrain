@@ -41,13 +41,13 @@ int input_process(scene *current_scene, int player_number) {
 	if (event.key.keysym.sym == SDLK_ESCAPE) {
 	  user_quit = 1;
 	  }
-	else if (event.key.keysym.sym == SDLK_SCROLLOCK) {
+	else if (event.key.keysym.sym == SDLK_F8) {
 	  fucked = !fucked;
 	  }
-	else if (event.key.keysym.sym == SDLK_PRINT) {
+	else if (event.key.keysym.sym == SDLK_F1) {
 	  toggle_render_fonts();
 	  }
-	else if (event.key.keysym.sym == SDLK_PAUSE) {
+	else if (event.key.keysym.sym == SDLK_F2) {
 	  toggle_antialiasing();
 	  }
 	else if (event.key.keysym.sym == SDLK_RETURN
