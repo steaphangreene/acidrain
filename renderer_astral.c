@@ -31,6 +31,3 @@ int init_renderer_astral() {
 int render_scene_astral(astral_scene *cscene, int player) {
   return 0;
   }
-
-void clicked_astral(double x, double y, int b) {
-  }

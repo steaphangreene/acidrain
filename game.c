@@ -1,5 +1,5 @@
 // *************************************************************************
-// main.c
+// game.c
 // This is a component of Acid Rain, Pre ALPHA non-distribution version
 //
 // -By Insomnia (Steaphan Greene)   (Copyright 2002 Steaphan Greene)
@@ -14,46 +14,19 @@
 // must have the author's permission, and may be subject to a royaltee fee.
 // *************************************************************************
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <time.h>
-
-#include <SDL/SDL.h>
-
-#include "renderer.h"
-#include "input.h"
 #include "scene.h"
+#include "game.h"
 
-int main(int argc, char **argv) {
-  int player_number = 1;
-  int scene_number = 0;
-  scene *current_scene = NULL;
+void panel_clicked(scene *current_scene, double x, double y, int b) {
+  }
 
-  srand(time(NULL));
-
-//  if(!init_renderer(1024, 768)) {
-  if(!init_renderer(832, 624)) {
-    fprintf(stderr, "Renderer failed to initialize!\n");
-    exit(1);
-    }
-
-  current_scene = get_scene(scene_number);
-
-  while(!user_quit) {
-    if(!render_scene(current_scene, player_number)) {
-      fprintf(stderr, "Render of scene failed!\n");
-      exit(1);
-      }
-
-    if(!input_process(current_scene, player_number)) {
-      fprintf(stderr, "Input processing failed!\n");
-      exit(1);
-      }
-
-    }
-
-  exit(0);
-  return 0;
+void clicked(scene *current_scene, double x, double y, int b) {
+  if(current_scene == NULL) return;
+  if(x >= 1.0) panel_clicked(current_scene, x, y, b);
+  else if(current_scene->type == SCENE_TYPE_MATRIX)  
+    clicked_matrix(&(current_scene->matrix), x, y, b);
+  else if(current_scene->type == SCENE_TYPE_REAL)
+    clicked_real(&(current_scene->real), x, y, b);
+  else if(current_scene->type == SCENE_TYPE_ASTRAL)
+    clicked_astral(&(current_scene->astral), x, y, b);  
   }

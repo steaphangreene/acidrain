@@ -23,8 +23,9 @@
 #include <math.h>
 
 #include "renderer.h"
+#include "game.h"
 
-#include "gimp.h"
+//#include "gimp.h"
 
 static SDL_Surface *surface = NULL;
 static int videoFlags = 0;
@@ -36,7 +37,7 @@ static scene *current_scene;
 
 int phase = 0;
 
-static unsigned int tex_panel = 0;
+//static unsigned int tex_panel = 0;
 
 void load_textures(void) {
 //  glGenTextures(1, &Liv);
@@ -274,18 +275,4 @@ void pixels_to_location(double *x, double *y) {
     (*x) *= 2.0;  (*x) -= 1.0;
     (*y) *= 2.0;  (*y) -= 1.0;
     }
-  }
-
-void panel_clicked(double x, double y, int b) {
-  }
-
-void clicked(double x, double y, int b) {
-  if(current_scene == NULL) return;
-  if(x >= 1.0) panel_clicked(x, y, b);
-  else if(current_scene->type == SCENE_TYPE_MATRIX)
-    clicked_matrix(x, y, b);
-  else if(current_scene->type == SCENE_TYPE_REAL)
-    clicked_real(x, y, b);
-  else if(current_scene->type == SCENE_TYPE_ASTRAL)
-    clicked_astral(x, y, b);
   }

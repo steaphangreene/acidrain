@@ -1,5 +1,5 @@
 // *************************************************************************
-// main.c
+// game.h
 // This is a component of Acid Rain, Pre ALPHA non-distribution version
 //
 // -By Insomnia (Steaphan Greene)   (Copyright 2002 Steaphan Greene)
@@ -14,46 +14,16 @@
 // must have the author's permission, and may be subject to a royaltee fee.
 // *************************************************************************
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <time.h>
+#ifndef GAME_H
+#define GAME_H
 
-#include <SDL/SDL.h>
-
-#include "renderer.h"
-#include "input.h"
 #include "scene.h"
 
-int main(int argc, char **argv) {
-  int player_number = 1;
-  int scene_number = 0;
-  scene *current_scene = NULL;
+void panel_clicked(scene *, double x, double y, int b);
+void clicked(scene *, double x, double y, int b);
 
-  srand(time(NULL));
+void clicked_matrix(matrix_scene *, double, double, int);
+void clicked_real(real_scene *, double, double, int);
+void clicked_astral(astral_scene *, double, double, int);
 
-//  if(!init_renderer(1024, 768)) {
-  if(!init_renderer(832, 624)) {
-    fprintf(stderr, "Renderer failed to initialize!\n");
-    exit(1);
-    }
-
-  current_scene = get_scene(scene_number);
-
-  while(!user_quit) {
-    if(!render_scene(current_scene, player_number)) {
-      fprintf(stderr, "Render of scene failed!\n");
-      exit(1);
-      }
-
-    if(!input_process(current_scene, player_number)) {
-      fprintf(stderr, "Input processing failed!\n");
-      exit(1);
-      }
-
-    }
-
-  exit(0);
-  return 0;
-  }
+#endif /* GAME_H */

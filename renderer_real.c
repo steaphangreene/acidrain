@@ -31,6 +31,3 @@ int init_renderer_real() {
 int render_scene_real(real_scene *cscene, int player) {
   return 0;
   }
-
-void clicked_real(double x, double y, int b) {
-  }

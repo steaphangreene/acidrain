@@ -17,8 +17,10 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#include "scene.h"
+
 extern int user_quit;
 
-int input_process(int);
+int input_process(scene *, int);
 
 #endif /* INPUT_H */

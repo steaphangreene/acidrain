@@ -72,4 +72,8 @@ const static scene new_real_scene = { real: {
 	SCENE_TYPE_REAL
 	} };
 
+typedef unsigned long long SceneID;
+
+scene *get_scene(SceneID id);
+
 #endif /* SCENE_H */
