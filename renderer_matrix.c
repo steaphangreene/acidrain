@@ -26,6 +26,12 @@
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
 
+#define XZAPPY 1024
+#define YZAPPY 256
+#define ZAPPY_FRAMES 13
+
+static unsigned int tex_zappy[ZAPPY_FRAMES];
+
 #include "renderer.h"
 #include "game.h"
 #include "scene.h"
@@ -71,6 +77,45 @@ static const int shad[] = {
 extern matrix_path *path;
 
 void load_textures_matrix(void) {
+  int x, y, num;
+  unsigned char *tmp = (unsigned char *)malloc(XZAPPY*YZAPPY*4);
+
+  glEnable(GL_TEXTURE_2D);
+  glGenTextures(ZAPPY_FRAMES, tex_zappy);
+
+  for(num=0; num < ZAPPY_FRAMES; ++num) {
+    for(x=0; x<XZAPPY; ++x) {
+      for(y=0; y<YZAPPY; ++y) {
+	int ctr = y*XZAPPY+x;
+	static int on = 0;
+
+	if((rand() % 32) == 0) on = !on;
+
+	tmp[(ctr<<2)+0] = 255;
+	tmp[(ctr<<2)+1] = 255;
+	tmp[(ctr<<2)+2] = 255;
+	tmp[(ctr<<2)+3] = 255*on;
+	}
+      }
+
+    glBindTexture(GL_TEXTURE_2D, tex_zappy[num]);
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                 GL_LINEAR_MIPMAP_NEAREST );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, XZAPPY, YZAPPY,
+        GL_RGBA, GL_UNSIGNED_BYTE, tmp);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    }  
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glDisable(GL_TEXTURE_2D);
+
+  free(tmp);
   }
 
 void renderer_make_tile(void) {
@@ -494,25 +539,47 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
     prog = -2.25 + (0.025 * (GLdouble)(cview.move));
 
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_LIGHT0);
+
     glLoadIdentity();
-    glColor3f(0.0, 0.0, 1.0);
+    glColor3f(0.7, 0.8, 1.0);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBindTexture(GL_TEXTURE_2D, tex_zappy[rand()%ZAPPY_FRAMES]);
+
     glBegin(GL_QUADS);
 
     if(cview.move < 90) {
       glNormal3d(0.0, -1.0, 0.0);
+      glTexCoord2f(0.0, 0.0);
       glVertex3d(-5.0, prog, -7.0);
+      glTexCoord2f(1.0, 0.0);
       glVertex3d( 5.0, prog, -7.0);
+      glTexCoord2f(1.0, 1.0);
       glVertex3d( 5.0, prog, -5.0);
+      glTexCoord2f(0.0, 1.0);
       glVertex3d(-5.0, prog, -5.0);
       }
     else {
       glNormal3d(0.0, -1.0, 0.0);
+      glTexCoord2f(0.0, 0.0);
       glVertex3d(-5.0, prog, -7.0);
+      glTexCoord2f(0.0, 1.0);
       glVertex3d(-5.0, prog, -5.0);
+      glTexCoord2f(1.0, 1.0);
       glVertex3d( 5.0, prog, -5.0);
+      glTexCoord2f(1.0, 0.0);
       glVertex3d( 5.0, prog, -7.0);
       }
     glEnd();
+
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
     }
 
   return 1;

@@ -42,6 +42,7 @@ void init_digits(void) {
       tmp[(ctr<<2)+3] = font_fancy[ctr];
       }
 
+    glEnable(GL_TEXTURE_2D);
     glGenTextures(1, tex_digit);
 
     glBindTexture(GL_TEXTURE_2D, tex_digit[0]);
@@ -57,6 +58,7 @@ void init_digits(void) {
 	sqrt(sizeof(font_fancy)), sqrt(sizeof(font_fancy)),
         GL_RGBA, GL_UNSIGNED_BYTE, tmp);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glDisable(GL_TEXTURE_2D);
 
     free(tmp);
 
@@ -268,11 +270,12 @@ void render_digit(int chr) {
     double xs, ys;
     if(!nonrendered_initialized) init_digits();
 
+    glEnable(GL_TEXTURE_2D);
+
     xs = (1.0/(double)16)*(double)((chr-32)%16);
     ys = (1.0/(double)16)*(double)((chr-32)/16);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc(GL_SRC_ALPHA,GL_ONE);
     glEnable(GL_BLEND);
     glBindTexture(GL_TEXTURE_2D, tex_digit[0]);
 
@@ -289,6 +292,7 @@ void render_digit(int chr) {
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
 
 /* Old Way
     if(tex_digit[chr] == 0) return;
