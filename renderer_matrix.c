@@ -267,10 +267,10 @@ void draw_dialog(int complete) {
 
   glBegin(GL_QUADS);
   glColor3f(0.0, 0.0, 0.0);
-  glVertex3d( 1.00, -0.15, -4.50);
-  glVertex3d(-1.00, -0.15, -4.50);
-  glVertex3d(-1.00,  0.15, -4.50);
-  glVertex3d( 1.00,  0.15, -4.50);
+  glVertex3d( 1.05, -0.15, -4.50);
+  glVertex3d(-1.05, -0.15, -4.50);
+  glVertex3d(-1.05,  0.15, -4.50);
+  glVertex3d( 1.05,  0.15, -4.50);
   glEnd();
 
   if(complete)
@@ -279,10 +279,10 @@ void draw_dialog(int complete) {
     glColor3f(1.0, 0.0, 0.0);
 
   glBegin(GL_QUADS);
-  glVertex3d( 1.01, -0.16, -4.51);
-  glVertex3d(-1.01, -0.16, -4.51);
-  glVertex3d(-1.01,  0.16, -4.51);
-  glVertex3d( 1.01,  0.16, -4.51);
+  glVertex3d( 1.06, -0.16, -4.51);
+  glVertex3d(-1.06, -0.16, -4.51);
+  glVertex3d(-1.06,  0.16, -4.51);
+  glVertex3d( 1.06,  0.16, -4.51);
   glEnd();
   }
 
@@ -311,6 +311,9 @@ void render_panel_matrix(matrix_scene *cscene, int player) {
 
     xs = 0.9 / (double)(strlen(mes));
     ys = xs * 1.5;
+
+    xp += xs/2.0;
+    yp += ys/2.0;
 
     glColor3d(0.0, 1.0, 1.0);
 
@@ -438,14 +441,14 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     draw_dialog(cview.move == 10);
 
     for(ctr = 0; ctr < cview.move; ++ctr) {
-      double basex = -1.0 + 0.20*(double)ctr;
+      double basex = -0.9 + 0.20*(double)ctr;
       int digit = (cview.data/base)%LTG_DIGITS;
 
       if(digit<10)	digit += '0';
       else		digit += 'A'-10;
 
-      glTranslatef(basex+0.02, -0.1, -4.49);
-      glScalef(0.16, 0.2, 1.0);
+      glTranslatef(basex, 0.0, -4.49);
+      glScalef(0.2, 0.2, 1.0);
       render_digit(digit);
       glLoadIdentity();
 
@@ -459,10 +462,10 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     draw_dialog(cscene->node > NODE_LTG9 || cscene->node < NODE_LTG0);
 
     for(ctr = 0; ctr < strlen(mes); ++ctr) {
-      double basex = -1.0 + 0.20*(double)ctr;
+      double basex = -0.9 + 0.20*(double)ctr;
 
-      glTranslatef(basex+0.02, -0.1, -4.49);
-      glScalef(0.16, 0.2, 1.0);
+      glTranslatef(basex, 0.0, -4.49);
+      glScalef(0.2, 0.2, 1.0);
       render_digit(mes[ctr]);
       glLoadIdentity();
       }

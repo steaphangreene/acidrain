@@ -232,19 +232,21 @@ void render_digit(int chr) {
 
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f);
-    glVertex3d( 0.0, 0.0, 0.0);
+    glVertex3d(-0.5,-0.5, 0.0);
     glTexCoord2f(0.0f, 1.0f);
-    glVertex3d( 0.0, 1.0, 0.0);
+    glVertex3d(-0.5, 0.5, 0.0);
     glTexCoord2f(1.0f, 1.0f);
-    glVertex3d( 1.0, 1.0, 0.0);
+    glVertex3d( 0.5, 0.5, 0.0);
     glTexCoord2f(1.0f, 0.0f);
-    glVertex3d( 1.0, 0.0, 0.0);
+    glVertex3d( 0.5,-0.5, 0.0);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, 0);
     }
   else {
     if(!rendered_initialized) init_digits();
+    glTranslatef(-0.5, -0.5, 0.0);
+    glScalef(1.0, 0.5, 1.0);
     glCallList(base_digit+chr);
     }
   }
