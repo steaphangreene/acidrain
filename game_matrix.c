@@ -289,6 +289,21 @@ void keypressed_matrix(matrix_scene *cscene, int k) {
     cview.move = 0;
     }
   else if(cview.movet == MOVE_NONE && k == SDLK_BACKSPACE) {
-    if(path == NULL) user_quit = 1;
+    if(path == NULL) {
+      user_quit = 1;
+      printf("Jacked out successfully!\n");
+      }
+    else {
+      cview.xtarg = 0.5*(double)(path->xp - 4);
+      cview.ytarg = 0.5*(double)(path->yp - 4);
+      if(cview.xtarg != cview.xoff || cview.ytarg != cview.yoff) {
+	cview.movet = MOVE_TARGET;
+	cview.move = 0;
+	}	
+      else {
+	cview.movet = MOVE_TARGET;
+	cview.move = 9;
+	}
+      }
     }
   }
