@@ -10,5 +10,8 @@ if(!(-r "${1}.tga")) then
   exit
 endif
 
-#tail -c +18 "${1}.tga" | head -c 
-echo DOES NOT WORK YET
+set sz=`ls -l ${1}.tga | sed 's-  *-;-g' | cut -f5 -d';'`
+@ sz -= 44
+
+echo 'WARNING! MAY NOT WORK'
+tail -c +19 "${1}.tga" | head -c +$sz > "${1}.raw"

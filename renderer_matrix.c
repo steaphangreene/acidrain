@@ -31,11 +31,14 @@
 #define ZAPPY_FRAMES 13
 
 static unsigned int tex_zappy[ZAPPY_FRAMES];
+static unsigned int tex_port;
 
 #include "renderer.h"
 #include "game.h"
 #include "scene.h"
 #include "scene_matrix.h"
+
+#include "ev11612_land_ocean_ice_512.h"
 
 /* Digit Font */
 #include "digits.h"
@@ -77,17 +80,18 @@ static const int shad[] = {
 extern matrix_path *path;
 
 void load_textures_matrix(void) {
-  int x, y, num;
-  unsigned char *tmp = (unsigned char *)malloc(XZAPPY*YZAPPY*4);
+  int x, y, num, ctr;
+  unsigned char *tmp;
 
   glEnable(GL_TEXTURE_2D);
   glGenTextures(ZAPPY_FRAMES, tex_zappy);
 
+  tmp = (unsigned char *)malloc(XZAPPY*YZAPPY*4);
   for(num=0; num < ZAPPY_FRAMES; ++num) {
     for(x=0; x<XZAPPY; ++x) {
       for(y=0; y<YZAPPY; ++y) {
-	int ctr = y*XZAPPY+x;
 	static int on = 0;
+	ctr = y*XZAPPY+x;
 
 	if((rand() % 32) == 0) on = !on;
 
@@ -111,11 +115,34 @@ void load_textures_matrix(void) {
         GL_RGBA, GL_UNSIGNED_BYTE, tmp);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     }  
+  free(tmp);
+
+
+  glGenTextures(1, &tex_port);
+  tmp = (unsigned char *)malloc(earth_image_xsize*earth_image_ysize*4);
+  for(ctr=0; ctr<earth_image_xsize*earth_image_ysize; ++ctr) {
+    tmp[ctr*4+0] = earth_image[ctr*3+2];
+    tmp[ctr*4+1] = earth_image[ctr*3+1];
+    tmp[ctr*4+2] = earth_image[ctr*3+0];
+    tmp[ctr*4+3] = 255;
+    }
+  glBindTexture(GL_TEXTURE_2D, tex_port);
+  glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+               GL_LINEAR_MIPMAP_NEAREST );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+  gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA,
+	earth_image_xsize, earth_image_ysize,
+	GL_RGBA, GL_UNSIGNED_BYTE, tmp);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  free(tmp);
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_TEXTURE_2D);
-
-  free(tmp);
   }
 
 void renderer_make_tile(void) {
@@ -191,6 +218,8 @@ void renderer_make_sphere(void) {
   GLUquadricObj *quadObj;
   quadObj = gluNewQuadric();
 
+  gluQuadricTexture(quadObj, GL_TRUE);
+  glBindTexture(GL_TEXTURE_2D, tex_port);
   glNewList(ICON_SPHERE, GL_COMPILE);
   gluSphere(quadObj, ICON_RADIUS, POLYCOUNT, POLYCOUNT/2);
   glEndList();
@@ -475,11 +504,34 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 	if(fake) glScaled(sc, sc, sc);
 	/* Draw Icon */
 	if(cscene->objs[xp][yp]->type == MATRIX_PORT
-		&& scene_visited(cscene->objs[xp][yp]->stat))
+		&& scene_visited(cscene->objs[xp][yp]->stat)) {
+	  glEnable(GL_TEXTURE_2D);
+	  glBindTexture(GL_TEXTURE_2D, tex_port);
 	  glColor3f(1.0, 0.0, 1.0);
-	else
-	  glColor3f(0.0, 0.0, 1.0);
-	glCallList(icon[tp]);
+	  glCallList(icon[tp]);
+	  glBindTexture(GL_TEXTURE_2D, 0);
+	  glDisable(GL_TEXTURE_2D);
+	  }
+	else if(cscene->objs[xp][yp]->type == MATRIX_PORT) {
+	  glEnable(GL_TEXTURE_2D);
+	  glBindTexture(GL_TEXTURE_2D, tex_port);
+	  glColor3f(1.0, 1.0, 1.0);
+	  glCallList(icon[tp]);
+	  glBindTexture(GL_TEXTURE_2D, 0);
+	  glDisable(GL_TEXTURE_2D);
+	  }
+	else if(cscene->objs[xp][yp]->type == MATRIX_FAKE &&
+		cscene->objs[xp][yp]->stat == MATRIX_PORT) {
+	  glEnable(GL_TEXTURE_2D);
+	  glBindTexture(GL_TEXTURE_2D, tex_port);
+	  glColor3f(1.0, 1.0, 1.0);
+	  glCallList(icon[tp]);
+	  glBindTexture(GL_TEXTURE_2D, 0);
+	  glDisable(GL_TEXTURE_2D);
+	  }
+	else {
+	  glCallList(icon[tp]);
+	  }
 
 	glPopMatrix();
 	if(cscene->objs[xp][yp]->name != NULL) {
