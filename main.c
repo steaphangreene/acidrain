@@ -28,7 +28,6 @@
 
 int main(int argc, char **argv) {
   int player_number = 1;
-  int scene_number = 0;
   scene *current_scene = NULL;
 
   srand(time(NULL));
@@ -39,9 +38,11 @@ int main(int argc, char **argv) {
     exit(1);
     }
 
-  current_scene = get_scene(scene_number);
+  init_scenes();
 
   while(!user_quit) {
+    current_scene = get_current_scene();
+
     if(!render_scene(current_scene, player_number)) {
       fprintf(stderr, "Render of scene failed!\n");
       exit(1);

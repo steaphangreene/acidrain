@@ -37,6 +37,8 @@
 #define ICON_BURST	12
 #define ICON_PYRAMID	13
 
+extern viewport cview;
+
 static const int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
 
 const double moves[] = {
@@ -52,7 +54,18 @@ const double moves[] = {
 	1.0/1.0
 	};
 
-static matrix_scene *current_scene = NULL;
+const double spreads[] = {
+	1.1,
+	1.3,
+	1.6,
+	2.0,
+	2.5,
+	3.1,
+	3.8,
+	4.6,
+	5.5,
+	6.5
+	};
 
 void renderer_make_tile(void) {
   glNewList(IMAGE_TILE, GL_COMPILE);
@@ -252,52 +265,82 @@ int init_renderer_matrix() {
 extern int phase;
 
 int render_scene_matrix(matrix_scene *cscene, int player) {
-  int ctr;
-  matrix_obj *tmp = cscene->objs;
+  int ctr, xp, yp;
+  double spread = 1.0;
 
-  current_scene = cscene;
+  if(cview.movet == MOVE_RECENTER
+		|| (cview.movet == MOVE_TRAVEL1 && cview.move < 10)) {
+    cview.xoff += (double)(cview.xtarg-cview.xoff)*moves[cview.move];
+    cview.yoff += (double)(cview.ytarg-cview.yoff)*moves[cview.move];
+    ++cview.move;
+    if(cview.move >= 10 && cview.movet == MOVE_RECENTER) {
+      cview.movet = MOVE_NONE;
+      }
+    }
 
-  if(current_scene->move >= 0) {
-    current_scene->xoff +=
-	(double)(current_scene->xtarg-current_scene->xoff)*(double)moves[current_scene->move];
-    current_scene->yoff +=
-	(double)(current_scene->ytarg-current_scene->yoff)*(double)moves[current_scene->move];
-    ++current_scene->move;
-    if(current_scene->move >= 10) current_scene->move = -1;
+  else if(cview.movet == MOVE_TRAVEL1) {
+    spread = spreads[cview.move-10];
+    ++cview.move;
+    if(cview.move >= 20) {
+      int xp = MATRIX_CONVXD(cview.xoff);
+      int yp = MATRIX_CONVXD(cview.yoff);
+      matrix_obj *tmp = cscene->objs[xp][yp];
+
+      cview.movet = MOVE_TRAVEL2;
+
+      set_current_scene(tmp->stat);
+      }
+    }
+
+  else if(cview.movet == MOVE_TRAVEL2) {
+    spread = spreads[cview.move-11];
+    --cview.move;
+    if(cview.move <= 10) {
+      cview.movet = MOVE_NONE;
+      }
     }
 
   for(ctr=0; ctr<100; ++ctr) {
-    double xpos = 0.5*((ctr%10)-4)-(current_scene->xoff);
-    double ypos = 0.5*((ctr/10)-4)-(current_scene->yoff);
+    double xpos = 0.5*((ctr%10)-4)-(cview.xoff);
+    double ypos = 0.5*((ctr/10)-4)-(cview.yoff);
 
     while(xpos < -2.5) xpos += 5.0;
     while(ypos < -2.5) ypos += 5.0;
     while(xpos > 2.5) xpos -= 5.0;
     while(ypos > 2.5) ypos -= 5.0;
 
+    xpos *= spread;
+    ypos *= spread;
+
     glLoadIdentity();
     glTranslatef(xpos, ypos, ICON_DEPTH-ICON_HEIGHT);
     glCallList(IMAGE_TILE);
     }
 
-  while(tmp != NULL) {
-    int tp = tmp->type, fac=1, ang;
-    double xpos = 0.5*(tmp->xp-4)-(current_scene->xoff);
-    double ypos = 0.5*(tmp->yp-4)-(current_scene->yoff);
+  for(xp=0; xp<MATRIX_X; ++xp) {
+    for(yp=0; yp<MATRIX_Y; ++yp) {
+      if(cscene->objs[xp][yp] != NULL) {
+	int tp = cscene->objs[xp][yp]->type, fac=1, ang;
+	double xpos = 0.5*(xp-4)-(cview.xoff);
+	double ypos = 0.5*(yp-4)-(cview.yoff);
 
-    if(tp == MATRIX_FAKE) { tp = tmp->stat; fac=-1; }
+	if(tp == MATRIX_FAKE) { tp = cscene->objs[xp][yp]->stat; fac=-1; }
 
-    while(xpos < -2.25) xpos += 4.5;
-    while(ypos < -2.25) ypos += 4.5;
-    while(xpos > 2.25) xpos -= 4.5;
-    while(ypos > 2.25) ypos -= 4.5;
+	while(xpos < -2.25) xpos += 4.5;
+	while(ypos < -2.25) ypos += 4.5;
+	while(xpos > 2.25) xpos -= 4.5;
+	while(ypos > 2.25) ypos -= 4.5;
 
-    ang = (phase*5%360)*fac;
-    glLoadIdentity();
-    glTranslatef(xpos, ypos, ICON_DEPTH);
-    glRotatef((double)ang, 0.0, 0.0, 1.0);
-    glCallList(icon[tp]);
-    tmp = tmp->next;
+	xpos *= spread;
+	ypos *= spread;
+
+	ang = (phase*5%360)*fac;
+	glLoadIdentity();
+	glTranslatef(xpos, ypos, ICON_DEPTH);
+	glRotatef((double)ang, 0.0, 0.0, 1.0);
+	glCallList(icon[tp]);
+	}
+      }
     }
 
   glFlush();

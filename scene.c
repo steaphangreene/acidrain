@@ -19,25 +19,57 @@
 
 #include "scene.h"
 
-scene *get_scene(SceneID id) {
-  int ctr;
-  scene *scn;
+scene *scene_list[MAX_SCENES];
+SceneID csnum = 0;
 
-  scn = (scene*)malloc(sizeof(scene));
-  (*scn) = new_matrix_scene;
+void set_current_scene(SceneID id) {
+  csnum = id;
+  }
 
-  for(ctr=0; ctr<81; ++ctr) {
-    matrix_obj *tmp;
-    int rn = rand()%19;
-    if(rn > 4) continue;
+scene *get_current_scene(void) {
+  return get_scene(csnum);
+  }
 
-    tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
-    tmp->type = rn+1;
-    tmp->xp = ctr%9;    tmp->yp = ctr/9;
-    tmp->stat = rand()%4+1;
-    tmp->stat2 = 0;
-    tmp->next = scn->matrix.objs;
-    scn->matrix.objs = tmp;
+scene *generate_scene(SceneID id) {
+  if(scene_list[id] != NULL) {
+    if(scene_list[id]->type == SCENE_TYPE_MATRIX)
+      return generate_scene_matrix(id);
+    else if(scene_list[id]->type == SCENE_TYPE_REAL)
+      return generate_scene_real(id);
+    else if(scene_list[id]->type == SCENE_TYPE_ASTRAL)
+      return generate_scene_astral(id);
     }
-  return scn;
+
+  if(scene_list[id] == NULL) 
+    return generate_scene_matrix(id);
+
+  if(scene_list[csnum]->type == SCENE_TYPE_MATRIX)
+    return generate_scene_matrix(id);
+  else if(scene_list[csnum]->type == SCENE_TYPE_REAL)
+    return generate_scene_real(id);
+  else if(scene_list[csnum]->type == SCENE_TYPE_ASTRAL)
+    return generate_scene_astral(id);
+
+  
+  fprintf(stderr, "Error generating scene of unknown type!\n");
+  exit(1);
+
+  return NULL;
+  }
+
+scene *get_scene(SceneID id) {
+  if(scene_list[id] == NULL || (!scene_list[id]->any.init))
+    return generate_scene(id);
+
+  return scene_list[id];
+  }
+
+void init_scenes(void) {
+  int ctr;
+
+  for(ctr=0; ctr<MAX_SCENES; ++ctr) scene_list[ctr] = NULL;
+
+  init_scenes_matrix();
+  init_scenes_real();
+  init_scenes_astral();
   }

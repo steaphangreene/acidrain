@@ -35,6 +35,8 @@ static int hgap=0, vgap=0;
 
 static scene *current_scene;
 
+viewport cview = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
 int phase = 0;
 
 //static unsigned int tex_panel = 0;

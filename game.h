@@ -19,6 +19,8 @@
 
 #include "scene.h"
 
+void set_scene(SceneID);
+
 void panel_clicked(scene *, double x, double y, int b);
 void clicked(scene *, double x, double y, int b);
 

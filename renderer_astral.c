@@ -24,6 +24,8 @@
 
 #include "renderer.h"
 
+extern viewport cview;
+
 int init_renderer_astral() {
   return 1;
   }

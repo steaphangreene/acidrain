@@ -1,5 +1,5 @@
 // *************************************************************************
-// renderer.h
+// scene_real.c
 // This is a component of Acid Rain, Pre ALPHA non-distribution version
 //
 // -By Insomnia (Steaphan Greene)   (Copyright 2002 Steaphan Greene)
@@ -14,30 +14,17 @@
 // must have the author's permission, and may be subject to a royaltee fee.
 // *************************************************************************
 
-#ifndef RENDERER_H
-#define RENDERER_H
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "scene.h"
 
-int init_renderer(int, int);
-int render_scene(scene *, int);
-void toggle_fullscreen(void);
-void resize_display(int, int);
-void pixels_to_location(double *, double *);
+extern scene *scene_list[];
+extern SceneID csnum;
 
-typedef struct _viewport {
-  double xoff, yoff;
-  double xtarg, ytarg;
-  int move, movet;
-  } viewport;
+scene *generate_scene_real(SceneID id) {
+  return scene_list[id];
+  }
 
-/* For use internally by renderer only! */
-int init_renderer_matrix();
-int init_renderer_real();
-int init_renderer_astral();
-
-int render_scene_matrix(matrix_scene *, int);
-int render_scene_real(real_scene *, int);
-int render_scene_astral(astral_scene *, int);
-
-#endif /* RENDERER_H */
+void init_scenes_real(void) {
+  }

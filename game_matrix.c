@@ -16,36 +16,72 @@
 
 #include "scene.h"
 #include "game.h"
+#include "renderer.h"
 
-void clicked_matrix(matrix_scene *current_scene, double x, double y, int b) {
-  if(current_scene->move == -1 && b == 3) {
+extern viewport cview;
+
+void clicked_matrix(matrix_scene *cscene, double x, double y, int b) {
+  if(cview.movet == MOVE_NONE && b == 1) {
+    int xp = MATRIX_CONVXD(cview.xoff + (x*2.0));
+    int yp = MATRIX_CONVXD(cview.yoff + (y*2.0));
+    matrix_obj *tmp = cscene->objs[xp][yp];
+
+    if(tmp != NULL) {
+      if(tmp->type == MATRIX_PORT) {
+	int xo = MATRIX_CONVXD((x*2.0));
+	int yo = MATRIX_CONVXD((y*2.0));
+	cview.xtarg += 4.5;  cview.xoff += 4.5;
+	cview.ytarg += 4.5;  cview.yoff += 4.5;
+	cview.xtarg += ((double)xo-4)/2.0;
+	cview.ytarg += ((double)yo-4)/2.0;
+	while(cview.xtarg >= 4.5) {
+	  cview.xtarg -= 4.5;
+	  cview.xoff -= 4.5;
+	  }
+	while(cview.ytarg >= 4.5) {
+	  cview.ytarg -= 4.5;
+	  cview.yoff -= 4.5;
+	  }
+	cview.movet = MOVE_TRAVEL1;
+	if(cview.xtarg != cview.xoff || cview.ytarg != cview.yoff) {
+	  cview.move = 0;
+	  }	
+	else {
+	  cview.move = 10;
+	  }
+	}
+      }
+    }
+  if(cview.movet == MOVE_NONE && b == 3) {
     x*=4;  x+=4.5;
     y*=4;  y+=4.5;
     { int ix = ((int)x);
       int iy = ((int)y);
-      current_scene->xtarg += 4.5;  current_scene->xoff += 4.5;
-      current_scene->ytarg += 4.5;  current_scene->yoff += 4.5;
-      current_scene->xtarg += ((double)ix-4)/2.0;
-      current_scene->ytarg += ((double)iy-4)/2.0;
-      while(current_scene->xtarg > 4.5) {
-        current_scene->xtarg -= 4.5;
-        current_scene->xoff -= 4.5;
-        }
-      while(current_scene->ytarg > 4.5) {
-        current_scene->ytarg -= 4.5;
-        current_scene->yoff -= 4.5;
-        }
-      if(current_scene->xtarg != current_scene->xoff
-                || current_scene->ytarg != current_scene->yoff)
-        current_scene->move = 0;
+      cview.xtarg += 4.5;  cview.xoff += 4.5;
+      cview.ytarg += 4.5;  cview.yoff += 4.5;
+      cview.xtarg += ((double)ix-4)/2.0;
+      cview.ytarg += ((double)iy-4)/2.0;
+      while(cview.xtarg >= 4.5) {
+	cview.xtarg -= 4.5;
+	cview.xoff -= 4.5;
+	}
+      while(cview.ytarg >= 4.5) {
+	cview.ytarg -= 4.5;
+	cview.yoff -= 4.5;
+	}
+      if(cview.xtarg != cview.xoff || cview.ytarg != cview.yoff)
+	cview.move = 0;
+	cview.movet = MOVE_RECENTER;
       }
     }
-  if(b == 4) {
-    current_scene->ytarg -= 0.5;
-    current_scene->move = 0;
+  if(b==4 && (cview.movet == MOVE_NONE || cview.movet == MOVE_RECENTER)) {
+    cview.ytarg -= 0.5;
+    cview.move = 0;
+    cview.movet = MOVE_RECENTER;
     }
-  if(b == 5) {
-    current_scene->ytarg += 0.5;
-    current_scene->move = 0;
+  if(b==5 && (cview.movet == MOVE_NONE || cview.movet == MOVE_RECENTER)) {
+    cview.ytarg += 0.5;
+    cview.move = 0;
+    cview.movet = MOVE_RECENTER;
     }
   }
