@@ -27,17 +27,24 @@
 
 int user_quit = 0;
 
+int fucked = 0;
+
 int input_process(int player_number) {
   SDL_Event event;
 
   while(SDL_WaitEvent(&event)) {
     switch (event.type) {
       case(SDL_USEREVENT): {
-	if(event.user.code == 13) return 1;
+	if(event.user.code == 13) {
+	  return 1;
+	  }
 	} break;
       case(SDL_KEYDOWN): {
 	if (event.key.keysym.sym == SDLK_ESCAPE) {
 	  user_quit = 1;
+	  }
+	else if (event.key.keysym.sym == SDLK_SPACE) {
+	  fucked = !fucked;
 	  }
 	else if (event.key.keysym.sym == SDLK_RETURN
 		&& ((event.key.keysym.mod & KMOD_LALT)

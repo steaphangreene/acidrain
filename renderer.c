@@ -32,6 +32,8 @@ static int hgap=0, vgap=0;
 
 static scene *current_scene;
 
+int phase = 0;
+
 #define SDL_TICK 13;
 
 Uint32 tick(Uint32 t, void *data) {
@@ -169,7 +171,30 @@ void render_panel(scene *cscene, int player) {
   glEnd();
   }
 
+extern int fucked;
+
 int render_scene(scene *cscene, int player) {
+  static Uint32 lasttick = 0;
+  Uint32 difftick = SDL_GetTicks()-lasttick;
+
+  ++phase;
+
+  if(lasttick == 0) {
+    lasttick = SDL_GetTicks();
+    difftick = 30;
+    }
+  else lasttick += 30;
+
+  if(difftick < 0) {
+    SDL_Delay(-difftick);
+    }
+
+  if(difftick > 60) {
+    return 1;
+    }
+
+  if(fucked) SDL_Delay(100);
+
   current_scene = cscene;
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

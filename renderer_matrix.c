@@ -24,6 +24,8 @@
 
 #include "renderer.h"
 
+#define POLYCOUNT	32
+
 #define IMAGE_TILE	1
 
 #define ICON_RADIUS	((GLdouble)0.1)
@@ -107,7 +109,7 @@ void renderer_make_sphere(void) {
   glNewList(ICON_SPHERE, GL_COMPILE);
 
   glColor3f(0.0, 0.0, 1.0);
-  gluSphere(quadObj, ICON_RADIUS, 32, 12);
+  gluSphere(quadObj, ICON_RADIUS, POLYCOUNT, POLYCOUNT/2);
 	
   glColor3f(0.0, 0.0, 0.0);
   glTranslatef(0.0, 0.0, -ICON_HEIGHT+0.01);
@@ -184,11 +186,11 @@ void renderer_make_burst(void) {
   gluCylinder(quadObj, ICON_RADIUS, ICON_RADIUS, ICON_RADIUS*2.0, 16, 1);
 
   glTranslatef(0.0, 0.0, ICON_RADIUS*2.0);
-  gluDisk(quadObj2, 0.0, ICON_RADIUS, 16, 1);
+  gluDisk(quadObj2, 0.0, ICON_RADIUS, POLYCOUNT, 1);
 
   glColor3f(0.0, 0.0, 0.0);
   glTranslatef(0.0, 0.0, -ICON_RADIUS-ICON_HEIGHT+0.01);
-  gluDisk(shadow, 0.0, ICON_RADIUS, 16, 1);
+  gluDisk(shadow, 0.0, ICON_RADIUS, POLYCOUNT, 1);
 
   glEndList();
   }
@@ -248,13 +250,11 @@ int init_renderer_matrix() {
   return 1;
   }
 
-static int phase = 0;
+extern int phase;
 
 int render_scene_matrix(matrix_scene *current_scene, int player) {
   int ctr;
   matrix_obj *tmp = current_scene->objs;
-
-  ++phase;
 
   if(move >= 0) {
     xoff += (double)(xtarg-xoff)*(double)moves[move];

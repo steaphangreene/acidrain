@@ -20,6 +20,8 @@
 #include <math.h>
 #include <time.h>
 
+#include <SDL/SDL.h>
+
 #include "renderer.h"
 #include "input.h"
 #include "scene.h"
@@ -30,7 +32,7 @@ int main(int argc, char **argv) {
   current_scene.matrix.type = SCENE_TYPE_MATRIX;
   current_scene.matrix.objs = NULL;
 
-  srandom(time(NULL));
+  srand(time(NULL));
 
 // if(!init_renderer(1024, 768)) {
   if(!init_renderer(832, 624)) {
@@ -40,13 +42,13 @@ int main(int argc, char **argv) {
 
   for(ctr=0; ctr<81; ++ctr) {
     matrix_obj *tmp;
-    int rn = random()%19;
+    int rn = rand()%19;
     if(rn > 4) continue;
 
     tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
     tmp->type = rn+1;
     tmp->xp = ctr%9;	tmp->yp = ctr/9;
-    tmp->stat = random()%4+1;
+    tmp->stat = rand()%4+1;
     tmp->stat2 = 0;
     tmp->next = current_scene.matrix.objs;
     current_scene.matrix.objs = tmp;
@@ -54,13 +56,15 @@ int main(int argc, char **argv) {
 
   while(!user_quit) {
     if(!render_scene(&current_scene, player_number)) {
-      fprintf(stderr, "Renderer failed to render!\n");
+      fprintf(stderr, "Render of scene failed!\n");
       exit(1);
       }
+
     if(!input_process(player_number)) {
       fprintf(stderr, "Input processing failed!\n");
       exit(1);
       }
+
     }
 
   exit(0);
