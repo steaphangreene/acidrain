@@ -1,7 +1,6 @@
 #include <math.h>
 #include <ctype.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <SDL/SDL_opengl.h>
 
 #include "renderer.h"
 #include "digits.h"
