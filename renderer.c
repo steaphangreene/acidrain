@@ -182,7 +182,7 @@ int render_scene(scene *cscene, int player) {
     return -1;
     }
 
-  if(fucked) SDL_Delay(500);
+  if(fucked) SDL_Delay(100);
 
   current_scene = cscene;
 
