@@ -36,19 +36,19 @@ static scene *current_scene;
 
 int phase = 0;
 
-static unsigned int Liv;
+static unsigned int tex_panel = 0;
 
 void load_textures(void) {
-  glGenTextures(1, &Liv);
-  glBindTexture(GL_TEXTURE_2D, Liv);
-  gluBuild2DMipmaps(GL_TEXTURE_2D, 3, LivTyler.width, LivTyler.height,
-	GL_RGB, GL_UNSIGNED_BYTE, LivTyler.pixel_data);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+//  glGenTextures(1, &Liv);
+//  glBindTexture(GL_TEXTURE_2D, Liv);
+//  gluBuild2DMipmaps(GL_TEXTURE_2D, 3, LivTyler.width, LivTyler.height,
+//	GL_RGB, GL_UNSIGNED_BYTE, LivTyler.pixel_data);
+//  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
   }
 
 void render_panel(scene *cscene, int player) {
   current_scene = cscene;
-  glBindTexture(GL_TEXTURE_2D, Liv);
+  glBindTexture(GL_TEXTURE_2D, tex_panel);
   glLoadIdentity();
   glColor3d(1.0, 1.0, 1.0);
   glNormal3d(0.0, 0.0, 1.0);
@@ -118,6 +118,15 @@ int init_renderer(int xs, int ys) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
   glEnable(GL_TEXTURE_2D);
+
+  glCullFace (GL_BACK);
+  glEnable (GL_CULL_FACE);
+  glEnable (GL_POLYGON_SMOOTH);
+
+//  glEnable(GL_LINE_SMOOTH);
+//  glEnable(GL_BLEND);
+//  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//  glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
 
   // Define material properties of specular color and degree of 
   // shininess.  Since this is only done once in this particular 

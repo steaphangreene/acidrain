@@ -28,13 +28,11 @@
 
 int main(int argc, char **argv) {
   int player_number = 1, ctr;
-  scene current_scene;
-  current_scene.matrix.type = SCENE_TYPE_MATRIX;
-  current_scene.matrix.objs = NULL;
+  scene current_scene = new_matrix_scene;
 
   srand(time(NULL));
 
-// if(!init_renderer(1024, 768)) {
+//  if(!init_renderer(1024, 768)) {
   if(!init_renderer(832, 624)) {
     fprintf(stderr, "Renderer failed to initialize!\n");
     exit(1);

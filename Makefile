@@ -3,8 +3,7 @@ LIBS:=	`sdl-config --libs` -L/usr/X11R6/lib -lGL -lGLU
 TSTR:=	$(shell date +"%Y%m%d%H%M")
 
 OBJS:=	main.o renderer.o input.o \
-	renderer_matrix.o renderer_real.o renderer_astral.o \
-	LivTyler.o
+	renderer_matrix.o renderer_real.o renderer_astral.o
 
 all:	acidrain
 
@@ -36,6 +35,3 @@ renderer_astral.o:	renderer_astral.c renderer.h scene.h
 
 input.o:	input.c input.h renderer.h
 	$(CC) -c input.c
-
-LivTyler.o:	LivTyler.c gimp.h
-	$(CC) -c LivTyler.c

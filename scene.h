@@ -37,6 +37,9 @@ typedef struct _matrix_obj {
 typedef struct _matrix_scene {
   int type;
   matrix_obj *objs;
+  double xoff, yoff; 
+  double xtarg, ytarg;
+  int move;
   } matrix_scene;
 
 typedef struct _real_scene {
@@ -53,5 +56,18 @@ typedef union _scene {
   real_scene real;
   astral_scene astral;
   } scene;
+
+const static scene new_matrix_scene = { matrix: {
+	SCENE_TYPE_MATRIX, NULL,
+	0.0, 0.0, 0.0, 0.0, -1
+	} };
+
+const static scene new_astral_scene = { astral: {
+	SCENE_TYPE_ASTRAL
+	} };
+
+const static scene new_real_scene = { real: {
+	SCENE_TYPE_REAL
+	} };
 
 #endif /* SCENE_H */

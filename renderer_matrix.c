@@ -37,10 +37,7 @@
 #define ICON_BURST	12
 #define ICON_PYRAMID	13
 
-static int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
-
-static double xoff=0.0, yoff=0.0, xtarg=0.0, ytarg=0.0;
-static int move = -1;
+static const int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
 
 const double moves[] = {
 	1.0/100.0,
@@ -54,6 +51,8 @@ const double moves[] = {
 	3.0/4.0,
 	1.0/1.0
 	};
+
+static matrix_scene *current_scene = NULL;
 
 void renderer_make_tile(void) {
   glNewList(IMAGE_TILE, GL_COMPILE);
@@ -183,10 +182,10 @@ void renderer_make_burst(void) {
 
   glColor3f(0.9, 0.9, 0.0);
   glTranslatef(0.0, 0.0, -ICON_RADIUS);
-  gluCylinder(quadObj, ICON_RADIUS, ICON_RADIUS, ICON_RADIUS*2.0, 16, 1);
+  gluCylinder(quadObj, ICON_RADIUS, 0.0, ICON_RADIUS*2.0, 16, 1);
 
   glTranslatef(0.0, 0.0, ICON_RADIUS*2.0);
-  gluDisk(quadObj2, 0.0, ICON_RADIUS, POLYCOUNT, 1);
+//  gluDisk(quadObj2, 0.0, ICON_RADIUS, POLYCOUNT, 1);
 
   glColor3f(0.0, 0.0, 0.0);
   glTranslatef(0.0, 0.0, -ICON_RADIUS-ICON_HEIGHT+0.01);
@@ -252,21 +251,24 @@ int init_renderer_matrix() {
 
 extern int phase;
 
-int render_scene_matrix(matrix_scene *current_scene, int player) {
+int render_scene_matrix(matrix_scene *cscene, int player) {
   int ctr;
-  matrix_obj *tmp = current_scene->objs;
+  matrix_obj *tmp = cscene->objs;
 
-  if(move >= 0) {
-    xoff += (double)(xtarg-xoff)*(double)moves[move];
-    yoff += (double)(ytarg-yoff)*(double)moves[move];
-    ++move;
-//    SDL_Delay(2000);
-    if(move >= 10) move = -1;
+  current_scene = cscene;
+
+  if(current_scene->move >= 0) {
+    current_scene->xoff +=
+	(double)(current_scene->xtarg-current_scene->xoff)*(double)moves[current_scene->move];
+    current_scene->yoff +=
+	(double)(current_scene->ytarg-current_scene->yoff)*(double)moves[current_scene->move];
+    ++current_scene->move;
+    if(current_scene->move >= 10) current_scene->move = -1;
     }
 
   for(ctr=0; ctr<100; ++ctr) {
-    double xpos = 0.5*((ctr%10)-4)-xoff;
-    double ypos = 0.5*((ctr/10)-4)-yoff;
+    double xpos = 0.5*((ctr%10)-4)-(current_scene->xoff);
+    double ypos = 0.5*((ctr/10)-4)-(current_scene->yoff);
 
     while(xpos < -2.5) xpos += 5.0;
     while(ypos < -2.5) ypos += 5.0;
@@ -280,8 +282,8 @@ int render_scene_matrix(matrix_scene *current_scene, int player) {
 
   while(tmp != NULL) {
     int tp = tmp->type, fac=1, ang;
-    double xpos = 0.5*(tmp->xp-4)-xoff;
-    double ypos = 0.5*(tmp->yp-4)-yoff;
+    double xpos = 0.5*(tmp->xp-4)-(current_scene->xoff);
+    double ypos = 0.5*(tmp->yp-4)-(current_scene->yoff);
 
     if(tp == MATRIX_FAKE) { tp = tmp->stat; fac=-1; }
 
@@ -305,27 +307,34 @@ int render_scene_matrix(matrix_scene *current_scene, int player) {
   }
 
 void clicked_matrix(double x, double y, int b) {
-  if(move == -1 && b == 3) {
-    x*=8;  x+=9.5;
-    y*=8;  y+=9.5;
-    if(((int)x & 1) == 1 && ((int)y & 1) == 1) {
-      int ix = ((int)x)/2;
-      int iy = ((int)y)/2;
-      xtarg += 4.5;  xoff += 4.5;
-      ytarg += 4.5;  yoff += 4.5;
-      xtarg += ((double)ix-4)/2.0;
-      ytarg += ((double)iy-4)/2.0;
-      while(xtarg > 4.5) { xtarg -= 4.5; xoff -= 4.5; }
-      while(ytarg > 4.5) { ytarg -= 4.5; yoff -= 4.5; }
-      if(xtarg != xoff || ytarg != yoff) move = 0;
+  if(current_scene->move == -1 && b == 3) {
+    x*=4;  x+=4.5;
+    y*=4;  y+=4.5;
+    { int ix = ((int)x);
+      int iy = ((int)y);
+      current_scene->xtarg += 4.5;  current_scene->xoff += 4.5;
+      current_scene->ytarg += 4.5;  current_scene->yoff += 4.5;
+      current_scene->xtarg += ((double)ix-4)/2.0;
+      current_scene->ytarg += ((double)iy-4)/2.0;
+      while(current_scene->xtarg > 4.5) {
+	current_scene->xtarg -= 4.5;
+	current_scene->xoff -= 4.5;
+	}
+      while(current_scene->ytarg > 4.5) {
+	current_scene->ytarg -= 4.5;
+	current_scene->yoff -= 4.5;
+	}
+      if(current_scene->xtarg != current_scene->xoff
+		|| current_scene->ytarg != current_scene->yoff)
+	current_scene->move = 0;
       }
     }
   if(b == 4) {
-    ytarg -= 0.5;
-    move = 0;
+    current_scene->ytarg -= 0.5;
+    current_scene->move = 0;
     }
   if(b == 5) {
-    ytarg += 0.5;
-    move = 0;
+    current_scene->ytarg += 0.5;
+    current_scene->move = 0;
     }
   }
