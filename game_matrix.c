@@ -255,7 +255,7 @@ void dial_digit(long long digit) {
   }
 
 void keypressed_matrix(matrix_scene *cscene, int k) {
-  if(cview.movet == MOVE_NONE && k == SDLK_d && cscene->funcs & FUNC_DIAL) {
+  if(cview.movet == MOVE_NONE && k == SDLK_F5 && cscene->funcs & FUNC_DIAL) {
     cview.movet = MOVE_RUN_DIAL;
     cview.move = 0;
     cview.data = 0;
@@ -278,13 +278,13 @@ void keypressed_matrix(matrix_scene *cscene, int k) {
       cview.move = 0;
       ++cview.data;	// 0000000000 is a valid number!
       }
-    else if(k == SDLK_d) {
+    else if(k == SDLK_F5) {
       cview.movet = MOVE_NONE;
       cview.move = 0;
       cview.data = 0;
       }
     }
-  else if(cview.movet == MOVE_NONE && k == SDLK_s) {
+  else if(cview.movet == MOVE_NONE && k == SDLK_F6) {
     cview.movet = MOVE_RUN_SCAN;
     cview.move = 0;
     }

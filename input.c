@@ -41,7 +41,7 @@ int input_process(scene *current_scene, int player_number) {
 	if (event.key.keysym.sym == SDLK_ESCAPE) {
 	  user_quit = 1;
 	  }
-	else if (event.key.keysym.sym == SDLK_F8) {
+	else if (event.key.keysym.sym == SDLK_F4) {
 	  fucked = !fucked;
 	  }
 	else if (event.key.keysym.sym == SDLK_F1) {
