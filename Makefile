@@ -57,7 +57,7 @@ input.o: input.c input.h scene.h renderer.h game.h
 main.o: main.c renderer.h scene.h input.h
 renderer.o: renderer.c renderer.h scene.h game.h
 renderer_astral.o: renderer_astral.c renderer.h scene.h
-renderer_matrix.o: renderer_matrix.c renderer.h scene.h scene_matrix.h
+renderer_matrix.o: renderer_matrix.c renderer.h scene.h game.h scene_matrix.h
 renderer_real.o: renderer_real.c renderer.h scene.h
 scene.o: scene.c scene.h
 scene_astral.o: scene_astral.c scene.h

@@ -23,7 +23,8 @@
 extern scene *scene_list[];
 extern SceneID csnum;
 
-void link_nodes(SceneID id1, int x1, int y1, SceneID id2, int x2, int y2) {
+void link_nodes(SceneID id1, int x1, int y1, int c1,
+		SceneID id2, int x2, int y2, int c2) {
   matrix_obj *p1, *p2;
 
   if(scene_list[id1] == NULL) {
@@ -36,6 +37,7 @@ void link_nodes(SceneID id1, int x1, int y1, SceneID id2, int x2, int y2) {
   p1->type = MATRIX_PORT;
   p1->stat = id2;
   p1->stat2 = COORD_ENCODE(x2, y2);
+  p1->conceal = c1;
   scene_list[id1]->matrix.objs[x1][y1] = p1;
 
   if(scene_list[id2] == NULL) {
@@ -48,6 +50,7 @@ void link_nodes(SceneID id1, int x1, int y1, SceneID id2, int x2, int y2) {
   p2->type = MATRIX_PORT;
   p2->stat = id1;
   p2->stat2 = COORD_ENCODE(x1, y1);
+  p2->conceal = c2;
   scene_list[id2]->matrix.objs[x2][y2] = p2;
   }
 
@@ -76,7 +79,7 @@ scene *generate_scene_matrix(SceneID id) {
 	tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
 	tmp->type = rn+1;
 	if(tmp->type == MATRIX_PORT) {
-	  link_nodes(id, xp, yp, new_scene(), 1+rand()%7, 1+rand()%7);
+	  link_nodes(id, xp, yp, 0, new_scene(), 1+rand()%7, 1+rand()%7, 0);
 	  }
 	else if(tmp->type == MATRIX_DATABIN) {
 	  tmp->stat = rand()%4+1;
@@ -111,13 +114,13 @@ scene *generate_scene_matrix(SceneID id) {
 	next = new_scene();
 	if(ltg_tp[ctr]) {
 	  int rnd = rand()%ltg_digits;
-	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr],
-	             next, ltg_xp[rnd], ltg_yp[rnd]);
+	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 0,
+	             next, ltg_xp[rnd], ltg_yp[rnd], 4);
 	  scene_list[next]->any.init = NODE_LTG8;
 	  }
 	else {
-	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr],
-	             next, 1+rand()%7, 1+rand()%7);
+	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4,
+	             next, 1+rand()%7, 1+rand()%7, 0);
 	  scene_list[next]->any.init = SCENE_UNKNOWN;
 	  scene_list[next]->matrix.zone = ZONE_WELCOME;
 	  }
@@ -135,12 +138,12 @@ scene *generate_scene_matrix(SceneID id) {
 	next = new_scene();
 	if(ltg_tp[ctr]) {
 	  int rnd = rand()%ltg_digits;
-	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr],
-	             next, ltg_xp[rnd], ltg_yp[rnd]);
+	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 0,
+	             next, ltg_xp[rnd], ltg_yp[rnd], 4);
 	  scene_list[next]->any.init = scene_list[id]->any.init-1;
 	  }
 	else {
-	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], next, 4, 4);
+	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
 	  scene_list[next]->any.init = scene_list[id]->any.init+1;
 	  }
 	}
@@ -154,7 +157,7 @@ scene *generate_scene_matrix(SceneID id) {
     for(ctr=0; ctr<ltg_digits; ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
 	next = new_scene();
-	link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], next, 4, 4);
+	link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
 	scene_list[next]->any.init = NODE_LTG1;
 	}
       }
@@ -176,36 +179,25 @@ void init_scenes_matrix(void) {
   scene_list[0]->matrix.zone = ZONE_OWNED;
 
   tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
-  tmp->type = MATRIX_PORT;
-  tmp->stat = 1;
-  tmp->stat2 = COORD_ENCODE(ltg_xp[rnd], ltg_yp[rnd]);
-  scene_list[0]->matrix.objs[4][4] = tmp;
-
-  tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
   tmp->type = MATRIX_DATAFILE;
   tmp->stat = 1;
+  tmp->conceal = 0;
   scene_list[0]->matrix.objs[3][6] = tmp;
 
   tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
   tmp->type = MATRIX_DATAFILE;
   tmp->stat = 1;
+  tmp->conceal = 0;
   scene_list[0]->matrix.objs[4][6] = tmp;
 
   tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
   tmp->type = MATRIX_DATAFILE;
   tmp->stat = 1;
+  tmp->conceal = 0;
   scene_list[0]->matrix.objs[5][6] = tmp;
 
   scene_list[0]->any.init = SCENE_KNOWN;
 
-
-  scene_list[1] = (scene*)malloc(sizeof(scene));
-  (*scene_list[1]) = new_matrix_scene;
+  link_nodes(0, 4, 4, 0, 1, ltg_xp[rnd], ltg_yp[rnd], 0);
   scene_list[1]->any.init = NODE_LTG9;
-
-  tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
-  tmp->type = MATRIX_PORT;
-  tmp->stat = 0;
-  tmp->stat2 = COORD_ENCODE(4, 4);
-  scene_list[1]->matrix.objs[ltg_xp[rnd]][ltg_yp[rnd]] = tmp;
   }

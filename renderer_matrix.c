@@ -23,6 +23,7 @@
 #include <math.h>
 
 #include "renderer.h"
+#include "game.h"
 #include "scene.h"
 #include "scene_matrix.h"
 
@@ -312,6 +313,14 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 	if(tp == MATRIX_FAKE) {
 	  tp = cscene->objs[xp][yp]->stat; fac=-1;
 	  }
+	else if(cscene->objs[xp][yp]->conceal != 0) {
+	  if(cscene->objs[xp][yp]->conceal < 0) continue;
+	  if(roll(6, cscene->objs[xp][yp]->conceal) < 1) {
+	    cscene->objs[xp][yp]->conceal = -(cscene->objs[xp][yp]->conceal);
+	    continue;
+	    }
+	  cscene->objs[xp][yp]->conceal = 0;
+	  }
 
 	while(xpos < -2.25) xpos += 4.5;
 	while(ypos < -2.25) ypos += 4.5;
@@ -334,8 +343,61 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
       }
     }
 
+  if(cview.movet >= MOVE_RUN_DIAL00 && cview.movet <= MOVE_RUN_DIAL10) {
+    int ctr;
+
+    glLoadIdentity();
+    glNormal3d( 0.0,  0.0,  1.0);
+    glBegin(GL_QUADS);
+
+    glColor3f(0.0, 0.0, 0.0);
+    glVertex3d( 1.01, -0.16, -4.51);
+    glVertex3d( 1.01,  0.16, -4.51);
+    glVertex3d(-1.01,  0.16, -4.51);
+    glVertex3d(-1.01, -0.16, -4.51);
+
+    glColor3f(1.0, 1.0, 1.0);
+    glVertex3d( 1.00, -0.15, -4.50);
+    glVertex3d( 1.00,  0.15, -4.50);
+    glVertex3d(-1.00,  0.15, -4.50);
+    glVertex3d(-1.00, -0.15, -4.50);
+
+    if(cview.movet != MOVE_RUN_DIAL10)
+      glColor3f(1.0, 0.0, 0.0);
+    else
+      glColor3f(0.0, 1.0, 0.0);
+    for(ctr = 0; ctr < cview.movet-MOVE_RUN_DIAL00; ++ctr) {
+      double basex = -1.0 + 0.20*(double)ctr;
+      glVertex3d( basex+0.02, -0.1, -4.49);
+      glVertex3d( basex+0.02,  0.1, -4.49);
+      glVertex3d( basex+0.18,  0.1, -4.49);
+      glVertex3d( basex+0.18, -0.1, -4.49);
+      }
+
+    glEnd();
+    }
+
+  if(cview.movet == MOVE_RUN_SCAN) {
+    GLdouble prog;
+
+    prog = -2.25 + (0.025 * (GLdouble)(cview.move));
+
+    glLoadIdentity();
+    glColor3f(0.0, 0.0, 1.0);
+    glBegin(GL_QUADS);
+
+    glNormal3d(0.0, -1.0, 0.0);
+    glVertex3d(-5.0, prog, -7.0);
+    glVertex3d(-5.0, prog, -5.0);
+    glVertex3d( 5.0, prog, -5.0);
+    glVertex3d( 5.0, prog, -7.0);
+
+    glEnd();
+    }
+
   glFlush();
   SDL_GL_SwapBuffers();
 
   return 1;
   }
+

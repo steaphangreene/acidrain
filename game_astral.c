@@ -27,5 +27,12 @@
 void clicked_astral(astral_scene *current_scene, double x, double y, int b) {
   }
 
+void panel_clicked_astral(astral_scene *current_scene, double x, double y, int b) {
+  }
+
 void update_viewport_astral(astral_scene *cscene) {
   }
+
+void keypressed_astral(astral_scene *cscene, int k) {
+  }
+

@@ -14,6 +14,8 @@
 // must have the author's permission, and may be subject to a royaltee fee.
 // *************************************************************************
 
+#include <SDL/SDL.h>
+
 #include "scene.h"
 #include "scene_matrix.h"
 #include "game.h"
@@ -27,7 +29,7 @@ void clicked_matrix(matrix_scene *cscene, double x, double y, int b) {
     int yp = MATRIX_CONVXD(cview.yoff + (y*2.0));
     matrix_obj *tmp = cscene->objs[xp][yp];
 
-    if(tmp != NULL) {
+    if(tmp != NULL && tmp->conceal == 0) {
       int xo = MATRIX_CONVXD((x*2.0));
       int yo = MATRIX_CONVXD((y*2.0));
       cview.xtarg += 4.5;  cview.xoff += 4.5;
@@ -87,6 +89,9 @@ void clicked_matrix(matrix_scene *cscene, double x, double y, int b) {
   }
 
 
+void panel_clicked_matrix(matrix_scene *cscene, double x, double y, int b) {
+  }
+
 void update_viewport_matrix(matrix_scene *cscene) {
   if(cview.movet == MOVE_RECENTER || cview.movet == MOVE_TARGET) {
     cview.xoff += (double)(cview.xtarg-cview.xoff)*moves[cview.move];
@@ -139,5 +144,57 @@ void update_viewport_matrix(matrix_scene *cscene) {
       cview.spread = 1.0;
       cview.movet = MOVE_NONE;
       }
+    }
+
+  else if(cview.movet == MOVE_RUN_SCAN) {
+    ++cview.move; 
+    if(cview.move %20 == 10) {
+      int xp, yp = MATRIX_CONVYD(cview.yoff - 2.5 + 0.025*(double)(cview.move));
+      for(xp=0; xp<8; ++xp) {
+	if(cscene->objs[xp][yp] != NULL && cscene->objs[xp][yp]->conceal < 0) {
+	  if(roll(6, -(cscene->objs[xp][yp]->conceal) > 0))
+	    cscene->objs[xp][yp]->conceal = 0;
+	  }
+	}
+      }
+    else if(cview.move >= 180) {
+      cview.movet = MOVE_NONE;
+      }
+    }
+  }
+
+void keypressed_matrix(matrix_scene *cscene, int k) {
+  if(cview.movet == MOVE_NONE && k == SDLK_d) {
+    cview.movet = MOVE_RUN_DIAL00;
+    cview.move = 0;
+    }
+  else if(cview.movet <= MOVE_RUN_DIAL10 && cview.movet >= MOVE_RUN_DIAL00) {
+    if(k >= SDLK_KP0 && k <= SDLK_KP9 && cview.movet != MOVE_RUN_DIAL10) {
+      cview.move *= 10;
+      cview.move += k-SDLK_KP0;
+      ++cview.movet;
+      }
+    else if(k >= SDLK_0 && k <= SDLK_9 && cview.movet != MOVE_RUN_DIAL10) {
+      cview.move *= 10;
+      cview.move += k-SDLK_0;
+      ++cview.movet;
+      }
+    else if(k == SDLK_BACKSPACE || k == SDLK_DELETE) {
+      cview.move /= 10;
+      --cview.movet;
+      if(cview.movet < MOVE_RUN_DIAL00) cview.movet = MOVE_NONE;
+      }
+    else if((k == SDLK_RETURN || k == SDLK_KP_ENTER)) {
+      cview.movet = MOVE_NONE;
+      cview.move = 0;
+      }
+    else if(k == SDLK_d) {
+      cview.movet = MOVE_NONE;
+      cview.move = 0;
+      }
+    }
+  else if(cview.movet == MOVE_NONE && k == SDLK_s) {
+    cview.movet = MOVE_RUN_SCAN;
+    cview.move = 0;
     }
   }

@@ -40,13 +40,16 @@ int input_process(scene *current_scene, int player_number) {
 	if (event.key.keysym.sym == SDLK_ESCAPE) {
 	  user_quit = 1;
 	  }
-	else if (event.key.keysym.sym == SDLK_SPACE) {
+	else if (event.key.keysym.sym == SDLK_SCROLLOCK) {
 	  fucked = !fucked;
 	  }
 	else if (event.key.keysym.sym == SDLK_RETURN
 		&& ((event.key.keysym.mod & KMOD_LALT)
 		|| (event.key.keysym.mod & KMOD_RALT))) {
 	  toggle_fullscreen();
+	  }
+	else {
+	  keypressed(current_scene, event.key.keysym.sym);
 	  }
 	} break;
       case(SDL_QUIT): {

@@ -27,5 +27,11 @@
 void clicked_real(real_scene *current_scene, double x, double y, int b) {
   }
 
+void panel_clicked_real(real_scene *current_scene, double x, double y, int b) {
+  }
+
 void update_viewport_real(real_scene *cscene) {
+  }
+
+void keypressed_real(real_scene *cscene, int k) {
   }

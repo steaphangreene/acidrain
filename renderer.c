@@ -25,8 +25,6 @@
 #include "renderer.h"
 #include "game.h"
 
-//#include "gimp.h"
-
 static SDL_Surface *surface = NULL;
 static int videoFlags = 0;
 
@@ -42,10 +40,11 @@ int phase = 0;
 //static unsigned int tex_panel = 0;
 
 void load_textures(void) {
-//  glGenTextures(1, &Liv);
-//  glBindTexture(GL_TEXTURE_2D, Liv);
-//  gluBuild2DMipmaps(GL_TEXTURE_2D, 3, LivTyler.width, LivTyler.height,
-//	GL_RGB, GL_UNSIGNED_BYTE, LivTyler.pixel_data);
+//  glGenTextures(1, &tex_panel);
+//  glBindTexture(GL_TEXTURE_2D, tex_panel);
+//  gluBuild2DMipmaps(GL_TEXTURE_2D, 3,
+//	panel_matrix_grap.width, panel_matrix_grap.height,
+//	GL_RGB, GL_UNSIGNED_BYTE, panel_matrix_grap.pixel_data);
 //  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
   }
 

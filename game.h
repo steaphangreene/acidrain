@@ -19,19 +19,32 @@
 
 #include "scene.h"
 
+int roll(int ndice, int targ);
+
 void set_scene(SceneID);
 
-void panel_clicked(scene *, double x, double y, int b);
+void clicked(scene *, double x, double y, int b);
 void clicked(scene *, double x, double y, int b);
 void update_viewport(scene *);
+void keypressed(scene *, int);
 
 //Internal use only!
 void clicked_matrix(matrix_scene *, double, double, int);
 void clicked_real(real_scene *, double, double, int);
 void clicked_astral(astral_scene *, double, double, int);
 
+void panel_clicked(scene *, double x, double y, int b);
+void panel_clicked_matrix(matrix_scene *, double, double, int);
+void panel_clicked_real(real_scene *, double, double, int);
+void panel_clicked_astral(astral_scene *, double, double, int);
+
 void update_viewport_matrix(matrix_scene *);
 void update_viewport_real(real_scene *);
 void update_viewport_astral(astral_scene *);
+
+void keypressed_matrix(matrix_scene *, int);
+void keypressed_real(real_scene *, int);
+void keypressed_astral(astral_scene *, int);
+
 
 #endif /* GAME_H */
