@@ -250,10 +250,10 @@ void __render_panel(scene *current_scene, int player) {
   glColor3f(6.0, 6.0, 6.0);
   glNormal3d(0.0, 0.0, 1.0);
   glBegin(GL_QUADS);
-  glVertex3d(1.0, -1.0, -3.0);
-  glVertex3d(2.0, -1.0, -3.0);
-  glVertex3d(2.0, 1.0, -3.0);
-  glVertex3d(1.0, 1.0, -3.0);
+  glVertex3d(1.5, -1.5, -4.5);
+  glVertex3d(2.5, -1.5, -4.5);
+  glVertex3d(2.5, 1.5, -4.5);
+  glVertex3d(1.5, 1.5, -4.5);
   glEnd();
   }
 
