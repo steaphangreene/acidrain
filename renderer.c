@@ -48,18 +48,18 @@ void load_textures(void) {
 
 void render_panel(scene *cscene, int player) {
   current_scene = cscene;
-  glBindTexture(GL_TEXTURE_2D, tex_panel);
+//  glBindTexture(GL_TEXTURE_2D, tex_panel);
   glLoadIdentity();
   glColor3d(1.0, 1.0, 1.0);
   glNormal3d(0.0, 0.0, 1.0);
   glBegin(GL_QUADS);
-  glTexCoord2f(0.0f, 0.0f);
+//  glTexCoord2f(0.0f, 0.0f);
   glVertex3d(1.5, -1.5, -4.5);
-  glTexCoord2f(1.0f, 0.0f);
+//  glTexCoord2f(1.0f, 0.0f);
   glVertex3d(2.5, -1.5, -4.5);
-  glTexCoord2f(1.0f, 1.0f);
+//  glTexCoord2f(1.0f, 1.0f);
   glVertex3d(2.5, 1.5, -4.5);
-  glTexCoord2f(0.0f, 1.0f);
+//  glTexCoord2f(0.0f, 1.0f);
   glVertex3d(1.5, 1.5, -4.5);
   glEnd();
   }
@@ -84,6 +84,7 @@ int init_renderer(int xs, int ys) {
   videoFlags |= SDL_GL_DOUBLEBUFFER;
   videoFlags |= SDL_HWPALETTE;
   videoFlags |= SDL_RESIZABLE;
+  videoFlags |= SDL_FULLSCREEN;
 
   /* Use HW Survaces if possible */
   if(videoInfo->hw_available) videoFlags |= SDL_HWSURFACE;
@@ -108,8 +109,8 @@ int init_renderer(int xs, int ys) {
   glClearColor(0.0, 0.0, 0.0, 0.0);
 
   // Set the shading model
-  glShadeModel(GL_SMOOTH);
-//  glShadeModel(GL_FLAT);
+//  glShadeModel(GL_SMOOTH);
+  glShadeModel(GL_FLAT);
 
   // Set the polygon mode to fill
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -117,11 +118,11 @@ int init_renderer(int xs, int ys) {
   // Enable depth testing for hidden line removal
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
-  glEnable(GL_TEXTURE_2D);
+//  glEnable(GL_TEXTURE_2D);
 
-  glCullFace (GL_BACK);
-  glEnable (GL_CULL_FACE);
-  glEnable (GL_POLYGON_SMOOTH);
+//  glCullFace (GL_BACK);
+//  glEnable (GL_CULL_FACE);
+//  glEnable (GL_POLYGON_SMOOTH);
 
 //  glEnable(GL_LINE_SMOOTH);
 //  glEnable(GL_BLEND);
