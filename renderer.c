@@ -84,7 +84,7 @@ int init_renderer(int xs, int ys) {
   videoFlags |= SDL_GL_DOUBLEBUFFER;
   videoFlags |= SDL_HWPALETTE;
   videoFlags |= SDL_RESIZABLE;
-  videoFlags |= SDL_FULLSCREEN;
+//  videoFlags |= SDL_FULLSCREEN;
 
   /* Use HW Survaces if possible */
   if(videoInfo->hw_available) videoFlags |= SDL_HWSURFACE;
@@ -109,8 +109,8 @@ int init_renderer(int xs, int ys) {
   glClearColor(0.0, 0.0, 0.0, 0.0);
 
   // Set the shading model
-//  glShadeModel(GL_SMOOTH);
-  glShadeModel(GL_FLAT);
+  glShadeModel(GL_SMOOTH);
+//  glShadeModel(GL_FLAT);
 
   // Set the polygon mode to fill
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

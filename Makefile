@@ -2,12 +2,12 @@ TSTR:=	$(shell date +"%Y%m%d%H%M")
 
 CC:=	gcc -O2 -Wall
 LIBS:=	`sdl-config --libs` -L/usr/X11R6/lib -lGL -lGLU
-OBJS:=	main.o renderer.o input.o \
+OBJS:=	main.o renderer.o input.o scene.o \
 	renderer_matrix.o renderer_real.o renderer_astral.o
 
 WCC:=	cross-gcc.sh -O2 -Wall
 WLIBS:=	`cross-exec.sh sdl-config --libs` -lopengl32 -lglu32
-WOBJS:=	main.obj renderer.obj input.obj \
+WOBJS:=	main.obj renderer.obj input.obj scene.obj \
 	renderer_matrix.obj renderer_real.obj renderer_astral.obj
 
 all:	acidrain
@@ -63,3 +63,9 @@ input.o:	input.c input.h renderer.h
 
 input.obj:	input.c input.h renderer.h
 	$(WCC) -c input.c -o input.obj
+
+scene.o:	scene.c scene.h renderer.h
+	$(CC) -c scene.c
+
+scene.obj:	scene.c scene.h renderer.h
+	$(WCC) -c scene.c -o scene.obj

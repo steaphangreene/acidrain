@@ -27,6 +27,8 @@
 #define MATRIX_CONTROL	4
 #define MATRIX_FAKE	5
 
+#include <stdio.h> // for NULL
+
 typedef struct _matrix_obj {
   int type;
   int xp, yp;
