@@ -51,6 +51,14 @@
 #define NODE_LTG8	108
 #define NODE_LTG9	109
 
+#define ZONE_UNKNOWN	0
+#define ZONE_OWNED	1
+#define ZONE_PUBLIC	2
+#define ZONE_WELCOME	3
+#define ZONE_PRIVATE	4
+#define ZONE_PROTECTED	5
+#define ZONE_SECURE	6
+
 #define MOVE_NONE	0
 #define MOVE_RECENTER	1
 #define MOVE_TRAVEL1	2
@@ -66,6 +74,7 @@ typedef struct _matrix_obj {
 typedef struct _matrix_scene {
   int type;
   int init;
+  int zone;
   matrix_obj *objs[MATRIX_X][MATRIX_Y];
   } matrix_scene;
 
@@ -93,7 +102,7 @@ typedef union _scene {
   } scene;
 
 const static scene new_matrix_scene = { matrix: {
-	SCENE_TYPE_MATRIX, SCENE_UNKNOWN,
+	SCENE_TYPE_MATRIX, SCENE_UNKNOWN, ZONE_UNKNOWN,
 	{{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },

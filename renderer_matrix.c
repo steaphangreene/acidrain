@@ -342,7 +342,24 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
 
     glLoadIdentity();
     glTranslatef(xpos, ypos, ICON_DEPTH-ICON_HEIGHT);
-    glColor3f(0.0, 0.8, 0.8);
+    if(cscene->zone == ZONE_OWNED) {
+      glColor3f(0.7, 0.7, 0.7);
+      }
+    else if(cscene->zone == ZONE_PUBLIC) {
+      glColor3f(0.0, 0.9, 0.0);
+      }
+    else if(cscene->zone == ZONE_WELCOME) {
+      glColor3f(0.0, 0.8, 0.8);
+      }
+    else if(cscene->zone == ZONE_PRIVATE) {
+      glColor3f(0.3, 0.3, 0.3);
+      }
+    else if(cscene->zone == ZONE_PROTECTED) {
+      glColor3f(0.8, 0.4, 0.0);
+      }
+    else if(cscene->zone == ZONE_SECURE) {
+      glColor3f(0.8, 0.0, 0.0);
+      }
     glCallList(IMAGE_TILE);
     }
 

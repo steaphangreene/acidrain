@@ -36,6 +36,9 @@ scene *generate_scene_matrix(SceneID id) {
     }
 
   if(scene_list[id]->any.init == SCENE_UNKNOWN) {
+    if(scene_list[id]->matrix.zone == ZONE_UNKNOWN) {
+      scene_list[id]->matrix.zone = ZONE_PRIVATE;
+      }
     for(xp=0; xp<MATRIX_X; ++xp) {
       for(yp=0; yp<MATRIX_Y; ++yp) {
 	int rn;
@@ -90,6 +93,8 @@ scene *generate_scene_matrix(SceneID id) {
     int ctr;
     SceneID next, nxp, nyp;
 
+    scene_list[id]->matrix.zone = ZONE_PUBLIC;
+
     for(ctr=0; ctr<11; ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
 	next = new_scene();
@@ -104,6 +109,7 @@ scene *generate_scene_matrix(SceneID id) {
 	else {
 	  nxp = 1+rand()%7;  nyp = 1+rand()%7;
 	  scene_list[next]->any.init = SCENE_UNKNOWN;
+	  scene_list[next]->matrix.zone = ZONE_WELCOME;
 	  }
 
 	tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
@@ -124,6 +130,8 @@ scene *generate_scene_matrix(SceneID id) {
   		&& scene_list[id]->any.init < NODE_LTG9) {
     int ctr;
     SceneID next, nxp, nyp;
+
+    scene_list[id]->matrix.zone = ZONE_PUBLIC;
 
     for(ctr=0; ctr<11; ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
@@ -158,6 +166,8 @@ scene *generate_scene_matrix(SceneID id) {
   else if(scene_list[id]->any.init == NODE_LTG0) {
     int ctr;
     SceneID next, nxp, nyp;
+
+    scene_list[id]->matrix.zone = ZONE_PUBLIC;
 
     for(ctr=0; ctr<10; ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
@@ -196,6 +206,7 @@ void init_scenes_matrix(void) {
 
   scene_list[0] = (scene*)malloc(sizeof(scene));
   (*scene_list[0]) = new_matrix_scene;
+  scene_list[0]->matrix.zone = ZONE_OWNED;
 
   tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
   tmp->type = MATRIX_PORT;
