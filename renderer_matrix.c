@@ -87,7 +87,7 @@ void load_xpm_texture(unsigned int tex, char *xpm[]) {
 	tmp[(y*width+x)*4+0] = 255;
 	tmp[(y*width+x)*4+1] = 255;
 	tmp[(y*width+x)*4+2] = 255;
-	tmp[(y*width+x)*4+3] = 0;
+	tmp[(y*width+x)*4+3] = 255;
 	}
       }
     }
@@ -133,35 +133,35 @@ void renderer_make_tile(void) {
 
   glBegin(GL_QUADS);
 
-  glNormal3d(-1.0,   0.0,   1.0);
+  glNormal3d(-1.0,   0.0,   -1.0);
   glVertex3d(-0.25, -0.25, -0.02);
   glVertex3d(-0.25,  0.25, -0.02);
   glVertex3d(-0.23,  0.23,  0.00);
   glVertex3d(-0.23, -0.23,  0.00);
 
-  glNormal3d( 0.0,  -1.0,   1.0);
+  glNormal3d( 0.0,  -1.0,   -1.0);
   glVertex3d(-0.25, -0.25, -0.02);
-  glVertex3d( 0.25, -0.25, -0.02);
-  glVertex3d( 0.23, -0.23,  0.00);
   glVertex3d(-0.23, -0.23,  0.00);
-
-  glNormal3d( 1.0,   0.0,   1.0);
-  glVertex3d( 0.25, -0.25, -0.02);
-  glVertex3d( 0.25,  0.25, -0.02);
-  glVertex3d( 0.23,  0.23,  0.00);
   glVertex3d( 0.23, -0.23,  0.00);
+  glVertex3d( 0.25, -0.25, -0.02);
 
-  glNormal3d( 0.0,   1.0,   1.0);
+  glNormal3d( 1.0,   0.0,   -1.0);
+  glVertex3d( 0.25, -0.25, -0.02);
+  glVertex3d( 0.23, -0.23,  0.00);
+  glVertex3d( 0.23,  0.23,  0.00);
+  glVertex3d( 0.25,  0.25, -0.02);
+
+  glNormal3d( 0.0,   1.0,   -1.0);
   glVertex3d(-0.25,  0.25, -0.02);
   glVertex3d( 0.25,  0.25, -0.02);
   glVertex3d( 0.23,  0.23,  0.00);
   glVertex3d(-0.23,  0.23,  0.00);
 
-  glNormal3d( 0.0,   0.0,   1.0);
+  glNormal3d( 0.0,   0.0,   -1.0);
   glVertex3d(-0.23, -0.23,  0.00);
-  glVertex3d( 0.23, -0.23,  0.00);
-  glVertex3d( 0.23,  0.23,  0.00);
   glVertex3d(-0.23,  0.23,  0.00);
+  glVertex3d( 0.23,  0.23,  0.00);
+  glVertex3d( 0.23, -0.23,  0.00);
 
   // No Bottom Drawn
 
@@ -217,43 +217,43 @@ void renderer_make_cube(void) {
 
   glNormal3d(0.0, -1.0, 0.0);
   glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
-  glVertex3d(ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
-  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
   glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
 
   glNormal3d(-1.0, 0.0, 0.0);
   glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
-  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
-  glVertex3d(-ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
   glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
 
   glNormal3d(0.0, 1.0, 0.0);
   glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
-  glVertex3d(-ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
-  glVertex3d(ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
   glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d(-ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
 
   glNormal3d(1.0, 0.0, 0.0);
   glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_RADIUS);
-  glVertex3d(ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
-  glVertex3d(ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
   glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_RADIUS);
-
-  glNormal3d(0.0, 0.0, 1.0);
-  glVertex3d(-ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
   glVertex3d(ICON_RADIUS, -ICON_RADIUS, ICON_RADIUS);
   glVertex3d(ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+
+  glNormal3d(0.0, 0.0, -1.0);
+  glVertex3d(-ICON_RADIUS,-ICON_RADIUS, ICON_RADIUS);
   glVertex3d(-ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d( ICON_RADIUS, ICON_RADIUS, ICON_RADIUS);
+  glVertex3d( ICON_RADIUS,-ICON_RADIUS, ICON_RADIUS);
 
   // No Bottom Drawn
 
   // Shadow
   glColor3f(0.0, 0.0, 0.0);
-  glNormal3d(0.0, 0.0, 1.0);
+  glNormal3d(0.0, 0.0, -1.0);
   glVertex3d(-ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
-  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
   glVertex3d(-ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glVertex3d(ICON_RADIUS, ICON_RADIUS, -ICON_HEIGHT+0.01);
+  glVertex3d(ICON_RADIUS, -ICON_RADIUS, -ICON_HEIGHT+0.01);
 
   glEnd();
 
@@ -348,22 +348,22 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
   int ctr, xp, yp;
 
   if(cscene->zone == ZONE_OWNED) {
-    glColor3f(1.0, 1.0, 1.0);
+    glColor3f(0.7, 0.7, 0.7);
     }
   else if(cscene->zone == ZONE_PUBLIC) {
-    glColor3f(0.0, 0.9, 0.0);
+    glColor3f(0.0, 0.6, 0.0);
     }
   else if(cscene->zone == ZONE_WELCOME) {
-    glColor3f(0.0, 0.8, 0.8);
+    glColor3f(0.0, 0.6, 0.6);
     }
   else if(cscene->zone == ZONE_PRIVATE) {
     glColor3f(0.3, 0.3, 0.3);
     }
   else if(cscene->zone == ZONE_PROTECTED) {
-    glColor3f(0.8, 0.4, 0.0);
+    glColor3f(0.6, 0.3, 0.0);
     }
   else if(cscene->zone == ZONE_SECURE) {
-    glColor3f(0.8, 0.0, 0.0);
+    glColor3f(0.6, 0.0, 0.0);
     }
   for(ctr=0; ctr<100; ++ctr) {
     double xpos = 0.5*((ctr%10)-4)-(cview.xoff);
@@ -429,14 +429,14 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     for(ctr=10; ctr>cview.move; --ctr) base /= 10;
 
     glLoadIdentity();
-    glNormal3d( 0.0,  0.0,  1.0);
+    glNormal3d( 0.0,  0.0,  -1.0);
 
     glBegin(GL_QUADS);
     glColor3f(0.0, 0.0, 0.0);
     glVertex3d( 1.00, -0.15, -4.50);
-    glVertex3d( 1.00,  0.15, -4.50);
-    glVertex3d(-1.00,  0.15, -4.50);
     glVertex3d(-1.00, -0.15, -4.50);
+    glVertex3d(-1.00,  0.15, -4.50);
+    glVertex3d( 1.00,  0.15, -4.50);
     glEnd();
 
     if(cview.move != 10)
@@ -444,17 +444,16 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     else
       glColor3f(0.0, 1.0, 0.0);
 
-//    glColor3f(1.0, 1.0, 1.0);
     glBegin(GL_QUADS);
     glVertex3d( 1.01, -0.16, -4.51);
-    glVertex3d( 1.01,  0.16, -4.51);
-    glVertex3d(-1.01,  0.16, -4.51);
     glVertex3d(-1.01, -0.16, -4.51);
+    glVertex3d(-1.01,  0.16, -4.51);
+    glVertex3d( 1.01,  0.16, -4.51);
     glEnd();
 
     for(ctr = 0; ctr < cview.move; ++ctr) {
       double basex = -1.0 + 0.20*(double)ctr;
-      glBindTexture(GL_TEXTURE_2D, tex_digit[(cview.data/base)%10LL]);
+      glBindTexture(GL_TEXTURE_2D, tex_digit[(cview.data/base)%10]);
 
       glBegin(GL_QUADS);
       glTexCoord2f(0.0f, 0.0f);
@@ -481,12 +480,20 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
     glColor3f(0.0, 0.0, 1.0);
     glBegin(GL_QUADS);
 
-    glNormal3d(0.0, -1.0, 0.0);
-    glVertex3d(-5.0, prog, -7.0);
-    glVertex3d(-5.0, prog, -5.0);
-    glVertex3d( 5.0, prog, -5.0);
-    glVertex3d( 5.0, prog, -7.0);
-
+    if(cview.move < 90) {
+      glNormal3d(0.0, -1.0, 0.0);
+      glVertex3d(-5.0, prog, -7.0);
+      glVertex3d( 5.0, prog, -7.0);
+      glVertex3d( 5.0, prog, -5.0);
+      glVertex3d(-5.0, prog, -5.0);
+      }
+    else {
+      glNormal3d(0.0, -1.0, 0.0);
+      glVertex3d(-5.0, prog, -7.0);
+      glVertex3d(-5.0, prog, -5.0);
+      glVertex3d( 5.0, prog, -5.0);
+      glVertex3d( 5.0, prog, -7.0);
+      }
     glEnd();
     }
 

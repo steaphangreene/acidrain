@@ -108,7 +108,7 @@ void update_viewport_matrix(matrix_scene *cscene) {
     }
 
   if(cview.movet == MOVE_TRAVEL2) {
-    long long num = -cview.data;
+    long long num = (-cview.data)-1;
     int ctr;
 
     for(ctr = NODE_LTG9; ctr > cscene->node; --ctr) num/=ltg_digits;
@@ -175,17 +175,15 @@ void update_viewport_matrix(matrix_scene *cscene) {
     cview.spread = spreads[cview.move];
     --cview.move; 
     if(cview.move < 0) {
+      cview.spread = 1.0;
       if(cview.data == 0) {
-	cview.spread = 1.0;
 	cview.movet = MOVE_NONE;
 	}
       else if(cview.data > 0) {
-	cview.spread = 1.0;
 	cview.movet = MOVE_TRAVEL;
 	cview.move = 0;
 	}
       else {
-	cview.spread = 1.0;
 	cview.movet = MOVE_TRAVEL2;
 	cview.move = 0;
 	}
@@ -198,8 +196,9 @@ void update_viewport_matrix(matrix_scene *cscene) {
       int xp, yp = MATRIX_CONVYD(cview.yoff - 2.5 + 0.025*(double)(cview.move));
       for(xp=0; xp<8; ++xp) {
 	if(cscene->objs[xp][yp] != NULL && cscene->objs[xp][yp]->conceal < 0) {
-	  if(roll(6, -(cscene->objs[xp][yp]->conceal) > 0))
+	  if(roll(6, -(cscene->objs[xp][yp]->conceal)) > 0) {
 	    cscene->objs[xp][yp]->conceal = 0;
+	    }
 	  }
 	}
       }
@@ -234,6 +233,7 @@ void keypressed_matrix(matrix_scene *cscene, int k) {
     else if(cview.move == 10 && (k == SDLK_RETURN || k == SDLK_KP_ENTER)) {
       cview.movet = MOVE_TRAVEL;
       cview.move = 0;
+      ++cview.data;	// 0000000000 is a valid number!
       }
     else if(k == SDLK_d) {
       cview.movet = MOVE_NONE;

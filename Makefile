@@ -9,19 +9,18 @@ OBJS:=	main.o input.o \
 
 WCC:=	win32-gcc -O2 -Wall
 WLIBS:=	`win32-exec sdl-config --libs` -lopengl32 -lglu32
-WOBJS:=	main.obj input.obj \
-	game.obj game_matrix.obj game_real.obj game_astral.obj \
-	scene.obj scene_matrix.obj scene_real.obj scene_astral.obj \
-	renderer.obj renderer_matrix.obj renderer_real.obj renderer_astral.obj
+WOBJS:=	$(shell echo $(OBJS) | sed 's-\.o-.win32_o-g')
 
-base:	acidrain
+basic:	x86
 
-all:	acidrain acidrain.exe
+all:	x86 win
+
+x86:	acidrain
 
 win:	acidrain.exe
 
 clean:	.
-	rm -f acidrain acidrain.exe *.o *.obj
+	rm -f acidrain acidrain.* *.o *.win32_o
 
 upload:	all
 	scp acidrain acidrain.exe warp:public_html/acidrain/
@@ -45,7 +44,7 @@ acidrain.exe:	$(WOBJS)
 %.o:	%.c
 	$(CC) -c $<
 
-%.obj:	%.c %.o
+%.win32_o:	%.c %.o
 	$(WCC) -c $< -o $@
 
 #AUTO-GENERATED DEPS BELOW (gcc -MM *.c to regen)

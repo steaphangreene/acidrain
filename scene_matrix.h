@@ -31,6 +31,9 @@
 #define NODE_LTG8	18
 #define NODE_LTG9	19
 
+#define NODE_BANK	100
+#define NODE_LIBRARY	101
+
 #define ZONE_UNKNOWN	0
 #define ZONE_OWNED	1
 #define ZONE_PUBLIC	2

@@ -53,16 +53,16 @@ void render_panel(scene *cscene, int player) {
 //  glBindTexture(GL_TEXTURE_2D, tex_panel);
   glLoadIdentity();
   glColor3d(1.0, 1.0, 1.0);
-  glNormal3d(0.0, 0.0, 1.0);
+  glNormal3d(0.0, 0.0, -1.0);
   glBegin(GL_QUADS);
 //  glTexCoord2f(0.0f, 0.0f);
   glVertex3d(1.5, -1.5, -4.5);
-//  glTexCoord2f(1.0f, 0.0f);
-  glVertex3d(2.5, -1.5, -4.5);
-//  glTexCoord2f(1.0f, 1.0f);
-  glVertex3d(2.5, 1.5, -4.5);
 //  glTexCoord2f(0.0f, 1.0f);
   glVertex3d(1.5, 1.5, -4.5);
+//  glTexCoord2f(1.0f, 1.0f);
+  glVertex3d(2.5, 1.5, -4.5);
+//  glTexCoord2f(1.0f, 0.0f);
+  glVertex3d(2.5, -1.5, -4.5);
   glEnd();
   }
 
@@ -70,7 +70,7 @@ int init_renderer(int xs, int ys) {
   const SDL_VideoInfo *videoInfo;
   GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
   GLfloat shininess[] = { 100.0 };
-  GLfloat light_pos[] = { 10.0, -10.0, 4.0, 0.0 };
+  GLfloat light_pos[] = { 8.0, -8.0, -8.0, 0.0 };
 
   xsize = xs;   ysize = ys;
 
@@ -122,8 +122,8 @@ int init_renderer(int xs, int ys) {
   glEnable(GL_NORMALIZE);
   glEnable(GL_TEXTURE_2D);
 
-//  glCullFace (GL_BACK);
-//  glEnable (GL_CULL_FACE);
+  glCullFace (GL_BACK);
+  glEnable (GL_CULL_FACE);
 //  glEnable (GL_POLYGON_SMOOTH);
 
 //  glEnable(GL_LINE_SMOOTH);

@@ -67,6 +67,12 @@ scene *generate_scene_matrix(SceneID id) {
   if(scene_list[id]->any.init == INIT_KNOWN) return scene_list[id];
 
   if(scene_list[id]->matrix.node == NODE_UNKNOWN) {
+    int rnd = rand()%3;
+    if(rnd == 0) scene_list[id]->matrix.node = NODE_BANK;
+    else if(rnd == 1) scene_list[id]->matrix.node = NODE_LIBRARY;
+    }
+
+  if(scene_list[id]->matrix.node == NODE_UNKNOWN) {
     if(scene_list[id]->matrix.zone == ZONE_UNKNOWN) {
       scene_list[id]->matrix.zone = ZONE_PRIVATE;
       scene_list[id]->matrix.name = "Private Node";
@@ -114,8 +120,8 @@ scene *generate_scene_matrix(SceneID id) {
   else if(scene_list[id]->matrix.node == NODE_LTG9) {
     int ctr, next;
 
-    scene_list[id]->matrix.zone = ZONE_PUBLIC;
     scene_list[id]->matrix.funcs |= FUNC_DIAL;
+    scene_list[id]->matrix.zone = ZONE_PUBLIC;
 
     for(ctr=0; ctr<(ltg_digits+1); ++ctr) {
       if(scene_list[id]->matrix.objs[ltg_xp[ctr]][ltg_yp[ctr]] == NULL) {
@@ -127,9 +133,9 @@ scene *generate_scene_matrix(SceneID id) {
 	  scene_list[next]->matrix.node = NODE_LTG8;
 	  }
 	else {
-	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4,
-	             next, 1+rand()%7, 1+rand()%7, 0);
+	  link_nodes(id, ltg_xp[ctr], ltg_yp[ctr], 4, next, 4, 4, 0);
 	  scene_list[next]->matrix.zone = ZONE_WELCOME;
+	  scene_list[next]->matrix.funcs = FUNC_DIAL;
 	  }
 	}
       }
@@ -175,6 +181,64 @@ scene *generate_scene_matrix(SceneID id) {
       }
     }
 
+  else if(scene_list[id]->matrix.node == NODE_BANK) {
+    int next, ctr;
+    int vault = rand()%5;
+    int dec1 = rand()%4;
+    int dec2 = rand()%3;
+    int dec3 = rand()%2;
+    if(dec1 >= vault) ++dec1;
+    if(dec2 >= vault) ++dec2;
+    if(dec2 >= dec1) ++dec2;
+    if(dec3 >= vault) ++dec3;
+    if(dec3 >= dec1) ++dec3;
+    if(dec3 >= dec2) ++dec3;
+
+    tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
+    tmp->type = MATRIX_DATAFILE;
+    tmp->stat = 0;
+    tmp->stat2 = 0;
+    tmp->conceal = 0;
+    scene_list[id]->matrix.objs[5][4] = tmp;
+    scene_list[id]->matrix.zone = ZONE_WELCOME;
+
+    for(ctr=0; ctr<5; ++ctr) {
+      next = new_scene();
+      link_nodes(id, 2+ctr, 2, 4, next, 4, 4, 0);
+
+      scene_list[next]->matrix.node = NODE_BANK;
+      if(ctr == dec1) scene_list[id]->matrix.objs[2+ctr][2]->conceal = 4;
+      else if(ctr == dec2) scene_list[id]->matrix.objs[2+ctr][2]->conceal = 10;
+      else scene_list[id]->matrix.objs[2+ctr][2]->conceal = 12;
+
+      if(ctr == vault) {
+	tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
+	tmp->type = MATRIX_DATAFILE;
+	tmp->stat = 0;
+	tmp->stat2 = 0;
+	tmp->conceal = 12;
+	scene_list[next]->matrix.objs[4][2] = tmp;
+	scene_list[next]->matrix.zone = ZONE_PROTECTED;
+	}
+      else if(ctr == dec3) {
+	tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
+	tmp->type = MATRIX_FAKE;
+	tmp->stat = MATRIX_DATAFILE;
+	tmp->stat2 = 12;
+	tmp->conceal = 8;
+	scene_list[next]->matrix.objs[4][2] = tmp;
+	scene_list[next]->matrix.zone = ZONE_PROTECTED;
+	}
+      else {
+	scene_list[next]->matrix.zone = ZONE_SECURE;
+	}
+      scene_list[next]->matrix.init = INIT_KNOWN;
+      }
+    }
+
+  else if(scene_list[id]->matrix.node == NODE_LIBRARY) {
+    }
+
   scene_list[id]->any.init = INIT_KNOWN;
 
   return scene_list[id];
@@ -189,6 +253,7 @@ void init_scenes_matrix(void) {
   scene_list[0] = (scene*)malloc(sizeof(scene));
   (*scene_list[0]) = new_matrix_scene;
   scene_list[0]->matrix.zone = ZONE_OWNED;
+  scene_list[0]->matrix.funcs = FUNC_DIAL;
 
   tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
   tmp->type = MATRIX_DATAFILE;
