@@ -267,10 +267,10 @@ void draw_dialog(int complete) {
 
   glBegin(GL_QUADS);
   glColor3f(0.0, 0.0, 0.0);
-  glVertex3d( 1.05, -0.15, -4.50);
-  glVertex3d(-1.05, -0.15, -4.50);
-  glVertex3d(-1.05,  0.15, -4.50);
-  glVertex3d( 1.05,  0.15, -4.50);
+  glVertex3d( 1.025, -0.2, -4.50);
+  glVertex3d(-1.025, -0.2, -4.50);
+  glVertex3d(-1.025,  0.2, -4.50);
+  glVertex3d( 1.025,  0.2, -4.50);
   glEnd();
 
   if(complete)
@@ -279,10 +279,10 @@ void draw_dialog(int complete) {
     glColor3f(1.0, 0.0, 0.0);
 
   glBegin(GL_QUADS);
-  glVertex3d( 1.06, -0.16, -4.51);
-  glVertex3d(-1.06, -0.16, -4.51);
-  glVertex3d(-1.06,  0.16, -4.51);
-  glVertex3d( 1.06,  0.16, -4.51);
+  glVertex3d( 1.035, -0.21, -4.51);
+  glVertex3d(-1.035, -0.21, -4.51);
+  glVertex3d(-1.035,  0.21, -4.51);
+  glVertex3d( 1.035,  0.21, -4.51);
   glEnd();
   }
 
@@ -310,7 +310,7 @@ void render_panel_matrix(matrix_scene *cscene, int player) {
     if(mes[0] == ':') ++mes;
 
     xs = 0.9 / (double)(strlen(mes));
-    ys = xs * 1.5;
+    ys = xs * 1.6;
 
     xp += xs/2.0;
     yp += ys/2.0;
@@ -319,7 +319,7 @@ void render_panel_matrix(matrix_scene *cscene, int player) {
 
     for(ctr=0; ctr<strlen(mes); ++ctr) {
       glTranslatef(xp, yp, -4.49);
-      glScalef(xs, ys, 1.0);
+      glScalef(xs*0.8, ys, 1.0);
       render_digit(mes[ctr]);
       glLoadIdentity();
       xp += xs;
@@ -448,7 +448,7 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
       else		digit += 'A'-10;
 
       glTranslatef(basex, 0.0, -4.49);
-      glScalef(0.2, 0.2, 1.0);
+      glScalef(0.15, 0.30, 1.0);
       render_digit(digit);
       glLoadIdentity();
 
@@ -465,7 +465,7 @@ int render_scene_matrix(matrix_scene *cscene, int player) {
       double basex = -0.9 + 0.20*(double)ctr;
 
       glTranslatef(basex, 0.0, -4.49);
-      glScalef(0.2, 0.2, 1.0);
+      glScalef(0.15, 0.30, 1.0);
       render_digit(mes[ctr]);
       glLoadIdentity();
       }
