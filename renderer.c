@@ -34,15 +34,15 @@ static scene *current_scene;
 
 int phase = 0;
 
-#define SDL_TICK 13;
-
-Uint32 tick(Uint32 t, void *data) {
-  SDL_Event event;
-  event.user.type = SDL_USEREVENT;
-  event.user.code = SDL_TICK;
-  SDL_PushEvent(&event);
-  return 30;
-  }
+//#define SDL_TICK 13;
+//
+//Uint32 tick(Uint32 t, void *data) {
+//  SDL_Event event;
+//  event.user.type = SDL_USEREVENT;
+//  event.user.code = SDL_TICK;
+//  SDL_PushEvent(&event);
+//  return 30;
+//  }
 
 int init_renderer(int xs, int ys) {
   const SDL_VideoInfo *videoInfo;
@@ -132,7 +132,7 @@ int init_renderer(int xs, int ys) {
   // manipulated by further calls
   glMatrixMode(GL_MODELVIEW);
 
-  SDL_AddTimer(30, tick, NULL);
+//  SDL_AddTimer(30, tick, NULL);
 
   if(!init_renderer_matrix()) {
     fprintf(stderr, "Matrix Renderer Init Failed!\n");
@@ -185,12 +185,13 @@ int render_scene(scene *cscene, int player) {
     }
   else lasttick += 30;
 
-  if(difftick < 0) {
-    SDL_Delay(-difftick);
+  if(difftick < 0 || difftick >= 1000000) {
+    int d = (int)difftick;
+    SDL_Delay(-d);
     }
 
-  if(difftick > 60) {
-    return 1;
+  if(difftick > 60 && difftick < 1000000) {
+    return -1;
     }
 
   if(fucked) SDL_Delay(100);
