@@ -14,9 +14,12 @@ int user_quit = 0;
 int input_process(int player_number) {
   SDL_Event event;
 
-  if(SDL_PollEvent(&event)) {
+  while(SDL_WaitEvent(&event)) {
     switch (event.type) {
-      case SDL_KEYDOWN: {
+      case(SDL_USEREVENT): {
+	if(event.user.code == 13) return 1;
+	} break;
+      case(SDL_KEYDOWN): {
 	if (event.key.keysym.sym == SDLK_ESCAPE) {
 	  user_quit = 1;
 	  }
@@ -26,11 +29,17 @@ int input_process(int player_number) {
 	  toggle_fullscreen();
 	  }
 	} break;
-      case SDL_QUIT: {
+      case(SDL_QUIT): {
 	user_quit = 1;
 	} break;
-      case SDL_VIDEORESIZE: {
+      case(SDL_VIDEORESIZE): {
 	resize_display(event.resize.w, event.resize.h);
+	} break;
+      case(SDL_MOUSEBUTTONDOWN): {
+	double x, y;
+	x = (double)event.button.x;  y = (double)event.button.y;
+	pixels_to_location(&x, &y);
+	clicked(x, y, event.button.button);
 	} break;
       }
     }

@@ -20,6 +20,35 @@ static int icon[] = {0, ICON_SPHERE, ICON_CUBE, ICON_BURST, ICON_PYRAMID };
 static SDL_Surface *surface = NULL;
 static int videoFlags = 0;
 
+static int xsize=0, ysize=0;
+static int hgap=0, vgap=0;
+
+static double xoff=0.0, yoff=0.0, xtarg=0.0, ytarg=0.0;
+static int move = -1;
+
+const double moves[] = {
+	1.0/100.0,
+	3.0/99.0,
+	6.0/96.0,
+	15.0/90.0,
+	25.0/75.0,
+	25.0/50.0,
+	15.0/25.0,
+	6.0/10.0,
+	3.0/4.0,
+	1.0/1.0
+	};
+
+#define SDL_TICK 13;
+
+Uint32 tick(Uint32 t, void *data) {
+  SDL_Event event;
+  event.user.type = SDL_USEREVENT;
+  event.user.code = SDL_TICK;
+  SDL_PushEvent(&event);
+  return 30;
+  }
+
 void __renderer_make_sphere(void) {
   GLUquadricObj *quadObj;
 
@@ -101,35 +130,37 @@ void __renderer_make_pyramid(void) {
   glBegin(GL_TRIANGLES);
 
   glNormal3d(-1.0, 0.0, 0.5);
-  glVertex3d(0.0, 0.0, -RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, RADIUS);
-  glVertex3d(-RADIUS, RADIUS, RADIUS);
+  glVertex3d(0.0, 0.0, RADIUS);
+  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
+  glVertex3d(-RADIUS, RADIUS, -RADIUS);
 
   glNormal3d(0.0, 1.0, 0.5);
-  glVertex3d(0.0, 0.0, -RADIUS);
-  glVertex3d(-RADIUS, RADIUS, RADIUS);
-  glVertex3d(RADIUS, RADIUS, RADIUS);
+  glVertex3d(0.0, 0.0, RADIUS);
+  glVertex3d(-RADIUS, RADIUS, -RADIUS);
+  glVertex3d(RADIUS, RADIUS, -RADIUS);
 
   glNormal3d(1.0, 0.0, 0.5);
-  glVertex3d(0.0, 0.0, -RADIUS);
-  glVertex3d(RADIUS, RADIUS, RADIUS);
-  glVertex3d(RADIUS, -RADIUS, RADIUS);
+  glVertex3d(0.0, 0.0, RADIUS);
+  glVertex3d(RADIUS, RADIUS, -RADIUS);
+  glVertex3d(RADIUS, -RADIUS, -RADIUS);
 
   glNormal3d(0.0, -1.0, 0.5);
-  glVertex3d(0.0, 0.0, -RADIUS);
-  glVertex3d(RADIUS, -RADIUS, RADIUS);
-  glVertex3d(-RADIUS, -RADIUS, RADIUS);
+  glVertex3d(0.0, 0.0, RADIUS);
+  glVertex3d(RADIUS, -RADIUS, -RADIUS);
+  glVertex3d(-RADIUS, -RADIUS, -RADIUS);
   glEnd();
   glEndList();
   }
 
-int init_renderer(int xsize, int ysize) {
+int init_renderer(int xs, int ys) {
   const SDL_VideoInfo *videoInfo;
   GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
   GLfloat shininess[] = { 100.0 };
-  GLfloat light_pos[] = { 10.0, 10.0, 4.0, 0.0 };
+  GLfloat light_pos[] = { 10.0, -10.0, 4.0, 0.0 };
 
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+  xsize = xs;   ysize = ys;
+
+  if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) != 0) {
     fprintf(stderr, "Error: %s\n", SDL_GetError());
     return 0;
     }
@@ -209,11 +240,13 @@ int init_renderer(int xsize, int ysize) {
   // Set the projection matrix to be the identity matrix
   glLoadIdentity();
 
-  glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), -0.5, 0.5, 1.5, 20.0);
+  glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), 0.5, -0.5, 1.5, 20.0);
 
   // Choose the modelview matrix to be the matrix
   // manipulated by further calls
   glMatrixMode(GL_MODELVIEW);
+
+  SDL_AddTimer(30, tick, NULL);
 
   return 1;
   }
@@ -231,10 +264,25 @@ int __astral_render_scene(astral_scene *current_scene, int player) {
 int __matrix_render_scene(matrix_scene *current_scene, int player) {
   matrix_obj *tmp = current_scene->objs;
 
+  if(move >= 0) {
+    xoff += (double)(xtarg-xoff)*(double)moves[move];
+    yoff += (double)(ytarg-yoff)*(double)moves[move];
+    ++move;
+    if(move >= 10) move = -1;
+    }
+
   while(tmp != NULL) {
+    double xpos = 0.5*(tmp->xp-4)-xoff;
+    double ypos = 0.5*(tmp->yp-4)-yoff;
+
+    while(xpos < -2.25) xpos += 4.5;
+    while(ypos < -2.25) ypos += 4.5;
+    while(xpos > 2.25) xpos -= 4.5;
+    while(ypos > 2.25) ypos -= 4.5;
+
     glLoadIdentity();
-    glTranslatef(0.25+0.5*(tmp->xp-4), 0.25+0.5*(tmp->yp-4), -6.0);
-    glRotatef((45+phase*1)%360, 0.0, 0.0, 1.0);
+    glTranslatef(xpos, ypos, -6.0);
+    glRotatef((45+phase*5)%360, 0.0, 0.0, 1.0);
     glCallList(icon[tmp->type]);
     tmp = tmp->next;
     }
@@ -274,19 +322,22 @@ int render_scene(scene *current_scene, int player) {
   return 1;
   }
 
-void resize_display(int xsize, int ysize) {
-  int rx = xsize, ry = ysize;
-  surface = SDL_SetVideoMode(xsize, ysize, 16, videoFlags);
+void resize_display(int xs, int ys) {
+  int rx = xs, ry = ys;
+  surface = SDL_SetVideoMode(rx, ry, 16, videoFlags);
+
+  xsize = xs;   ysize = ys;
 
   if(xsize > (ysize*4)/3) xsize = (ysize*4)/3;
   if(ysize > (xsize*3)/4) ysize = (xsize*3)/4;
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), -0.5, 0.5, 1.5, 20.0);
+  glFrustum(-0.5, -0.5+((GLdouble)xsize)/((GLdouble)ysize), 0.5, -0.5, 1.5, 20.0);
   glMatrixMode(GL_MODELVIEW);
 
-  glViewport((rx-xsize)/2, (ry-ysize)/2, (GLint)xsize, (GLint)ysize);
+  hgap = (rx-xsize)/2;  vgap = (ry-ysize)/2;
+  glViewport(hgap, vgap, (GLint)xsize, (GLint)ysize);
   }
 
 static int oldmodex = 0, oldmodey = 0;
@@ -308,3 +359,39 @@ void toggle_fullscreen(void) {
   SDL_WM_ToggleFullScreen(surface);
   videoFlags ^= SDL_FULLSCREEN;
   }
+
+void pixels_to_location(double *x, double *y) {
+  (*x) -= (double)hgap;
+  (*y) -= (double)vgap;
+
+  if((*x) < 0.0) (*x)=-10.0, (*y)=-10.0;
+  else if((*y) < 0.0) (*x)=-10.0, (*y)=-10.0;
+  else if((*x) >= (double)xsize) (*x)=-10.0, (*y)=-10.0;
+  else if((*y) >= (double)ysize) (*x)=-10.0, (*y)=-10.0;
+  else {
+    (*x) /= (double)ysize;  // INTENTIONAL - Divide by YSIZE, not XSIZE!
+    (*y) /= (double)ysize;
+    (*x) *= 2.0;  (*x) -= 1.0;
+    (*y) *= 2.0;  (*y) -= 1.0;
+    }
+  }
+
+void clicked(double x, double y, int b) {
+  if(move == -1 && b == 3) {
+    x*=8;  x+=9.5;
+    y*=8;  y+=9.5;
+    if(((int)x & 1) == 1 && ((int)y & 1) == 1) {
+      int ix = ((int)x)/2;
+      int iy = ((int)y)/2;
+      xtarg += 4.5;  xoff += 4.5;
+      ytarg += 4.5;  yoff += 4.5;
+      xtarg += ((double)ix-4)/2.0;
+      ytarg += ((double)iy-4)/2.0;
+      while(xtarg > 4.5) { xtarg -= 4.5; xoff -= 4.5; }
+      while(ytarg > 4.5) { ytarg -= 4.5; yoff -= 4.5; }
+      if(xtarg != xoff || ytarg != yoff) move = 0;
+      }
+    }
+  }
+
+

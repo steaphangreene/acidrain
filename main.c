@@ -27,14 +27,14 @@ int main(int argc, char **argv) {
     exit(1);
     }
 
-  for(ctr=0; ctr<64; ++ctr) {
+  for(ctr=0; ctr<81; ++ctr) {
     matrix_obj *tmp;
     int rn = random()%19;
     if(rn > 3) continue;
 
     tmp = (matrix_obj*)malloc(sizeof(matrix_obj));
     tmp->type = rn+1;
-    tmp->xp = ctr%8;	tmp->yp = ctr/8;
+    tmp->xp = ctr%9;	tmp->yp = ctr/9;
     tmp->stat = 0;	tmp->stat2 = 0;
     tmp->next = current_scene.matrix.objs;
     current_scene.matrix.objs = tmp;
@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Input processing failed!\n");
       exit(1);
       }
+//    SDL_Delay(40);
     }
 
   exit(0);
