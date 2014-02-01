@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
+#include <string.h>
 #include <SDL/SDL_opengl.h>
 
 #include "settings.h"
